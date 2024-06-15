@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
-import 'package:kemasindo/app/components/custom_datepicker_dialog.dart';
-import 'package:kemasindo/app/style/borders.dart';
-import 'package:kemasindo/app/style/colors.dart';
-import 'package:kemasindo/app/style/paddings.dart';
-
 import '../../../components/custom_button.dart';
+import '../../../components/custom_datepicker_dialog.dart';
 import '../../../components/custom_dropdown.dart';
+import '../../../style/borders.dart';
+import '../../../style/colors.dart';
+import '../../../style/paddings.dart';
 import '../controllers/permohonan_ijin_controller.dart';
 
 class PermohonanIjinView extends GetView<PermohonanIjinController> {
@@ -62,7 +61,7 @@ class PermohonanIjinView extends GetView<PermohonanIjinController> {
                                   Row(
                                     children: [
                                       CustomDateTimePickerDialog(
-                                        text: 'Dari',
+                                        title: 'Mulai',
                                         onDataChange: (value) {
                                           if (value != null) {
                                             controller.controllerFrom.value =
@@ -75,6 +74,7 @@ class PermohonanIjinView extends GetView<PermohonanIjinController> {
                                           }
                                           return null;
                                         },
+                                        isRequired: true,
                                       ),
                                       const SizedBox(
                                         width: kElementPadding / 2,
@@ -88,7 +88,7 @@ class PermohonanIjinView extends GetView<PermohonanIjinController> {
                                         width: kElementPadding / 2,
                                       ),
                                       CustomDateTimePickerDialog(
-                                        text: 'Sampai',
+                                        title: 'Sampai',
                                         onDataChange: (value) {
                                           if (value != null) {
                                             controller.controllerTo.value =
@@ -103,6 +103,7 @@ class PermohonanIjinView extends GetView<PermohonanIjinController> {
                                           }
                                           return null;
                                         },
+                                        isRequired: false,
                                       ),
                                     ],
                                   ),
@@ -130,7 +131,6 @@ class PermohonanIjinView extends GetView<PermohonanIjinController> {
                                   ),
                                   CustomDropdownButton(
                                     height: 50,
-                                    hint: 'Pilih',
                                     items: const [
                                       {'text': 'Ijin', 'value': 'I'},
                                       {'text': 'Cuti', 'value': 'C'}
@@ -138,9 +138,9 @@ class PermohonanIjinView extends GetView<PermohonanIjinController> {
                                     onChangeValue: (value) {
                                       controller.controllerJenis.text == value;
                                     },
-                                    validator: (value) => value == null
-                                        ? 'Jenis ijin harus dipilih...!'
-                                        : null,
+                                    validator: 'Jenis ijin harus dipilih...!',
+                                    title: 'Jenis Ijin',
+                                    isRequired: true,
                                   ),
                                   const SizedBox(
                                     height: kElementPadding,
@@ -210,74 +210,77 @@ class PermohonanIjinView extends GetView<PermohonanIjinController> {
                                   const SizedBox(
                                     height: 10,
                                   ),
-                                  Obx(() =>
-                                  GestureDetector(
-                                    child: Column(
-                                      children: [
-                                        SizedBox(
-                                          height: 200,
-                                          width: Get.width,
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(30),
-                                                border: Border.all(
-                                                    color: kInputBorderColor)),
-                                            child: GetBuilder<
-                                                PermohonanIjinController>(
-                                              builder: (_) {
-                                                return controller
-                                                        .boolImageIjin.isFalse
-                                                    ? Column(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
-                                                        children: [
-                                                          const Icon(
-                                                            Icons
-                                                                .add_a_photo_outlined,
-                                                            size: 50,
-                                                            color:
-                                                                kPrimaryColor,
+                                  Obx(
+                                    () => GestureDetector(
+                                      child: Column(
+                                        children: [
+                                          SizedBox(
+                                            height: 200,
+                                            width: Get.width,
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(30),
+                                                  border: Border.all(
+                                                      color:
+                                                          kInputBorderColor)),
+                                              child: GetBuilder<
+                                                  PermohonanIjinController>(
+                                                builder: (_) {
+                                                  return controller
+                                                          .boolImageIjin.isFalse
+                                                      ? Column(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .center,
+                                                          children: [
+                                                            const Icon(
+                                                              Icons
+                                                                  .add_a_photo_outlined,
+                                                              size: 50,
+                                                              color:
+                                                                  kPrimaryColor,
+                                                            ),
+                                                            const SizedBox(
+                                                              height: 10,
+                                                            ),
+                                                            Text(
+                                                              'Ambil Foto Bukti Ijin',
+                                                              style: Theme.of(
+                                                                      context)
+                                                                  .textTheme
+                                                                  .bodyMedium
+                                                                  ?.copyWith(
+                                                                      color:
+                                                                          kSecondaryTextColor),
+                                                            )
+                                                          ],
+                                                        )
+                                                      : ClipRRect(
+                                                          borderRadius:
+                                                              BorderRadius.circular(
+                                                                  kDefaultBorder),
+                                                          child: Image.file(
+                                                            controller
+                                                                .imageIjin!,
+                                                            fit:
+                                                                BoxFit.fitWidth,
                                                           ),
-                                                          const SizedBox(
-                                                            height: 10,
-                                                          ),
-                                                          Text(
-                                                            'Ambil Foto Bukti Ijin',
-                                                            style: Theme.of(
-                                                                    context)
-                                                                .textTheme
-                                                                .bodyText2
-                                                                ?.copyWith(
-                                                                    color:
-                                                                        kSecondaryTextColor),
-                                                          )
-                                                        ],
-                                                      )
-                                                    : ClipRRect(
-                                                        borderRadius:
-                                                            BorderRadius.circular(
-                                                                kDefaultBorder),
-                                                        child: Image.file(
-                                                          controller.imageIjin!,
-                                                          fit: BoxFit.fitWidth,
-                                                        ),
-                                                      );
-                                              },
+                                                        );
+                                                },
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                        controller.boolImageIjin.isFalse
-                                            ? const SizedBox()
-                                            : const Text(
-                                                'Tap untuk mengambil ulang bukti..!')
-                                      ],
+                                          controller.boolImageIjin.isFalse
+                                              ? const SizedBox()
+                                              : const Text(
+                                                  'Tap untuk mengambil ulang bukti..!')
+                                        ],
+                                      ),
+                                      onTap: () {
+                                        controller.getImageIjin();
+                                      },
                                     ),
-                                    onTap: () {
-                                      controller.getImageIjin();
-                                    },
-                                  ),
                                   ),
                                 ],
                               ),

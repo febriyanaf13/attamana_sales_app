@@ -1,10 +1,10 @@
 import 'package:get/get.dart';
-import 'package:kemasindo/app/modules/laporan/models/laporan_bulanan.dart';
-import 'package:kemasindo/app/modules/laporan/models/laporan_tahunan.dart';
-import 'package:kemasindo/app/modules/laporan/providers/laporan_provider.dart';
-import 'package:kemasindo/app/utils/constants.dart';
 
 import '../../../components/custom_dialog.dart';
+import '../../../utils/constants.dart';
+import '../models/laporan_bulanan.dart';
+import '../models/laporan_tahunan.dart';
+import '../providers/laporan_provider.dart';
 
 class LaporanController extends GetxController {
   var currentTabIndex = 0.obs;
@@ -19,18 +19,8 @@ class LaporanController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    getLaporanBulanan();
-    getLaporanTahunan();
-  }
-
-  @override
-  void onReady() {
-    super.onReady();
-  }
-
-  @override
-  void onClose() {
-    super.onClose();
+    // getLaporanBulanan();
+    // getLaporanTahunan();
   }
 
   void getLaporanBulanan() {
@@ -47,11 +37,7 @@ class LaporanController extends GetxController {
           var data = body['data'];
           listLaporanBulanan.value =
               laporanBulananFromJson(data).reversed.toList();
-        } else {
-          dialogWarning('Opss...', message);
         }
-      } else {
-        dialogError('Error ${value.statusCode}', 'Polygon Area');
       }
     });
   }
@@ -70,11 +56,7 @@ class LaporanController extends GetxController {
           var data = body['data'];
           listLaporanTahunan.value =
               laporanTahunanFromJson(data).reversed.toList();
-        } else {
-          dialogWarning('Opss...', message);
         }
-      } else {
-        dialogError('Error ${value.statusCode}', 'Polygon Area');
       }
     });
   }

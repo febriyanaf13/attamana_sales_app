@@ -1,4 +1,4 @@
-package com.example.kemasindo
+package com.zdt.attamana
 
 import io.flutter.embedding.android.FlutterActivity
 

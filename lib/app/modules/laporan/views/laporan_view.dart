@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
-import 'package:kemasindo/app/modules/laporan/views/laporan_bulanini_view.dart';
-import 'package:kemasindo/app/modules/laporan/views/laporan_tahunini_view.dart';
-import 'package:kemasindo/app/style/colors.dart';
 
 import '../../../components/custom_app_bar.dart';
 import '../../../style/borders.dart';
+import '../../../style/colors.dart';
 import '../../../style/paddings.dart';
 import '../controllers/laporan_controller.dart';
+import 'laporan_bulanini_view.dart';
+import 'laporan_tahunini_view.dart';
 
 class LaporanView extends GetView<LaporanController> {
   const LaporanView({Key? key}) : super(key: key);
@@ -29,7 +29,7 @@ class LaporanView extends GetView<LaporanController> {
                         borderRadius: BorderRadius.circular(kDefaultBorder)),
                     child: TabBar(
                         labelColor: kPrimaryColor,
-                        labelStyle: Theme.of(context).textTheme.subtitle1,
+                        labelStyle: Theme.of(context).textTheme.titleMedium,
                         unselectedLabelColor: kSecondaryTextColor,
                         indicatorColor: kBoxColor,
                         indicator: BoxDecoration(

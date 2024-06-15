@@ -41,3 +41,42 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 }
+
+// class CustomTabAppBar extends StatelessWidget implements PreferredSizeWidget {
+//   @override
+//   final Size preferredSize;
+//   final String title;
+//   final List<Widget>? action;
+//   final PreferredSize? tabBar;
+//   final Color? colors;
+//
+//   const CustomTabAppBar(
+//     this.title, {
+//     Key? key,
+//     this.action,
+//     this.tabBar,
+//     this.colors,
+//   })  : preferredSize = const Size.fromHeight(50.0),
+//         super(key: key);
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return AppBar(
+//       title: Align(
+//         alignment: Alignment.center,
+//         child: Text(
+//           title,
+//           style:
+//               Theme.of(context).textTheme.headlineSmall?.copyWith(color: white),
+//         ),
+//       ),
+//       titleSpacing: kPagePadding,
+//       backgroundColor: colors ?? kBackgroundColor,
+//       elevation: 0,
+//       iconTheme: const IconThemeData(color: white),
+//       automaticallyImplyLeading: false,
+//       actions: action,
+//       bottom: tabBar,
+//     );
+//   }
+// }

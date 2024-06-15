@@ -16,139 +16,147 @@ class GrafikView extends GetView<GrafikController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        appBar: AppBar(
+          title: const Text('Reports'),
+          centerTitle: true,
+          backgroundColor: kPrimaryColor,
+        ),
         body: SafeArea(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(kPagePadding),
-        child: Column(
-          children: [
-            Obx(() => kalenderPresensi()),
-            const SizedBox(
-              height: kElementPadding,
-            ),
-            Obx(() => SizedBox(
-                  child: Column(
-                    children: [
-                      const Divider(),
-                      Text('PRESENTASE ABSEN BULAN INI',
-                          style: Get.textTheme.bodyText2
-                              ?.copyWith(fontWeight: FontWeight.bold)),
-                      const Divider(),
-                      Card(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(kDefaultBorder),
-                        ),
-                        color: kBoxColor,
-                        child:
-                            // dataNilai.length == 0
-                            //     ? Center(
-                            //         child: LottieEmptyData(
-                            //           isLoading: simC.isLoadingNilai,
-                            //           msg: 'Presentasi rekap nilai kosong...',
-                            //         ),
-                            //       )
-                            //     :
-                        SizedBox(
-                          height: 350,
-                          child: Padding(
-                            padding: const EdgeInsets.all(kElementPadding),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                Expanded(
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Expanded(
-                                        flex: 3,
-                                        child: PieChart(
-                                          PieChartData(
-                                              pieTouchData: PieTouchData(
-                                                  touchCallback:
-                                                      (FlTouchEvent event,
-                                                          pieTouchResponse) {
-                                                // setState(() {
-                                                //   if (!event
-                                                //           .isInterestedForInteractions ||
-                                                //       pieTouchResponse == null ||
-                                                //       pieTouchResponse
-                                                //               .touchedSection ==
-                                                //           null) {
-                                                //     touchedIndex = -1;
-                                                //     return;
-                                                //   }
-                                                //   touchedIndex = pieTouchResponse
-                                                //       .touchedSection!
-                                                //       .touchedSectionIndex;
-                                                // });
-                                              }),
-                                              borderData: FlBorderData(
-                                                show: false,
-                                              ),
-                                              sectionsSpace: 0,
-                                              centerSpaceRadius: 60,
-                                              sections:
-                                                  controller.showingSections()),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 1,
-                                        child: ListView.separated(
-                                          separatorBuilder:
-                                              (BuildContext context,
-                                                  int index) {
-                                            return const SizedBox(
-                                              height: 10,
-                                            );
-                                          },
-                                          itemCount:
-                                              controller.dataGrafik.length,
-                                          shrinkWrap: true,
-                                          physics:
-                                              const NeverScrollableScrollPhysics(),
-                                          itemBuilder: (context, index) {
-                                            // return Text('nhuruf');
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(kPagePadding),
+            child: Column(
+              children: [
+                Obx(() => kalenderPresensi()),
+                const SizedBox(
+                  height: kElementPadding,
+                ),
+                Obx(() => SizedBox(
+                      child: Column(
+                        children: [
+                          const Divider(),
+                          Text('PRESENTASE ABSEN BULAN INI',
+                              style: Get.textTheme.bodyMedium
+                                  ?.copyWith(fontWeight: FontWeight.bold)),
+                          const Divider(),
+                          Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.circular(kDefaultBorder),
+                            ),
+                            color: kBoxColor,
+                            child:
+                                // dataNilai.length == 0
+                                //     ? Center(
+                                //         child: LottieEmptyData(
+                                //           isLoading: simC.isLoadingNilai,
+                                //           msg: 'Presentasi rekap nilai kosong...',
+                                //         ),
+                                //       )
+                                //     :
+                                SizedBox(
+                              height: 350,
+                              child: Padding(
+                                padding: const EdgeInsets.all(kElementPadding),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: [
+                                    Expanded(
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Expanded(
+                                            flex: 3,
+                                            child: PieChart(
+                                              PieChartData(
+                                                  pieTouchData: PieTouchData(
+                                                      touchCallback:
+                                                          (FlTouchEvent event,
+                                                              pieTouchResponse) {
+                                                    // setState(() {
+                                                    //   if (!event
+                                                    //           .isInterestedForInteractions ||
+                                                    //       pieTouchResponse == null ||
+                                                    //       pieTouchResponse
+                                                    //               .touchedSection ==
+                                                    //           null) {
+                                                    //     touchedIndex = -1;
+                                                    //     return;
+                                                    //   }
+                                                    //   touchedIndex = pieTouchResponse
+                                                    //       .touchedSection!
+                                                    //       .touchedSectionIndex;
+                                                    // });
+                                                  }),
+                                                  borderData: FlBorderData(
+                                                    show: false,
+                                                  ),
+                                                  sectionsSpace: 0,
+                                                  centerSpaceRadius: 60,
+                                                  sections: controller
+                                                      .showingSections()),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            flex: 1,
+                                            child: ListView.separated(
+                                              separatorBuilder:
+                                                  (BuildContext context,
+                                                      int index) {
+                                                return const SizedBox(
+                                                  height: 10,
+                                                );
+                                              },
+                                              itemCount:
+                                                  controller.dataGrafik.length,
+                                              shrinkWrap: true,
+                                              physics:
+                                                  const NeverScrollableScrollPhysics(),
+                                              itemBuilder: (context, index) {
+                                                // return Text('nhuruf');
 
-                                            return Indicator(
-                                              color:
-                                                  controller.colorStatus[index],
-                                              text: controller.dataGrafik[index]
-                                                  .huruf,
-                                              jumlah:
-                                                  '=   ${controller.dataGrafik[index].jumlah}',
-                                            );
-                                          },
-                                        ),
+                                                return Indicator(
+                                                  color: controller
+                                                      .colorStatus[index],
+                                                  text: controller
+                                                      .dataGrafik[index].huruf,
+                                                  jumlah:
+                                                      '=   ${controller.dataGrafik[index].jumlah}',
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                    const Divider(
+                                      color: Colors.grey,
+                                      height: 1,
+                                    ),
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    Text(
+                                      'H = Hadir,   T = Terlambat,   I = Izin,   S = Sakit,\nPA = Pulang Awal,   DL = Dinas Luar,   A = Alfa,   C = Cuti',
+                                      textAlign: TextAlign.center,
+                                      maxLines: 2,
+                                      style:
+                                          Get.textTheme.bodyLarge?.copyWith(),
+                                    )
+                                  ],
                                 ),
-                                const Divider(
-                                  color: Colors.grey,
-                                  height: 1,
-                                ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                Text(
-                                  'H = Hadir,   T = Terlambat,   I = Izin,   S = Sakit,\nPA = Pulang Awal,   DL = Dinas Luar,   A = Alfa,   C = Cuti',
-                                  textAlign: TextAlign.center,
-                                  maxLines: 2,
-                                  style: Get.textTheme.bodyText1?.copyWith(
-                                      ),
-                                )
-                              ],
+                              ),
                             ),
                           ),
-                        ),
+                        ],
                       ),
-                    ],
-                  ),
-                )),
-          ],
-        ),
-      ),
-    ));
+                    )),
+              ],
+            ),
+          ),
+        ));
   }
 
   Widget kalenderPresensi() {
@@ -160,14 +168,19 @@ class GrafikView extends GetView<GrafikController> {
           children: [
             TableCalendar(
               locale: 'id_ID',
-              eventLoader: controller.getEventsForDay,
+              firstDay: DateTime(tahunIni, 01, 01),
+              lastDay: DateTime(tahunIni, 12, 31),
               focusedDay: controller.focusedDay.value,
               selectedDayPredicate: (day) =>
                   isSameDay(controller.focusedDay.value, day),
+              eventLoader: controller.getEventsForDay,
               onDaySelected: controller.onDaySelected,
+              startingDayOfWeek: StartingDayOfWeek.monday,
+              holidayPredicate: (day) => day.weekday > 6,
               calendarStyle: CalendarStyle(
                   holidayTextStyle: const TextStyle(color: kErrorColor),
-                  weekendTextStyle: const TextStyle(color: kErrorColor),
+                  holidayDecoration: const BoxDecoration(),
+                  // weekendTextStyle: const TextStyle(color: kErrorColor),
                   selectedDecoration: const BoxDecoration(
                       color: kPrimaryColor, shape: BoxShape.circle),
                   todayDecoration: BoxDecoration(
@@ -177,8 +190,6 @@ class GrafikView extends GetView<GrafikController> {
                 formatButtonVisible: false,
                 titleCentered: true,
               ),
-              firstDay: DateTime(tahunIni, 01, 01),
-              lastDay: DateTime(tahunIni, 12, 31),
               calendarBuilders: CalendarBuilders(
                 markerBuilder: (context, day, List<KalenderPresensi> events) {
                   if (events.isEmpty) {
@@ -313,7 +324,7 @@ class GrafikView extends GetView<GrafikController> {
         children: [
           Text(
             lblData,
-            style: Get.textTheme.bodyText1,
+            style: Get.textTheme.bodyLarge,
           ),
           const Text(
             ':',

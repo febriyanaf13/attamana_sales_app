@@ -18,7 +18,8 @@ class CustomButton extends StatelessWidget {
       required this.text,
       this.height,
       this.width,
-      required this.border, this.color})
+      required this.border,
+      this.color})
       : super(key: key);
 
   @override
@@ -26,12 +27,12 @@ class CustomButton extends StatelessWidget {
     return AnimatedButton(
       pressEvent: onTap,
       text: text,
-      borderRadius: const BorderRadius.all(Radius.circular(30)),
+      borderRadius: const BorderRadius.all(Radius.circular(10)),
       buttonTextStyle:
           Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white),
       width: width ?? Get.width,
       height: height ?? Get.height,
-      color: color?? kSecondaryColor,
+      color: color ?? kSecondaryColor,
     );
   }
 }

@@ -1,15 +1,16 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:kemasindo/app/modules/grafik/models/grafik.dart';
-import 'package:kemasindo/app/modules/grafik/providers/grafik_provider.dart';
+
 import 'package:table_calendar/table_calendar.dart';
 
 import '../../../components/custom_dialog.dart';
 import '../../../style/colors.dart';
 import '../../../utils/constants.dart';
 import '../../laporan/controllers/laporan_controller.dart';
+import '../models/grafik.dart';
 import '../models/kalender_presensi.dart';
+import '../providers/grafik_provider.dart';
 
 class GrafikController extends GetxController {
   int touchedIndex = -1;
@@ -37,7 +38,7 @@ class GrafikController extends GetxController {
 
   @override
   void onInit() {
-    getGrafikAbsenBulanan();
+    // getGrafikAbsenBulanan();
     listKalenderPresensi.value = [
       KalenderPresensi(
           tanggal: DateTime.parse("2022-11-15"),
@@ -49,16 +50,6 @@ class GrafikController extends GetxController {
     super.onInit();
   }
 
-  @override
-  void onReady() {
-    super.onReady();
-  }
-
-  @override
-  void onClose() {
-    super.onClose();
-  }
-
   setFocusedDay(DateTime day) {
     focusedDay(day);
   }
@@ -68,21 +59,17 @@ class GrafikController extends GetxController {
         .getGrafikAbsenBulanan(userData['userid'].toString(),
             bulanIni.toString(), tahunIni.toString())
         .then((value) {
-      if (value.statusCode == 200) {
+      if (value.status.isOk) {
         var body = value.body;
         var success = body['success'];
         var message = body['message'];
 
-        if (success) {
           print(body['data']);
           var data = body['data'];
           dataGrafik.value = grafikFromJson(data);
-        } else {
-          dialogWarning('Opss...', message);
-        }
-      } else {
-        dialogError('Error ${value.statusCode}', 'Polygon Area');
+
       }
+
     });
   }
 
@@ -137,7 +124,7 @@ class GrafikController extends GetxController {
               padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 5),
               child: Text(
                 '${persentase.toStringAsFixed(2)}%',
-                style: Get.textTheme.subtitle2?.copyWith(fontSize: fontSize),
+                style: Get.textTheme.titleSmall?.copyWith(fontSize: fontSize),
               ),
             )),
         badgePositionPercentageOffset: 1,

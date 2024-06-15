@@ -1,7 +1,6 @@
 
 import 'dart:io';
 
-import 'package:kemasindo/app/modules/permohonan_ijin/providers/permohonan_ijin_provider.dart';
 
 class PermohonanIjin {
   PermohonanIjin({

@@ -1,7 +1,7 @@
+import 'package:attamana_salles_app/app/utils/extension_image.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
-import 'package:kemasindo/app/utils/extension_image.dart';
 
 import '../../../style/colors.dart';
 import '../../../style/paddings.dart';
@@ -9,9 +9,15 @@ import '../controllers/account_controller.dart';
 
 class AccountView extends GetView<AccountController> {
   const AccountView({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Profiles'),
+        centerTitle: true,
+        backgroundColor: kPrimaryColor,
+      ),
       body: SafeArea(
           child: SizedBox(
         height: double.infinity,
@@ -26,15 +32,16 @@ class AccountView extends GetView<AccountController> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Container(
-                          height: 90,
-                          width: 90,
+                          height: 100,
+                          width: 100,
                           decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              border: Border.all(color: kWhiteColor, width: 5),
+                              border:
+                                  Border.all(color: kPrimaryColor, width: 5),
                               color: kWhiteColor,
                               image: DecorationImage(
                                   image: AssetImage(
-                                    'logo_login'.png,
+                                    'user_profile'.png,
                                   ),
                                   fit: BoxFit.fill)),
                           child: const CircleAvatar(
@@ -43,55 +50,56 @@ class AccountView extends GetView<AccountController> {
                       const SizedBox(
                         height: kElementPadding,
                       ),
-                      Text('Nama',
+                      Text(controller.nama,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: Theme.of(context).textTheme.headline6),
-                      Text('Email@ccc.com',
+                          style: Get.textTheme.titleLarge
+                              ?.copyWith(color: kPrimaryColor)),
+                      Text(controller.email,
                           style: Theme.of(context)
                               .textTheme
-                              .bodyText1
+                              .bodyLarge
                               ?.copyWith(color: kPrimaryTextColor)),
                     ],
                   ),
                   const SizedBox(
                     height: kContainerPadding,
                   ),
-                  GestureDetector(
-                      child: Row(
-                    children: [
-                      Expanded(
-                        child: Row(
-                          children: [
-                            const Icon(Icons.person, color: kDarkGreyColor),
-                            const SizedBox(
-                              width: kElementPadding,
-                            ),
-                            Text(
-                              'Data Pribadi',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyText1
-                                  ?.copyWith(color: kPrimaryTextColor),
-                            )
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                          child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: const [
-                          Icon(
-                            Icons.keyboard_arrow_right,
-                            color: kPrimaryTextColor,
-                          )
-                        ],
-                      ))
-                    ],
-                  )),
-                  const SizedBox(
-                    height: kElementPadding,
-                  ),
+                  // GestureDetector(
+                  //     child: Row(
+                  //   children: [
+                  //     Expanded(
+                  //       child: Row(
+                  //         children: [
+                  //           const Icon(Icons.person, color: kDarkGreyColor),
+                  //           const SizedBox(
+                  //             width: kElementPadding,
+                  //           ),
+                  //           Text(
+                  //             'Data Pribadi',
+                  //             style: Theme.of(context)
+                  //                 .textTheme
+                  //                 .bodyLarge
+                  //                 ?.copyWith(color: kPrimaryTextColor),
+                  //           )
+                  //         ],
+                  //       ),
+                  //     ),
+                  //     const Expanded(
+                  //         child: Row(
+                  //       mainAxisAlignment: MainAxisAlignment.end,
+                  //       children: [
+                  //         Icon(
+                  //           Icons.keyboard_arrow_right,
+                  //           color: kPrimaryTextColor,
+                  //         )
+                  //       ],
+                  //     ))
+                  //   ],
+                  // )),
+                  // const SizedBox(
+                  //   height: kElementPadding,
+                  // ),
                   // GestureDetector(
                   //   onTap: () => Get.toNamed(Routes.OUR_TIM),
                   //   child: Row(
@@ -178,6 +186,45 @@ class AccountView extends GetView<AccountController> {
                         child: Row(
                           children: [
                             const Icon(
+                              Icons.password,
+                              color: kDarkGreyColor,
+                            ),
+                            const SizedBox(
+                              width: kElementPadding,
+                            ),
+                            Text(
+                              'Update Password',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge
+                                  ?.copyWith(color: kPrimaryTextColor),
+                            ),
+                            const Expanded(
+                                child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Icon(
+                                  Icons.keyboard_arrow_right,
+                                  color: kPrimaryTextColor,
+                                )
+                              ],
+                            ))
+                          ],
+                        ),
+                        onTap: () => controller.onTapUpdatePassword(),
+                      )),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: kElementPadding,
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                          child: GestureDetector(
+                        child: Row(
+                          children: [
+                            const Icon(
                               Icons.logout,
                               color: kErrorColor,
                             ),
@@ -188,13 +235,13 @@ class AccountView extends GetView<AccountController> {
                               'Keluar',
                               style: Theme.of(context)
                                   .textTheme
-                                  .bodyText1
+                                  .bodyLarge
                                   ?.copyWith(color: kPrimaryTextColor),
                             ),
-                            Expanded(
+                            const Expanded(
                                 child: Row(
                               mainAxisAlignment: MainAxisAlignment.end,
-                              children: const [
+                              children: [
                                 Icon(
                                   Icons.keyboard_arrow_right,
                                   color: kPrimaryTextColor,
@@ -217,7 +264,7 @@ class AccountView extends GetView<AccountController> {
                   'Version ${controller.version}',
                   style: Theme.of(context)
                       .textTheme
-                      .bodyText2
+                      .bodyMedium
                       ?.copyWith(color: kSecondaryTextColor),
                 )))
           ],

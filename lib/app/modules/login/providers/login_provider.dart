@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import '../../../data/api/my_api.dart';
 
 class LoginProvider extends GetConnect {
-
   // request token
   Future<Response> reqToken(String username, String password) {
     final body = FormData({
@@ -22,8 +21,7 @@ class LoginProvider extends GetConnect {
       'username': username,
       'password': password,
     });
-    return post(
-      Api.login, body, headers: headers
-    );
+    return post(Api.login, body, headers: headers);
   }
+
 }

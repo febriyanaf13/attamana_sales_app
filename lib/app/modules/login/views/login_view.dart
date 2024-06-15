@@ -2,20 +2,24 @@
 
 library login;
 
-import 'package:flutter/foundation.dart';
+import 'package:attamana_salles_app/app/utils/extension_image.dart';
+import 'package:attamana_salles_app/app/utils/string.dart';
+import 'package:awesome_dialog/awesome_dialog.dart' as awd;
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:kemasindo/app/components/custom_button.dart';
-import 'package:kemasindo/app/modules/login/providers/login_provider.dart';
-import 'package:kemasindo/app/routes/app_pages.dart';
-import 'package:kemasindo/app/style/colors.dart';
-import 'package:kemasindo/app/utils/extension_image.dart';
-import 'package:responsive_builder/responsive_builder.dart';
-import 'package:lottie/lottie.dart';
 
+import 'package:lottie/lottie.dart';
+import 'package:nb_utils/nb_utils.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+
+import '../../../components/custom_button.dart';
 import '../../../components/custom_dialog.dart';
 import '../../../data/models/user.dart';
+import '../../../routes/app_pages.dart';
+import '../../../style/colors.dart';
 import '../../../utils/constants.dart';
+import '../providers/login_provider.dart';
 
 // bindings
 part '../bindings/login_binding.dart';
@@ -29,15 +33,209 @@ class LoginView extends GetView<LoginController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.white,
-        resizeToAvoidBottomInset: false,
-        body: SafeArea(
-            child: ScreenTypeLayout(
-          mobile: _buildMobileScreen(controller),
-          tablet: _buildTabletScreen(controller),
-          desktop: Container(color: Colors.red),
-          watch: Container(color: Colors.purple),
-        )));
+      backgroundColor: kPrimaryColor,
+      body: Container(
+        decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              begin: Alignment.topRight,
+              end: Alignment.bottomLeft,
+              colors: [
+                Colors.blue,
+                Colors.red,
+              ],
+            ),
+            image: DecorationImage(
+                image: AssetImage('bg'.png), repeat: ImageRepeat.repeat)),
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                kPrimaryColor.withOpacity(0.9),
+                kPrimaryColor,
+              ],
+            ),
+          ),
+          child: SingleChildScrollView(
+            child: SizedBox(
+              height: Get.height,
+              child: Column(
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // Lottie.asset(
+                        //   'logo_splash'.json,
+                        //   width: Get.width * 0.5,
+                        // ),
+                        Card(
+                            elevation: 2,
+                            color: kPrimaryColor,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(150),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(5),
+                              child: Image.asset(
+                                'logo_attamana'.png,
+                                scale: 5,
+                              ),
+                            )),
+                        SizedBox(
+                          height: Get.height * 0.03,
+                        ),
+                        RichText(
+                            text: TextSpan(
+                                text: 'ATTAMANA',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .headlineLarge
+                                    ?.copyWith(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        letterSpacing: 2),
+                                children: [
+                              TextSpan(
+                                text: '',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleLarge
+                                    ?.copyWith(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold),
+                              ),
+                            ])),
+
+                        Obx(
+                          () => Text(
+                            'Version : ${controller.version}',
+                            style: Get.textTheme.bodyMedium
+                                ?.copyWith(color: kSecondaryTextColor),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 20.0, right: 20),
+                    child: Form(
+                      key: controller.formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          /// username or Gmail
+                          TextFormField(
+                            style: kTextFormFieldStyle(),
+                            decoration: const InputDecoration(
+                              prefixIcon: Icon(Icons.person),
+                              hintText: 'Username',
+                            ),
+                            controller: controller.nameController,
+                            // The validator receives the text that the user has entered.
+                            // validator: (value) {
+                            //   if (value == null || value.isEmpty) {
+                            //     return 'Please enter username';
+                            //   } else if (value.length < 3) {
+                            //     return 'at least enter 4 characters';
+                            //   } else if (value.length > 13) {
+                            //     return 'maximum character is 13';
+                            //   }
+                            //   return null;
+                            // },
+                          ),
+
+                          SizedBox(
+                            height: Get.height * 0.02,
+                          ),
+
+                          // password
+                          Obx(
+                            () => TextFormField(
+                              style: kTextFormFieldStyle(),
+                              controller: controller.passwordController,
+                              obscureText: controller.isObscure.value,
+                              decoration: InputDecoration(
+                                prefixIcon: const Icon(Icons.lock_open),
+                                suffixIcon: IconButton(
+                                  icon: Icon(
+                                    controller.isObscure.value
+                                        ? Icons.visibility_off
+                                        : Icons.visibility,
+                                  ),
+                                  onPressed: () {
+                                    controller.isObscureActive();
+                                  },
+                                ),
+                                hintText: 'Password',
+                              ),
+                              // The validator receives the text that the user has entered.
+                              // validator: (value) {
+                              //   if (value == null || value.isEmpty) {
+                              //     return 'Please enter password';
+                              //   } else if (value.length < 3) {
+                              //     return 'at least enter 6 characters';
+                              //   } else if (value.length > 13) {
+                              //     return 'maximum character is 13';
+                              //   }
+                              //   return null;
+                              // },
+                            ),
+                          ),
+                          SizedBox(
+                            height: Get.height * 0.02,
+                          ),
+                          Text(
+                            'Forgot Password?',
+                            style: Get.textTheme.bodyMedium
+                                ?.copyWith(color: kSecondaryTextColor),
+                            textAlign: TextAlign.right,
+                          ),
+                          SizedBox(
+                            height: Get.height * 0.05,
+                          ),
+
+                          /// Login Button
+                          Obx(
+                            () => controller.isLoadingLogin.isTrue
+                                ? const Center(
+                                    child: CircularProgressIndicator(),
+                                  )
+                                : CustomButton(
+                                    onTap: controller.onTapLogin,
+                                    text: "Login",
+                                    border: 30,
+                                    height: 50,
+                                  ),
+                          ),
+                          SizedBox(
+                            height: Get.height * 0.03,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    // Scaffold(
+    //   backgroundColor: Colors.white,
+    //   resizeToAvoidBottomInset: false,
+    //   body: SafeArea(
+    //       child: ScreenTypeLayout(
+    //     mobile: _buildMobileScreen(controller),
+    //     tablet: _buildTabletScreen(controller),
+    //     desktop: Container(color: Colors.red),
+    //     watch: Container(color: Colors.purple),
+    //   )));
   }
 
   /// For Small screens
@@ -101,7 +299,7 @@ class LoginView extends GetView<LoginController> {
           padding: const EdgeInsets.only(left: 20.0),
           child: Text(
             'Login',
-            style: Get.textTheme.headline3
+            style: Get.textTheme.displaySmall
                 ?.copyWith(color: kPrimaryColor, fontWeight: FontWeight.bold),
           ),
         ),
@@ -112,7 +310,7 @@ class LoginView extends GetView<LoginController> {
           padding: const EdgeInsets.only(left: 20.0),
           child: Text(
             'Welcome Back',
-            style: Get.textTheme.headline5?.copyWith(color: kAccentColor),
+            style: Get.textTheme.headlineSmall?.copyWith(color: kAccentColor),
           ),
         ),
         SizedBox(
@@ -187,7 +385,7 @@ class LoginView extends GetView<LoginController> {
                 ),
                 Text(
                   'Creating an account means you\'re okay with our Terms of Services and our Privacy Policy',
-                  style: Get.textTheme.bodyText2
+                  style: Get.textTheme.bodyMedium
                       ?.copyWith(color: kSecondaryTextColor),
                   textAlign: TextAlign.center,
                 ),
@@ -196,11 +394,15 @@ class LoginView extends GetView<LoginController> {
                 ),
 
                 /// Login Button
-                CustomButton(
-                  onTap: controller.onTapLogin,
-                  text: "Login",
-                  border: 30,
-                  height: 50,
+                Obx(
+                  () => controller.isLoadingLogin.isTrue
+                      ? const Center(child: CircularProgressIndicator())
+                      : CustomButton(
+                          onTap: controller.onTapLogin,
+                          text: "Login",
+                          border: 30,
+                          height: 50,
+                        ),
                 ),
                 SizedBox(
                   height: Get.height * 0.03,
@@ -229,7 +431,6 @@ class LoginView extends GetView<LoginController> {
         ),
         onPressed: () {
           // Validate returns true if the form is valid, or false otherwise.
-          
         },
         child: const Text('Login'),
       ),
@@ -246,7 +447,7 @@ class LoginView extends GetView<LoginController> {
       );
 
   TextStyle kLoginTermsAndPrivacyStyle(Size size) =>
-      TextStyle(fontSize: 15, color: Colors.grey, height: 1.5);
+      const TextStyle(fontSize: 15, color: Colors.grey, height: 1.5);
 
   TextStyle kHaveAnAccountStyle(Size size) =>
       TextStyle(fontSize: size.height * 0.022, color: Colors.black);

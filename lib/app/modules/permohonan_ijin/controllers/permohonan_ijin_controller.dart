@@ -3,11 +3,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:kemasindo/app/modules/permohonan_ijin/providers/permohonan_ijin_provider.dart';
 
 import '../../../components/custom_dialog.dart';
 import '../../../utils/constants.dart';
 import '../model/permohonan_ijin.dart';
+import '../providers/permohonan_ijin_provider.dart';
 
 class PermohonanIjinController extends GetxController {
   //TODO: Implement PermohonanIjinController
@@ -20,20 +20,8 @@ class PermohonanIjinController extends GetxController {
   TextEditingController controllerAlasan = TextEditingController();
   var userData = storage.read('userData');
 
-  @override
-  void onInit() {
-    super.onInit();
-  }
 
-  @override
-  void onReady() {
-    super.onReady();
-  }
 
-  @override
-  void onClose() {
-    super.onClose();
-  }
 
   Future getImageIjin() async {
     try {

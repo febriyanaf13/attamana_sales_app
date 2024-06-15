@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:kemasindo/app/modules/laporan/controllers/laporan_controller.dart';
-import 'package:kemasindo/app/style/paddings.dart';
+
 import 'package:timelines/timelines.dart';
 
 import '../../../style/colors.dart';
+import '../../../style/paddings.dart';
+import '../controllers/laporan_controller.dart';
 
 class LaporanBulaniniView extends GetView<LaporanController> {
   const LaporanBulaniniView({Key? key}) : super(key: key);
@@ -101,11 +102,11 @@ class LaporanBulaniniView extends GetView<LaporanController> {
                                 children: [
                                   Text(
                                     'Satatus :',
-                                    style: Get.textTheme.subtitle2,
+                                    style: Get.textTheme.titleSmall,
                                   ),
                                   Text(
                                     status,
-                                    style: Get.textTheme.subtitle2
+                                    style: Get.textTheme.titleSmall
                                         ?.copyWith(color: colors),
                                   ),
                                 ],

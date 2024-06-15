@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:kemasindo/app/style/borders.dart';
 
+import '../style/borders.dart';
 import '../style/colors.dart';
 import '../style/paddings.dart';
 
@@ -13,7 +13,7 @@ void dialogError(String title, String msg) {
       borderWidth: 1,
       borderColor: kErrorColor,
       forwardAnimationCurve: Curves.elasticInOut,
-      backgroundColor: kWhiteColor.withOpacity(0.5),
+      backgroundColor: kWhiteColor,
       duration: const Duration(seconds: 5),
       icon: const Padding(
         padding: EdgeInsets.all(kContentPadding),
@@ -33,7 +33,7 @@ void dialogWarning(String title, String msg) {
       borderWidth: 1,
       borderColor: kWarningrColor,
       forwardAnimationCurve: Curves.easeInSine,
-      backgroundColor: kWhiteColor.withOpacity(0.5),
+      backgroundColor: kWhiteColor,
       duration: const Duration(seconds: 5),
       icon: const Padding(
         padding: EdgeInsets.all(kContentPadding),
@@ -53,7 +53,7 @@ void dialogSuccess(String title, String msg) {
       borderWidth: 1,
       borderColor: kSuccessColor,
       forwardAnimationCurve: Curves.easeOutBack,
-      backgroundColor: kWhiteColor.withOpacity(0.5),
+      backgroundColor: kWhiteColor,
       duration: const Duration(seconds: 5),
       icon: const Padding(
         padding: EdgeInsets.all(kContentPadding),

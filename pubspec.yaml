@@ -1,29 +1,44 @@
-name: kemasindo
-version: 1.0.0+1
+name: attamana_salles_app
+version: 1.0.2+2
 publish_to: none
 description: A new Flutter project.
 environment:
-  sdk: '>=2.17.3 <3.0.0'
+  sdk: '>=2.18.0 <3.0.0'
 
 dependencies:
-  awesome_dialog: ^3.0.2
+  animated_custom_dropdown: ^3.0.0
+  auto_size_text: ^3.0.0
+  awesome_dialog: ^3.2.1
+  collection: ^1.18.0
   cupertino_icons: ^1.0.2
   fl_chart: ^0.55.2
+  change_app_package_name: ^1.1.0
+  carousel_slider: any
   floating_bottom_navigation_bar: ^1.5.2
   flutter:
     sdk: flutter
+  flutter_analog_clock: ^1.0.3
+  flutter_launcher_icons: any
+  flutter_rating_bar: any
   geolocator: ^9.0.2
+  geocoding: ^2.1.1
   get: 4.6.5
   get_storage: ^2.0.3
   google_maps_flutter: ^2.2.1
   intl: ^0.17.0
   lottie: ^1.3.0
   maps_toolkit: ^2.0.1
+  nb_utils: any
   package_info_plus: ^3.1.2
+  persistent_bottom_nav_bar: ^5.0.2
+  remove_emoji_input_formatter: ^0.0.1+1
   responsive_builder: ^0.4.3
+
+  searchfield: any
   table_calendar: ^3.0.8
   timelines: ^0.1.0
-  dropdown_button2: ^1.2.2
+  time_range_picker: any
+  dropdown_button2: ^2.3.9
   image_picker: ^0.8.6
 
 
@@ -32,11 +47,22 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
+
+flutter_icons:
+  android: "launcher_icon"
+  image_path_android: "assets/png/logo.png"
+  ios: "launcher_icon"
+  remove_alpha_ios: true
+  image_path_ios: "assets/png/logo.png"
+
+
+
 flutter:
   uses-material-design: true
   assets:
     - assets/lottie/
     - assets/png/
+    - assets/jpg/
 
   fonts:
     - family: Digital

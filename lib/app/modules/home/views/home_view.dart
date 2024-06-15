@@ -2,11 +2,11 @@ import 'package:floating_bottom_navigation_bar/floating_bottom_navigation_bar.da
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
-import 'package:kemasindo/app/modules/grafik/views/grafik_view.dart';
-import 'package:kemasindo/app/modules/laporan/views/laporan_view.dart';
-import 'package:kemasindo/app/modules/maps/views/maps_view.dart';
-import 'package:kemasindo/app/style/colors.dart';
 
+import '../../../style/colors.dart';
+import '../../grafik/views/grafik_view.dart';
+import '../../laporan/views/laporan_view.dart';
+import '../../maps/views/maps_view.dart';
 import '../controllers/home_controller.dart';
 
 class HomeView extends GetView<HomeController> {

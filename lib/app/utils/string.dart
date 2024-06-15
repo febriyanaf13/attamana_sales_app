@@ -1,0 +1,17 @@
+const String kToken = 'token';
+const String kLogin = 'login';
+const String kUserId = 'userId';
+const String kPegawaiId = 'pegawaiId';
+const String kUserNama = 'userNama';
+const String kLokasiAbsen = 'lokasiAbsen';
+const String kGeometryLokasi = 'geometryLokasi';
+const String kGeometryAbsen = 'geometryAbsen';
+const String kUserTelp = 'userTelp';
+const String kUserEmail = 'userEmail';
+const String kUserFoto = 'userFoto';
+const String kUserAlamat = 'userAlamat';
+const String kRoleId = 'roleId';
+const String kRoleName = 'roleName';
+const String kStatusKaryawan = 'statusKaryawan';
+const String kSesionInstall = 'sesion_install';
+const String kSesionAuth = 'sesion_auth';
