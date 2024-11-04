@@ -32,13 +32,13 @@ class Customer {
   });
 
   factory Customer.fromJson(Map<String, dynamic> json) => Customer(
-        customerId: json["customer_id"],
-        corporate: json["corporate"],
-        companyName: json["company_name"],
-        nama: json["nama"],
-        address: json["address"],
-        city: json["city"],
-        country: json["country"],
+        customerId: json["customer_id"] ?? 0,
+        corporate: json["corporate"] ?? '-',
+        companyName: json["company_name"] ?? '-',
+        nama: json["nama"] ?? '-',
+        address: json["address"] ?? "-",
+        city: json["city"] ?? '-',
+        country: json["country"] ?? '-',
         phone1: json["phone1"] == null || json["phone1"] == ''
             ? '-'
             : json["phone1"],

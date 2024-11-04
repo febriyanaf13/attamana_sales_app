@@ -26,9 +26,11 @@ class SalesOrderController extends GetxController {
   @override
   void onInit() {
     textEditingControllerTglFilterMulai.text =
-        '${DateTime.now().day.toString().padLeft(2, '0')}-${DateTime.now().month.toString().padLeft(2, '0')}-${DateTime.now().year.toString().padLeft(2, '0')}';
+        '${DateTime.now().year.toString().padLeft(2, '0')}-${DateTime.now().month.toString().padLeft(2, '0')}-${DateTime.now().day.toString().padLeft(2, '0')}';
     textEditingControllerTglFilterSelesai.text =
-        '${DateTime.now().day.toString().padLeft(2, '0')}-${DateTime.now().month.toString().padLeft(2, '0')}-${DateTime.now().year.toString().padLeft(2, '0')}';
+        '${DateTime.now().year.toString().padLeft(2, '0')}-${DateTime.now().month.toString().padLeft(2, '0')}-${DateTime.now().day.toString().padLeft(2, '0')}';
+
+    print(textEditingControllerTglFilterMulai.text);
     super.onInit();
   }
 
@@ -52,15 +54,15 @@ class SalesOrderController extends GetxController {
     print(body);
     SalesOrderProvider().reqPostSalesOrder(body).then((value) {
       isLoadingSalesOrder.toggle();
-
+      if (kDebugMode) {
+        print(value.body);
+      }
       if (value.status.isOk) {
         var data = value.body['data'];
         if (kDebugMode) {
           print(data);
         }
-        if (kDebugMode) {
-          print(value.body);
-        }
+
         rangeTanggal.value =
             '${textEditingControllerTglFilterMulai.text}  -  ${textEditingControllerTglFilterSelesai.text}';
         listSalesOrder.value = SalesOrderFromJson(data);

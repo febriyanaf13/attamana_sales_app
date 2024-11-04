@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 // import '../../../utils/constants.dart';
 import '../../../components/custom_dialog.dart';
@@ -9,18 +11,22 @@ import '../../login/providers/login_provider.dart';
 class SplashController extends GetxController {
   var user = storage.read('userData');
   var session = storage.read('session');
+  var version = ''.obs;
 
   @override
   void onInit() {
     reqToken();
+    getVersionApp();
     Future.delayed(const Duration(seconds: 3), () => autoLogin());
     super.onInit();
   }
 
   void reqToken() {
     LoginProvider().reqToken('febri', 'febrimobile150708').then((value) {
-      print('status_code token : ${value.statusCode}');
-     
+      if (kDebugMode) {
+        print('status_code token : ${value.statusCode}');
+      }
+
       var success = value.body['success'];
       var message = value.body['message'];
 
@@ -52,5 +58,11 @@ class SplashController extends GetxController {
 
   void onTapLogin() {
     Get.offNamed(Routes.LOGIN);
+  }
+
+  void getVersionApp() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+
+    version.value = packageInfo.version;
   }
 }

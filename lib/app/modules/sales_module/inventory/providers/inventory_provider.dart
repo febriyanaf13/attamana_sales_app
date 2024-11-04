@@ -19,11 +19,12 @@ class InventoryProvider extends GetConnect {
     return get(api, headers: headers);
   }
 
-  Future<Response> postRequestListStockBarang(body) {
-    var api = Api.listStockBarang;
+  Future<Response> getListStockBarang(gudangId, cari, page) {
+    var api =
+        "${Api.listStockBarang}?gudang_id=$gudangId&cari=$cari&page=$page";
     if (kDebugMode) {
       print(api);
     }
-    return post(api, body, headers: headers);
+    return get(api, headers: headers);
   }
 }

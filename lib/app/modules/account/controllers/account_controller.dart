@@ -7,7 +7,6 @@ import 'package:package_info_plus/package_info_plus.dart';
 import '../../../components/custom_button.dart';
 import '../../../components/custom_dialog.dart';
 import '../../../routes/app_pages.dart';
-import '../../../style/colors.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/string.dart';
 

@@ -17,6 +17,10 @@ class CustomerController extends GetxController {
 
   var isSearchCustomer = false.obs;
 
+  var curretPage = 1.obs;
+  var totalPages = 1.obs;
+  var visiblePage = 1.obs;
+
   @override
   void onInit() {
     getCustomer();
@@ -34,11 +38,26 @@ class CustomerController extends GetxController {
   }
 
   void getCustomer() {
-    CustomerProvider().getCustomer(userId).then((value) {
+    CustomerProvider()
+        .getCustomer(userId, controllerSearch.text, curretPage)
+        .then((value) {
+      print("response get custommer :${value.body}");
       if (value.status.isOk) {
         var data = value.body['data'];
+        var total = value.body['total'];
+        var perhalaman = value.body['perhalaman'];
+        totalPages.value = (total / perhalaman).ceil();
         listCustomer.value = customerFromJson(data);
         listCustomerSearch.value = customerFromJson(data);
+        curretPage == 1;
+
+        if (totalPages == 1) {
+          visiblePage.value = 1;
+        } else if (totalPages == 2) {
+          visiblePage.value = 2;
+        } else {
+          visiblePage.value = 3;
+        }
       }
     });
   }

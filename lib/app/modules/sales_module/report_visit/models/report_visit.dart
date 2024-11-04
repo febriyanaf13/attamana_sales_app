@@ -12,8 +12,8 @@ String reportVisitToJson(List<ReportVisit> data) =>
 
 class ReportVisit {
   String leadId;
-  int? customerId;
-  int kunjunganId;
+  dynamic customerId;
+  int? kunjunganId;
   DateTime? tanggalVisit;
   String namaSales;
   String namaHotel;
@@ -50,9 +50,9 @@ class ReportVisit {
   });
 
   factory ReportVisit.fromJson(Map<String, dynamic> json) => ReportVisit(
-        leadId: json["lead_id"],
+        leadId: json["lead_id"] ?? '0',
         customerId: json["customer_id"],
-        kunjunganId: json["kunjungan_id"],
+        kunjunganId: json["kunjungan_id"] ?? 0,
         tanggalVisit: json["tanggal_visit"] == null
             ? null
             : DateTime.parse(json["tanggal_visit"]),

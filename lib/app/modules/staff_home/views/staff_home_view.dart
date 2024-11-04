@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:nb_utils/nb_utils.dart';
+import '../../../services/internet_connection_checker.dart';
 import '../controllers/staff_home_controller.dart';
 
 class StaffHomeView extends GetView<StaffHomeController> {
@@ -15,6 +16,8 @@ class StaffHomeView extends GetView<StaffHomeController> {
 
   @override
   Widget build(BuildContext context) {
+    var internetConnectionChecker = Get.put(InternetConnectionChecker());
+
     return Scaffold(
         backgroundColor: kCardColor,
         body: RefreshIndicator(
@@ -76,13 +79,34 @@ class StaffHomeView extends GetView<StaffHomeController> {
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
                                           children: [
-                                            Text(
-                                              'Hi, ${controller.nama}',
-                                              style: Get.textTheme.titleSmall
-                                                  ?.copyWith(
-                                                      color: kWhiteColor,
-                                                      fontWeight:
-                                                          FontWeight.normal),
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  'Hi, ${controller.nama}',
+                                                  style: Get
+                                                      .textTheme.titleSmall
+                                                      ?.copyWith(
+                                                          color: kWhiteColor,
+                                                          fontWeight: FontWeight
+                                                              .normal),
+                                                ),
+                                                10.width,
+                                                Obx(
+                                                  () => internetConnectionChecker
+                                                          .isConnectedToInternet
+                                                          .isTrue
+                                                      ? const Icon(
+                                                          Icons
+                                                              .radio_button_checked_rounded,
+                                                          color: Colors.green,
+                                                        )
+                                                      : const Icon(
+                                                          Icons
+                                                              .radio_button_checked_rounded,
+                                                          color: Colors.red,
+                                                        ),
+                                                )
+                                              ],
                                             ),
                                             5.height,
                                             Container(
@@ -366,6 +390,22 @@ class StaffHomeView extends GetView<StaffHomeController> {
                             )),
                       ),
                     ),
+                    // Obx(
+                    //   () => Positioned(
+                    //     top: 45,
+                    //     right: 32,
+                    //     child: internetConnectionChecker
+                    //             .isConnectedToInternet.isTrue
+                    //         ? const Icon(
+                    //             Icons.radio_button_checked_rounded,
+                    //             color: Colors.green,
+                    //           )
+                    //         : const Icon(
+                    //             Icons.radio_button_checked_rounded,
+                    //             color: Colors.red,
+                    //           ),
+                    //   ),
+                    // )
                   ],
                 ),
               ),
@@ -559,7 +599,7 @@ class StaffHomeView extends GetView<StaffHomeController> {
           crossAxisCount: 4,
           mainAxisSpacing: 10,
           childAspectRatio: 4 / 4,
-          mainAxisExtent: Get.width / 6),
+          mainAxisExtent: Get.width / 6 + 20),
       children: [
         CustomMenuHome(
             title: 'Customers',
@@ -597,6 +637,12 @@ class StaffHomeView extends GetView<StaffHomeController> {
             onTap: () {
               Get.toNamed(Routes.REPORT_VISIT);
             }),
+        CustomMenuHome(
+            title: 'Sample & Pricing',
+            icon: 'sample'.png,
+            onTap: () {
+              Get.toNamed(Routes.SAMPLE_AND_PRICING);
+            }),
         controller.roles == 'SALES MANAGER' || controller.roles == 'DIREKTUR'
             ? CustomMenuHome(
                 title: 'Assign Sales',
@@ -605,6 +651,13 @@ class StaffHomeView extends GetView<StaffHomeController> {
                   Get.toNamed(Routes.ASSIGN_SALES);
                 })
             : const SizedBox(),
+
+        // CustomMenuHome(
+        //     title: 'Sample & Pricing',
+        //     icon: 'inventory'.png,
+        //     onTap: () {
+        //       Get.toNamed(Routes.INVENTORY);
+        //     }),
         // CustomMenuHome(
         //     title: 'Slip Gaji',
         //     icon: 'slip_gaji'.png,
@@ -871,19 +924,24 @@ class CustomMenuHome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Image.asset(
-          icon,
-          width: 40,
-          height: 40,
-        ),
-        Text(
-          title,
-          style: Get.textTheme.bodySmall,
-        )
-      ],
-    ).onTap(onTap);
+    return SizedBox(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Image.asset(
+            icon,
+            width: 40,
+            height: 40,
+          ),
+          10.height,
+          AutoSizeText(
+            title,
+            style: Get.textTheme.bodySmall,
+            maxLines: 2,
+            textAlign: TextAlign.center,
+          )
+        ],
+      ).onTap(onTap),
+    );
   }
 }

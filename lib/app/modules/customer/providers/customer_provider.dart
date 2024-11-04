@@ -11,8 +11,8 @@ class CustomerProvider extends GetConnect {
     "Accept": "application/json"
   };
 
-  Future<Response> getCustomer(int userId) {
-    var api = "${Api.customer}/$userId";
+  Future<Response> getCustomer(int userId, cari, page) {
+    var api = "${Api.customer}/$userId?cari=$cari&page=$page";
     if (kDebugMode) {
       print(api);
     }

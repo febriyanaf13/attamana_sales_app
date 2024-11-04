@@ -2,12 +2,16 @@
 
 library login;
 
+import 'dart:async';
+
+import 'package:attamana_salles_app/app/services/internet_connection_checker.dart';
 import 'package:attamana_salles_app/app/utils/extension_image.dart';
 import 'package:attamana_salles_app/app/utils/string.dart';
 import 'package:awesome_dialog/awesome_dialog.dart' as awd;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 
 import 'package:lottie/lottie.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -32,197 +36,219 @@ class LoginView extends GetView<LoginController> {
 
   @override
   Widget build(BuildContext context) {
+    var internetConnectionChecker = Get.put(InternetConnectionChecker());
     return Scaffold(
       backgroundColor: kPrimaryColor,
-      body: Container(
-        decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              begin: Alignment.topRight,
-              end: Alignment.bottomLeft,
-              colors: [
-                Colors.blue,
-                Colors.red,
-              ],
-            ),
-            image: DecorationImage(
-                image: AssetImage('bg'.png), repeat: ImageRepeat.repeat)),
-        child: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                kPrimaryColor.withOpacity(0.9),
-                kPrimaryColor,
-              ],
-            ),
-          ),
-          child: SingleChildScrollView(
-            child: SizedBox(
-              height: Get.height,
-              child: Column(
-                children: [
-                  Expanded(
-                    flex: 2,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        // Lottie.asset(
-                        //   'logo_splash'.json,
-                        //   width: Get.width * 0.5,
-                        // ),
-                        Card(
-                            elevation: 2,
-                            color: kPrimaryColor,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(150),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(5),
-                              child: Image.asset(
-                                'logo_attamana'.png,
-                                scale: 5,
-                              ),
-                            )),
-                        SizedBox(
-                          height: Get.height * 0.03,
-                        ),
-                        RichText(
-                            text: TextSpan(
-                                text: 'ATTAMANA',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .headlineLarge
-                                    ?.copyWith(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                        letterSpacing: 2),
-                                children: [
-                              TextSpan(
-                                text: '',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleLarge
-                                    ?.copyWith(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold),
-                              ),
-                            ])),
-
-                        Obx(
-                          () => Text(
-                            'Version : ${controller.version}',
-                            style: Get.textTheme.bodyMedium
-                                ?.copyWith(color: kSecondaryTextColor),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 20.0, right: 20),
-                    child: Form(
-                      key: controller.formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          /// username or Gmail
-                          TextFormField(
-                            style: kTextFormFieldStyle(),
-                            decoration: const InputDecoration(
-                              prefixIcon: Icon(Icons.person),
-                              hintText: 'Username',
-                            ),
-                            controller: controller.nameController,
-                            // The validator receives the text that the user has entered.
-                            // validator: (value) {
-                            //   if (value == null || value.isEmpty) {
-                            //     return 'Please enter username';
-                            //   } else if (value.length < 3) {
-                            //     return 'at least enter 4 characters';
-                            //   } else if (value.length > 13) {
-                            //     return 'maximum character is 13';
-                            //   }
-                            //   return null;
-                            // },
-                          ),
-
-                          SizedBox(
-                            height: Get.height * 0.02,
-                          ),
-
-                          // password
-                          Obx(
-                            () => TextFormField(
-                              style: kTextFormFieldStyle(),
-                              controller: controller.passwordController,
-                              obscureText: controller.isObscure.value,
-                              decoration: InputDecoration(
-                                prefixIcon: const Icon(Icons.lock_open),
-                                suffixIcon: IconButton(
-                                  icon: Icon(
-                                    controller.isObscure.value
-                                        ? Icons.visibility_off
-                                        : Icons.visibility,
-                                  ),
-                                  onPressed: () {
-                                    controller.isObscureActive();
-                                  },
+      body: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  begin: Alignment.topRight,
+                  end: Alignment.bottomLeft,
+                  colors: [
+                    Colors.blue,
+                    Colors.red,
+                  ],
+                ),
+                image: DecorationImage(
+                    image: AssetImage('bg'.png), repeat: ImageRepeat.repeat)),
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    kPrimaryColor.withOpacity(0.9),
+                    kPrimaryColor,
+                  ],
+                ),
+              ),
+              child: SingleChildScrollView(
+                child: SizedBox(
+                  height: Get.height,
+                  child: Column(
+                    children: [
+                      Expanded(
+                        flex: 2,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            // Lottie.asset(
+                            //   'logo_splash'.json,
+                            //   width: Get.width * 0.5,
+                            // ),
+                            Card(
+                                elevation: 2,
+                                color: kPrimaryColor,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(150),
                                 ),
-                                hintText: 'Password',
-                              ),
-                              // The validator receives the text that the user has entered.
-                              // validator: (value) {
-                              //   if (value == null || value.isEmpty) {
-                              //     return 'Please enter password';
-                              //   } else if (value.length < 3) {
-                              //     return 'at least enter 6 characters';
-                              //   } else if (value.length > 13) {
-                              //     return 'maximum character is 13';
-                              //   }
-                              //   return null;
-                              // },
-                            ),
-                          ),
-                          SizedBox(
-                            height: Get.height * 0.02,
-                          ),
-                          Text(
-                            'Forgot Password?',
-                            style: Get.textTheme.bodyMedium
-                                ?.copyWith(color: kSecondaryTextColor),
-                            textAlign: TextAlign.right,
-                          ),
-                          SizedBox(
-                            height: Get.height * 0.05,
-                          ),
-
-                          /// Login Button
-                          Obx(
-                            () => controller.isLoadingLogin.isTrue
-                                ? const Center(
-                                    child: CircularProgressIndicator(),
-                                  )
-                                : CustomButton(
-                                    onTap: controller.onTapLogin,
-                                    text: "Login",
-                                    border: 30,
-                                    height: 50,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(5),
+                                  child: Image.asset(
+                                    'logo_attamana'.png,
+                                    scale: 5,
                                   ),
-                          ),
-                          SizedBox(
-                            height: Get.height * 0.03,
-                          ),
-                        ],
+                                )),
+                            SizedBox(
+                              height: Get.height * 0.03,
+                            ),
+                            RichText(
+                                text: TextSpan(
+                                    text: 'ATTAMANA',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineLarge
+                                        ?.copyWith(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                            letterSpacing: 2),
+                                    children: [
+                                  TextSpan(
+                                    text: '',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleLarge
+                                        ?.copyWith(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold),
+                                  ),
+                                ])),
+
+                            Obx(
+                              () => Text(
+                                'Version : ${controller.version}',
+                                style: Get.textTheme.bodyMedium
+                                    ?.copyWith(color: kSecondaryTextColor),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 20.0, right: 20),
+                        child: Form(
+                          key: controller.formKey,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              /// username or Gmail
+                              TextFormField(
+                                style: kTextFormFieldStyle(),
+                                decoration: const InputDecoration(
+                                  prefixIcon: Icon(Icons.person),
+                                  hintText: 'Username',
+                                ),
+                                controller: controller.nameController,
+                                // The validator receives the text that the user has entered.
+                                // validator: (value) {
+                                //   if (value == null || value.isEmpty) {
+                                //     return 'Please enter username';
+                                //   } else if (value.length < 3) {
+                                //     return 'at least enter 4 characters';
+                                //   } else if (value.length > 13) {
+                                //     return 'maximum character is 13';
+                                //   }
+                                //   return null;
+                                // },
+                              ),
+
+                              SizedBox(
+                                height: Get.height * 0.02,
+                              ),
+
+                              // password
+                              Obx(
+                                () => TextFormField(
+                                  style: kTextFormFieldStyle(),
+                                  controller: controller.passwordController,
+                                  obscureText: controller.isObscure.value,
+                                  decoration: InputDecoration(
+                                    prefixIcon: const Icon(Icons.lock_open),
+                                    suffixIcon: IconButton(
+                                      icon: Icon(
+                                        controller.isObscure.value
+                                            ? Icons.visibility_off
+                                            : Icons.visibility,
+                                      ),
+                                      onPressed: () {
+                                        controller.isObscureActive();
+                                      },
+                                    ),
+                                    hintText: 'Password',
+                                  ),
+                                  // The validator receives the text that the user has entered.
+                                  // validator: (value) {
+                                  //   if (value == null || value.isEmpty) {
+                                  //     return 'Please enter password';
+                                  //   } else if (value.length < 3) {
+                                  //     return 'at least enter 6 characters';
+                                  //   } else if (value.length > 13) {
+                                  //     return 'maximum character is 13';
+                                  //   }
+                                  //   return null;
+                                  // },
+                                ),
+                              ),
+                              SizedBox(
+                                height: Get.height * 0.02,
+                              ),
+                              Text(
+                                'Forgot Password?',
+                                style: Get.textTheme.bodyMedium
+                                    ?.copyWith(color: kSecondaryTextColor),
+                                textAlign: TextAlign.right,
+                              ),
+                              SizedBox(
+                                height: Get.height * 0.05,
+                              ),
+
+                              /// Login Button
+                              Obx(
+                                () => controller.isLoadingLogin.isTrue
+                                    ? const Center(
+                                        child: CircularProgressIndicator(),
+                                      )
+                                    : CustomButton(
+                                        onTap: controller.onTapLogin,
+                                        text: "Login",
+                                        border: 30,
+                                        height: 50,
+                                        color: Colors.red,
+                                      ),
+                              ),
+                              SizedBox(
+                                height: Get.height * 0.03,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
           ),
-        ),
+          Obx(
+            () => Positioned(
+              right: 20,
+              child: SafeArea(
+                child: internetConnectionChecker.isConnectedToInternet.isTrue
+                    ? const Icon(
+                        Icons.radio_button_checked_rounded,
+                        color: Colors.green,
+                      )
+                    : const Icon(
+                        Icons.radio_button_checked_rounded,
+                        color: Colors.red,
+                      ),
+              ),
+            ),
+          )
+        ],
       ),
     );
 
@@ -402,6 +428,7 @@ class LoginView extends GetView<LoginController> {
                           text: "Login",
                           border: 30,
                           height: 50,
+                          color: Colors.red,
                         ),
                 ),
                 SizedBox(

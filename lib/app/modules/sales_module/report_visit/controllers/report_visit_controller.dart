@@ -55,12 +55,14 @@ class ReportVisitController extends GetxController {
     print(body);
     isLoadingeportVisit.toggle();
     ReportVisitProvider().postRequestListReportVisit(body).then((value) {
+      print("respons report visit : ${value.body}");
+
       isLoadingeportVisit.toggle();
       if (value.status.isOk) {
         var data = value.body['data'];
         listReportVisit.value = reportVisitFromJson(data);
       }
-    });
+    }).timeout(const Duration(seconds: 30));
   }
 
   void getListSales() {

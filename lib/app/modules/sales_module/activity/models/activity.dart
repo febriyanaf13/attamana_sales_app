@@ -53,7 +53,9 @@ class Activity {
         status: json["status"],
         waktuCheckin: json["waktu_checkin"] == null
             ? '-'
-            : DateTime.parse(json["waktu_checkin"]),
+            : json["waktu_checkin"] == ""
+                ? ""
+                : DateTime.parse(json["waktu_checkin"]),
         waktuCheckout: json["waktu_checkout"] ?? '-',
         lokasiCheckin: json["lokasi_checkin"],
         lokasiCheckout: json["lokasi_checkout"],

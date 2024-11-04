@@ -142,7 +142,10 @@ class ActivityController extends GetxController {
         var data = value.body['data'];
         listActivity.value = activityFromJson(data);
         for (var list in listActivity) {
-          if (list.status == null || list.status == 'CHECK IN') {
+          print('masuk sini');
+          if (list.status == null ||
+              list.status == "" ||
+              list.status == 'CHECK IN') {
             listActivityOpenProgress.add(list);
           } else {
             listActivityCompleted.add(list);

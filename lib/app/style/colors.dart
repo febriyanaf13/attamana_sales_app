@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 const kPrimaryColor = Color(0xFF843429);
-const kSecondaryColor = orangeRed;
+const kSecondaryColor = Color(0xFF843429);
 const kAccentColor = Color(0xFFFC6565);
 const kErrorColor = Color(0xFFC35656);
 const kWarningrColor = Color(0xFFEDAE49);

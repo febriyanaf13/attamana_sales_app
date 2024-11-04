@@ -89,6 +89,15 @@ class SplashView extends GetView<SplashController> {
                       ],
                     ),
                   ),
+                  Obx(
+                    () => Text(
+                      'Version ${controller.version}',
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.copyWith(color: kSecondaryTextColor),
+                    ),
+                  ),
                   controller.session == null
                       ? Expanded(
                           flex: 1,
@@ -98,7 +107,7 @@ class SplashView extends GetView<SplashController> {
                                 width: 200,
                                 height: 50,
                                 border: 30,
-                                color: kSecondaryColor,
+                                color: Colors.red,
                                 text: 'Login'),
                           ))
                       : Container()

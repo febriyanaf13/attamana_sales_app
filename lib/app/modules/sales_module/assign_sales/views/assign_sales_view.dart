@@ -6,8 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nb_utils/nb_utils.dart';
 
-import '../../../../components/custom_dropdown_sales_model_search.dart';
-import '../../../../components/custom_dropdown_search.dart';
 import '../../../../components/custom_lottie_loading.dart';
 import '../../../../components/custom_lottie_not_found.dart';
 import '../../../../routes/app_pages.dart';
@@ -331,7 +329,7 @@ class ListCustomerNotAssign extends StatelessWidget {
                     padding: const EdgeInsets.all(10),
                     child: CustomDropdown<Sales>.search(
                       hintText: 'Select Sales',
-                      headerBuilder: (context, selectedItem) =>
+                      headerBuilder: (context, selectedItem, enabled) =>
                           Text(selectedItem.nama),
                       listItemBuilder:
                           (context, item, isSelected, onItemSelect) {
@@ -340,7 +338,8 @@ class ListCustomerNotAssign extends StatelessWidget {
                       items: controller.dataListAllSales.value,
                       excludeSelected: false,
                       onChanged: (value) {
-                        controller.pegawaiId.value = value.pegawaiId.toString();
+                        controller.pegawaiId.value =
+                            value!.pegawaiId.toString();
                       },
                     )),
                 Expanded(

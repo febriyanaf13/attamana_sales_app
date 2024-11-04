@@ -99,7 +99,7 @@ class IzinView extends GetView<IzinController> {
                       ),
                     ),
                     onTap: () {
-                      // controller.getImageCuti();
+                      controller.getImageCuti();
                     },
                   ),
                 ),

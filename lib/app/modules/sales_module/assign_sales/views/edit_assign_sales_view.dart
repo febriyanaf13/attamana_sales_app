@@ -127,7 +127,7 @@ class EditAssignSalesView extends GetView<AssignSalesController> {
                           10.height,
                           CustomDropdown<Sales>.search(
                             hintText: 'Select Sales',
-                            headerBuilder: (context, selectedItem) =>
+                            headerBuilder: (context, selectedItem, enable) =>
                                 Text(selectedItem.nama),
                             listItemBuilder:
                                 (context, item, isModified, onItemSelect) {
@@ -137,17 +137,17 @@ class EditAssignSalesView extends GetView<AssignSalesController> {
                             initialItem: listAllSales[0],
                             excludeSelected: false,
                             onChanged: (value) {
-                              var id = value.pegawaiId;
+                              var id = value!.pegawaiId;
                               if (id !=
                                   controller
                                       .dataListCustomerSalesUpdate[index]) {
                                 controller.dataListCustomerSalesUpdate[index] =
                                     id.toString();
                               }
-                              pegawaiId.value = value.pegawaiId.toString();
+                              pegawaiId.value = value!.pegawaiId.toString();
                               // controller.dataListCustomerSalesUpdate
                               //     .add(value.pegawaiId.toString());
-                              log('changing value to: ${value.nama}');
+                              log('changing value to: ${value!.nama}');
                             },
                             validator: (p0) {
                               if (p0?.pegawaiId == null) {
@@ -189,8 +189,9 @@ class EditAssignSalesView extends GetView<AssignSalesController> {
                                 10.height,
                                 CustomDropdown<Sales>.search(
                                   hintText: 'Select Sales',
-                                  headerBuilder: (context, selectedItem) =>
-                                      Text(selectedItem.nama),
+                                  headerBuilder:
+                                      (context, selectedItem, enable) =>
+                                          Text(selectedItem.nama),
                                   listItemBuilder: (context, item, isModified,
                                       onItemSelect) {
                                     return Text(item.nama);
@@ -200,14 +201,14 @@ class EditAssignSalesView extends GetView<AssignSalesController> {
                                   excludeSelected: false,
                                   onChanged: (value) {
                                     isModified(true);
-                                    var id = value.pegawaiId.toString();
+                                    var id = value!.pegawaiId.toString();
                                     if (id !=
                                         controller.dataListCustomerSalesUpdate[
                                             index]) {
                                       controller.dataListCustomerSalesUpdate[
                                           index] = id.toString();
                                     }
-                                    log('changing value to: ${value.nama}');
+                                    log('changing value to: ${value!.nama}');
                                   },
                                   validator: (p0) {
                                     if (p0!.pegawaiId == null) {

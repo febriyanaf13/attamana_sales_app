@@ -2,7 +2,6 @@ import 'package:get/get.dart';
 
 import '../modules/account/bindings/account_binding.dart';
 import '../modules/account/views/account_view.dart';
-
 import '../modules/customer/bindings/customer_binding.dart';
 import '../modules/customer/views/customer_view.dart';
 import '../modules/cuti/bindings/cuti_binding.dart';
@@ -54,6 +53,8 @@ import '../modules/sales_module/report_visit/bindings/report_visit_binding.dart'
 import '../modules/sales_module/report_visit/views/report_visit_view.dart';
 import '../modules/sales_module/sales_order/bindings/sales_order_binding.dart';
 import '../modules/sales_module/sales_order/views/sales_order_view.dart';
+import '../modules/sample_and_pricing/bindings/sample_and_pricing_binding.dart';
+import '../modules/sample_and_pricing/views/sample_and_pricing_view.dart';
 import '../modules/slip_gaji/bindings/slip_gaji_binding.dart';
 import '../modules/slip_gaji/views/detail_slip_gaji_view.dart';
 import '../modules/slip_gaji/views/slip_gaji_view.dart';
@@ -278,6 +279,11 @@ class AppPages {
       name: _Paths.EDIT_ASSIGN_SALES,
       page: () => const EditAssignSalesView(),
       binding: AssignSalesBinding(),
+    ),
+    GetPage(
+      name: _Paths.SAMPLE_AND_PRICING,
+      page: () => const SampleAndPricingView(),
+      binding: SampleAndPricingBinding(),
     ),
   ];
 }

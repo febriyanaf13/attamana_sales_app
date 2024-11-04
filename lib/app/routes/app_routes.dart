@@ -46,6 +46,7 @@ abstract class Routes {
   static const ADD_MAINTENANCE = _Paths.ADD_MAINTENANCE;
   static const ASSIGN_SALES = _Paths.ASSIGN_SALES;
   static const EDIT_ASSIGN_SALES = _Paths.EDIT_ASSIGN_SALES;
+  static const SAMPLE_AND_PRICING = _Paths.SAMPLE_AND_PRICING;
 }
 
 abstract class _Paths {
@@ -91,4 +92,5 @@ abstract class _Paths {
   static const ADD_MAINTENANCE = '/add-maintenance';
   static const ASSIGN_SALES = '/assign-sales';
   static const EDIT_ASSIGN_SALES = '/edit-assign-sales';
+  static const SAMPLE_AND_PRICING = '/sample-and-pricing';
 }

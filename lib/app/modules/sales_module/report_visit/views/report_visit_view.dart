@@ -315,7 +315,7 @@ class ReportVisitView extends GetView<ReportVisitController> {
                                     label: Text('WAKTU CHECKIN'),
                                   ),
                                   const DataColumn(
-                                    label: Text('WAKTU CHECKIN'),
+                                    label: Text('WAKTU CHECKOUT'),
                                   ),
                                 ],
                                 rows: controller.listReportVisit.map((element) {

@@ -1,3 +1,4 @@
+import 'package:attamana_salles_app/app/services/internet_connection_checker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -7,6 +8,7 @@ import 'app/themes/app_theme.dart';
 
 void main() async {
   await GetStorage.init();
+  Get.put(InternetConnectionChecker());
   initializeDateFormatting('id_ID', null).then((_) => runApp(
         GetMaterialApp(
           debugShowCheckedModeBanner: false,

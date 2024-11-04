@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 import 'package:nb_utils/nb_utils.dart';
+import 'package:number_pagination/number_pagination.dart';
 
 import '../../../../components/custom_dropdown_search.dart';
 import '../../../../style/colors.dart';
@@ -16,9 +17,45 @@ class InventoryView extends GetView<InventoryController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Inventory'),
+        title: Obx(
+          () => controller.isSearchInventory.isFalse
+              ? const Text('Inventory')
+              : SizedBox(
+                  height: 50,
+                  child: TextFormField(
+                    controller: controller.controllerSearch,
+                    decoration: InputDecoration(
+                      hintText: 'Search...',
+                      hintStyle: Get.textTheme.bodyMedium?.copyWith(
+                          letterSpacing: 1, fontStyle: FontStyle.italic),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(
+                          color: kInputBorderColor,
+                        ),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(color: kInputBorderColor),
+                      ),
+                    ),
+                    onChanged: (value) {
+                      controller.page.value = 1;
+                      controller.getListStockBarang(controller.gudangId.value);
+                      // controller.getlistSCustomerSearch(value);
+                    },
+                  ),
+                ),
+        ),
         backgroundColor: kPrimaryColor,
         centerTitle: true,
+        actions: [
+          IconButton(
+              onPressed: () {
+                controller.isSearchInventory.toggle();
+              },
+              icon: const Icon(Icons.search_rounded))
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.only(right: 20, left: 20, top: 20),
@@ -39,7 +76,7 @@ class InventoryView extends GetView<InventoryController> {
                 onSave: (value) {},
                 onSelectedItem: (value) {
                   controller.gudangId.value = value.item!;
-                  controller.postRequestlistStockBarang(value.item!);
+                  controller.getListStockBarang(value.item);
                 },
                 validator: (x) {
                   if (controller.listGudang
@@ -62,18 +99,18 @@ class InventoryView extends GetView<InventoryController> {
                   return Future<void>.delayed(
                     const Duration(seconds: 3),
                     () {
-                      controller.postRequestlistStockBarang(
-                          controller.gudangId.value);
+                      controller.getListStockBarang(controller.gudangId.value);
                     },
                   );
                 },
                 child: Obx(
                   () => controller.isLoadingListStockBarang.isTrue
                       ? const CustomLottieLoading()
-                      : controller.listStockBarang.isEmpty
+                      : controller.listStockBarangSearch.isEmpty
                           ? const CustomLottieNotFound()
                           : ListView.separated(
-                              itemCount: controller.listStockBarang.length,
+                              itemCount:
+                                  controller.listStockBarangSearch.length,
                               padding: const EdgeInsets.only(bottom: 20),
                               itemBuilder: (context, index) {
                                 return Card(
@@ -100,7 +137,7 @@ class InventoryView extends GetView<InventoryController> {
                                                     children: [
                                                       Text(
                                                         controller
-                                                            .listStockBarang[
+                                                            .listStockBarangSearch[
                                                                 index]
                                                             .namaProduk,
                                                         style: Get.textTheme
@@ -121,7 +158,7 @@ class InventoryView extends GetView<InventoryController> {
                                                           5.width,
                                                           Text(
                                                             controller
-                                                                .listStockBarang[
+                                                                .listStockBarangSearch[
                                                                     index]
                                                                 .namaGudang,
                                                             style: Get.textTheme
@@ -139,7 +176,7 @@ class InventoryView extends GetView<InventoryController> {
                                                           ),
                                                           5.width,
                                                           Text(
-                                                            '${controller.listStockBarang[index].jumlahStok} - ${controller.listStockBarang[index].satuan}',
+                                                            '${controller.listStockBarangSearch[index].jumlahStok} - ${controller.listStockBarangSearch[index].satuan}',
                                                             style: Get.textTheme
                                                                 .bodySmall,
                                                           ),
@@ -155,7 +192,7 @@ class InventoryView extends GetView<InventoryController> {
                                                       //     5.width,
                                                       //     Text(
                                                       //       controller
-                                                      //           .listStockBarang[index]
+                                                      //           .listStockBarangSearch[index]
                                                       //           .action,
                                                       //       style: Get.textTheme.bodySmall,
                                                       //     ),
@@ -171,7 +208,7 @@ class InventoryView extends GetView<InventoryController> {
                                                 //         borderRadius:
                                                 //             BorderRadius.circular(5)),
                                                 //     child: Text(
-                                                //         '${controller.listStockBarang[index].namaGudang}')),
+                                                //         '${controller.listStockBarangSearch[index].namaGudang}')),
                                               ],
                                             ),
                                             // const Divider(
@@ -211,6 +248,20 @@ class InventoryView extends GetView<InventoryController> {
                 ),
               ),
             ),
+            Obx(() => NumberPagination(
+                  // by default, the paginator shows numbers as center content
+                  totalPages: controller.numberPage.value,
+                  currentPage: controller.page.value,
+                  selectedButtonColor: kPrimaryColor,
+                  // controlButtonSize: Size(40, 40),
+                  buttonRadius: 10,
+
+                  visiblePagesCount: controller.visiblePage.value,
+                  onPageChanged: (int index) {
+                    controller.page.value = index;
+                    controller.getListStockBarang(controller.gudangId.value);
+                  },
+                ))
           ],
         ),
       ),

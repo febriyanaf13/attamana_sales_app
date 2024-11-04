@@ -22,7 +22,14 @@ class LoginController extends GetxController {
   @override
   void onInit() {
     getVersionApp();
+
     super.onInit();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
   }
 
   Future<void> onTapLogin() async {
@@ -39,11 +46,12 @@ class LoginController extends GetxController {
           var success = value.body['success'];
           var message = value.body['message'];
           var data = value.body['data'];
+          print(value.body);
           print(success);
           List<String> listStringGedung = [];
           List<String> listNamaGedung = [];
 
-          if (success) {
+          if (success == true) {
             var jsonData = userFromJson(data);
             storage.write('userData', {
               "userid": jsonData[0].userid,

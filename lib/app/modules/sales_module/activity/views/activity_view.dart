@@ -462,6 +462,8 @@ class ActivityView extends GetView<ActivityController> {
                 itemCount: controller.listActivityOpenProgress.length,
                 padding: const EdgeInsets.all(20),
                 itemBuilder: (context, index) {
+                  print(
+                      "activity open : ${controller.listActivityOpenProgress.length}");
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

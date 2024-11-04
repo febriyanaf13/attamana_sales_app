@@ -10,7 +10,7 @@ import 'package:flutter/services.dart';
 
 import 'package:get/get.dart';
 import 'package:nb_utils/nb_utils.dart';
-import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
+import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 
 import '../controllers/dashboard_controller.dart';
 
@@ -53,28 +53,28 @@ class DashboardView extends GetView<DashboardController> {
         items: controller.role == 'SALES' || controller.role == 'SALES MANAGER'
             ? _navBarsItemsSales()
             : _navBarsItems(),
-        confineInSafeArea: true,
+        confineToSafeArea: true,
         onItemSelected: (value) => tabController.index = value,
         backgroundColor: Colors.white,
         handleAndroidBackButtonPress: true,
         resizeToAvoidBottomInset: true,
         stateManagement: true,
-        hideNavigationBarWhenKeyboardShows: true,
+        // hideNavigationBarWhenKeyboardShows: true,
         decoration: NavBarDecoration(
           borderRadius: BorderRadius.circular(10.0),
           colorBehindNavBar: Colors.white,
         ),
-        popAllScreensOnTapOfSelectedTab: true,
-        popActionScreens: PopActionScreensType.all,
-        itemAnimationProperties: const ItemAnimationProperties(
-          duration: Duration(milliseconds: 200),
-          curve: Curves.ease,
-        ),
-        screenTransitionAnimation: const ScreenTransitionAnimation(
-          animateTabTransition: true,
-          curve: Curves.ease,
-          duration: Duration(milliseconds: 200),
-        ),
+        // popAllScreensOnTapOfSelectedTab: true,
+        // popActionScreens: PopActionScreensType.all,
+        // itemAnimationProperties: const ItemAnimationProperties(
+        //   duration: Duration(milliseconds: 200),
+        //   curve: Curves.ease,
+        // ),
+        // screenTransitionAnimation: const ScreenTransitionAnimation(
+        //   animateTabTransition: true,
+        //   curve: Curves.ease,
+        //   duration: Duration(milliseconds: 200),
+        // ),
         navBarStyle:
             controller.role == 'SALES' || controller.role == 'SALES MANAGER'
                 ? NavBarStyle.style9

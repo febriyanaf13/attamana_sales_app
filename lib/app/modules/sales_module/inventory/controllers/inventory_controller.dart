@@ -1,3 +1,4 @@
+import 'package:attamana_salles_app/app/modules/sales_module/assign_sales/controllers/assign_sales_controller.dart';
 import 'package:attamana_salles_app/app/modules/sales_module/inventory/models/barang.dart';
 import 'package:attamana_salles_app/app/modules/sales_module/inventory/models/gudang.dart';
 import 'package:attamana_salles_app/app/modules/sales_module/inventory/providers/inventory_provider.dart';
@@ -7,20 +8,26 @@ import 'package:get/get.dart';
 class InventoryController extends GetxController {
   //TODO: Implement InventoryController
 
-  final count = 0.obs;
-
+  TextEditingController controllerSearch = TextEditingController();
   TextEditingController textEditingControllerGudang =
       TextEditingController(text: 'ALL');
   var listGudang = <Map<String, String>>[].obs;
   var listStockBarang = <Barang>[].obs;
+  var listStockBarangSearch = <Barang>[].obs;
 
   var gudangId = ''.obs;
   var isLoadingListStockBarang = false.obs;
+  var isSearchInventory = false.obs;
+
+  var page = 1.obs;
+  var numberPage = 1.obs;
+  var visiblePage = 1.obs;
 
   @override
   void onInit() {
     getListGudang();
-    postRequestlistStockBarang('ALL');
+    gudangId.value = 'ALL';
+    getListStockBarang(gudangId.value);
 
     super.onInit();
   }
@@ -34,8 +41,6 @@ class InventoryController extends GetxController {
   void onClose() {
     super.onClose();
   }
-
-  void increment() => count.value++;
 
   void getListGudang() {
     InventoryProvider().getListGudang().then((value) {
@@ -51,20 +56,52 @@ class InventoryController extends GetxController {
 //   }
 // }
       }
-    });
+    }).timeout(const Duration(seconds: 60));
   }
 
-  void postRequestlistStockBarang(gudangId) {
+  void getListStockBarang(gudangId) {
     isLoadingListStockBarang.toggle();
+    listStockBarangSearch.clear();
 
-    var body = {'gudang_id': gudangId};
-    InventoryProvider().postRequestListStockBarang(body).then((value) {
+    print("gudang_id : $gudangId");
+    InventoryProvider()
+        .getListStockBarang(gudangId, controllerSearch.text, page)
+        .then((value) {
       isLoadingListStockBarang.toggle();
-
+      print("inventory response : ${value.body}");
+      print("inventory response code : ${value.statusCode}");
+      print("inventory response text : ${value.statusText}");
       if (value.status.isOk) {
         var data = value.body['data'];
+        var total = value.body['total'];
+        var perhalaman = value.body['perhalaman'];
+        print("inventory : $data");
+        print(numberPage);
         listStockBarang.value = barangFromJson(data);
+        listStockBarangSearch.value = barangFromJson(data);
+        numberPage.value = (total / perhalaman).ceil();
+        page == 1;
+
+        if (numberPage == 1) {
+          visiblePage.value = 1;
+        } else if (numberPage == 2) {
+          visiblePage.value = 2;
+        } else {
+          visiblePage.value = 3;
+        }
       }
-    });
+    }).timeout(const Duration(minutes: 5));
+  }
+
+  getlistSCustomerSearch(String searchText) {
+    List<Barang> listSearch = listStockBarang.where((element) {
+      return element.namaGudang
+              .toLowerCase()
+              .contains(searchText.toLowerCase()) ||
+          element.namaProduk.toLowerCase().contains(searchText.toLowerCase());
+    }).toList();
+    // listSearch.sort((a, b) => b!.tgllunas!.compareTo(a!.tgllunas!));
+    listStockBarangSearch(listSearch);
+    print(listSearch.length);
   }
 }

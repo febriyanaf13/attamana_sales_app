@@ -1,3 +1,4 @@
+import 'package:animated_custom_dropdown/custom_dropdown.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 
@@ -90,14 +91,19 @@ class _CustomDropdownButtonState extends State<CustomDropdownButton> {
                 : widget.textStyle!,
           ),
           autovalidateMode: AutovalidateMode.onUserInteraction,
+          buttonStyleData: ButtonStyleData(
+            height: widget.height ?? 50,
+            padding: const EdgeInsets.only(left: 5, right: 10),
+          ),
           // hint: const Icon(Icons.arrow_drop_down, color: Colors.black54),
           // iconOnClick: const Icon(Icons.arrow_drop_up, color: Colors.black54),
           // iconSize: widget.iconSize == null ? 25 : widget.iconSize!,
           // buttonHeight: widget.height ?? 50,
-          // buttonPadding: const EdgeInsets.only(left: 5, right: 10),
-          // dropdownDecoration: BoxDecoration(
-          //   borderRadius: BorderRadius.circular(25),
-          // ),
+          dropdownStyleData: DropdownStyleData(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              useSafeArea: true),
           items: widget.items
               ?.map((item) => DropdownMenuItem<Object>(
                     value: item['value'],
