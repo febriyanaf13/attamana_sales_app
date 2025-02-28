@@ -105,7 +105,7 @@ class _CustomDropDownSalesModelSearchState
           // widget.labelSpace.validate() ? 6.height : const Offstage(),
           SearchField<Sales>(
             hint: widget.hint,
-            initialValue: SearchFieldListItem<Sales>(
+            selectedValue: SearchFieldListItem<Sales>(
               widget.dataList![0].nama.toString() ?? '-',
               item: Sales(
                 nama: widget.dataList![0].nama,
@@ -124,10 +124,10 @@ class _CustomDropDownSalesModelSearchState
             textInputAction: TextInputAction.done,
             controller: widget.controller,
 
-            searchInputDecoration: const InputDecoration(
-              contentPadding: EdgeInsets.all(kContentPadding),
+            searchInputDecoration: SearchInputDecoration(
+              contentPadding: const EdgeInsets.all(kContentPadding),
               // hintText: widget.hint,
-              hintStyle: TextStyle(color: kSecondaryTextColor),
+              hintStyle: const TextStyle(color: kSecondaryTextColor),
               // enabledBorder: OutlineInputBorder(
               //     borderSide: const BorderSide(
               //       color: Colors.black45,

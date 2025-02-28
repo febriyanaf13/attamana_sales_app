@@ -102,16 +102,16 @@ class _CustomDropDownSearchState extends State<CustomDropDownSearch> {
           // widget.labelSpace.validate() ? 6.height : const Offstage(),
           SearchField<String>(
             hint: widget.hint,
-            initialValue: widget.initialValue,
+            selectedValue: widget.initialValue,
             suggestionState: Suggestion.expand,
             suggestionAction: SuggestionAction.next,
             textInputAction: TextInputAction.done,
             controller: widget.controller,
 
-            searchInputDecoration: const InputDecoration(
-              contentPadding: EdgeInsets.all(20),
+            searchInputDecoration: SearchInputDecoration(
+              contentPadding: const EdgeInsets.all(20),
               // hintText: widget.hint,
-              hintStyle: TextStyle(color: kSecondaryTextColor),
+              hintStyle: const TextStyle(color: kSecondaryTextColor),
               // enabledBorder: OutlineInputBorder(
               //     borderSide: const BorderSide(
               //       color: Colors.black45,

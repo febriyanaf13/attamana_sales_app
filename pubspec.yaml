@@ -20,9 +20,12 @@ dependencies:
     sdk: flutter
   flutter_analog_clock: ^1.0.3
   flutter_launcher_icons: any
+  flutter_plugin_android_lifecycle: ^2.0.20
   #  file_picker: any
   flutter_rating_bar: any
-  geolocator: ^9.0.2
+  fluttertoast: ^8.2.9
+  #  geolocator: ^9.0.2
+  geolocator: ^10.1.0
   geocoding: ^2.1.1
   get: ^4.6.6
   get_storage: ^2.0.3
@@ -42,7 +45,7 @@ dependencies:
   rive_common: ^0.4.10
   searchfield: any
   table_calendar: ^3.0.8
-  timelines: ^0.1.0
+  timelines_plus: any
   time_range_picker: ^2.3.0
   dropdown_button2: ^2.3.9
   image_picker: ^0.8.6

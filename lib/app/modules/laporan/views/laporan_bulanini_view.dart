@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-import 'package:timelines/timelines.dart';
+import 'package:timelines_plus/timelines_plus.dart';
 
 import '../../../style/colors.dart';
 import '../../../style/paddings.dart';
@@ -11,6 +11,7 @@ import '../controllers/laporan_controller.dart';
 
 class LaporanBulaniniView extends GetView<LaporanController> {
   const LaporanBulaniniView({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
-import 'package:timelines/timelines.dart';
+import 'package:timelines_plus/timelines_plus.dart';
 
 import '../../../style/colors.dart';
 import '../../../style/paddings.dart';
@@ -98,7 +98,8 @@ class LaporanTahuniniView extends GetView<LaporanController> {
                                   value = controller
                                       .listLaporanTahunan[index].alfa!;
 
-                                  break;case 'C':
+                                  break;
+                                case 'C':
                                   status = 'Cuti';
                                   value = controller
                                       .listLaporanTahunan[index].cuti!;
@@ -212,7 +213,8 @@ class LaporanTahuniniView extends GetView<LaporanController> {
                                       size: 10.0,
                                       color: Colors.white,
                                     ),
-                                  );case 'C':
+                                  );
+                                case 'C':
                                   return const DotIndicator(
                                     color: Colors.black,
                                     child: Icon(
