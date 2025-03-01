@@ -2,6 +2,8 @@ abstract class Api {
   // static const baseUrl = 'https://attamana.freightapp.in:444/api';
   static const baseUrl = 'https://demoerp.freightapp.in:444/api';
 
+  // static const baseUrl = '192.168.18.15:8000/api';
+
   static const token = '$baseUrl/login';
   static const login = '$baseUrl/uslogin';
 
@@ -34,6 +36,7 @@ abstract class Api {
   static const listActivity = '$baseUrl/list_kunjungan';
   static const detailActivity = '$baseUrl/detail_kunjungan';
   static const existingCustomer = '$baseUrl/get_allcustomer';
+  static const jenisKunjungan = '$baseUrl/get_jenis_kunjungan';
   static const simpanActivity = '$baseUrl/save_kunjungan';
   static const updateActivity = '$baseUrl/update_kunjungan';
   static const presensiActivity = '$baseUrl/absen_kunjungan';
@@ -51,6 +54,8 @@ abstract class Api {
   //sales monitoring
   static const salesOrder = '$baseUrl/so_monitoring';
   static const customer = '$baseUrl/getsales_customer';
+  static const addCustomer = '$baseUrl/add_customer';
+  static const updateCustomer = '$baseUrl/update_customer';
   static const sales = '$baseUrl/allsales';
 
   //sales report

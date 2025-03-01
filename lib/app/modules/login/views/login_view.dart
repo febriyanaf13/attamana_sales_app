@@ -239,7 +239,7 @@ class LoginView extends GetView<LoginController> {
                 child: internetConnectionChecker.isConnectedToInternet.isTrue
                     ? const Icon(
                         Icons.radio_button_checked_rounded,
-                        color: Colors.green,
+                        color: Color(0xFF3FFF00),
                       )
                     : const Icon(
                         Icons.radio_button_checked_rounded,

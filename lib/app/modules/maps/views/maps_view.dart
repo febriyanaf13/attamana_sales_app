@@ -102,6 +102,7 @@ class _MapsViewState extends State<MapsView> with WidgetsBindingObserver {
   late LocationPermission permission;
 
   var argument = Get.arguments;
+  var routeArgument = '';
   var role = storage.read(kRoleName);
   var userName = storage.read(kUserNama);
   var statusKaryawan = storage.read(kStatusKaryawan);
@@ -279,7 +280,7 @@ class _MapsViewState extends State<MapsView> with WidgetsBindingObserver {
         polygons.clear();
         // for (var gedung in listGedungDanKoordinat!) {
         print('pol ${controller.listKoorPolygonGedung}');
-        if (argument == null || argument['route'] == 'MAPS') {
+        if (argument == null) {
           polygons[namaGedung!] = Polygon(
             polygonId: PolygonId(namaGedung!),
             points: controller.listKoorPolygonGedung,
@@ -595,15 +596,15 @@ class _MapsViewState extends State<MapsView> with WidgetsBindingObserver {
   }
 
   void onTapCheckInOutButton(status) {
-    // CekLokasi cekLokasi = CekLokasi(
-    //   latTitikSekarang: centerPosition!.latitude,
-    //   lngTitikSekarang: centerPosition!.longitude,
-    //   latTitikCircle: centerCircle!.latitude,
-    //   lngTitikCircle: centerCircle!.longitude,
-    //   listLatPolygon: [],
-    //   listLngPolygon: [],
-    //   listPolygonPoints: [],
-    // );
+    CekLokasi cekLokasi = CekLokasi(
+      latTitikSekarang: centerPosition!.latitude,
+      lngTitikSekarang: centerPosition!.longitude,
+      latTitikCircle: centerCircle!.latitude,
+      lngTitikCircle: centerCircle!.longitude,
+      listLatPolygon: [],
+      listLngPolygon: [],
+      listPolygonPoints: [],
+    );
     var listButuhLokasi = [
       'OFFERING PRODUCT',
       'VISIT CUSTOMER',
@@ -617,21 +618,21 @@ class _MapsViewState extends State<MapsView> with WidgetsBindingObserver {
       'SALES CALL / WHATSAPP',
     ];
 
-    //proteksi absen
-    // if (listButuhLokasi.contains(argument['action'].toString())) {
-    //   if (cekLokasi.apakahLokasiDalamCircle()) {
-    //     print('iya didalam');
-    //     controllerJobVisit.postPresensiActivity(argument['idKunjungan'], status,
-    //         '(${centerCircle!.latitude}, ${centerCircle!.longitude})');
-    //   } else {
-    //     dialogWarning('Ops...', 'Maaf, anda tidak dalam wilayah presensi');
-    //   }
-    // } else if (listTidakButuhLokasi.contains(argument['action'].toString())) {
-    //   controllerJobVisit.postPresensiActivity(argument['idKunjungan'], status,
-    //       '(${centerCircle!.latitude}, ${centerCircle!.longitude})');
-    // }
-    controllerJobVisit.postPresensiActivity(argument['idKunjungan'], status,
-        '(${centerPosition!.latitude}, ${centerPosition!.longitude})');
+    // proteksi absen
+    if (listButuhLokasi.contains(argument['action'].toString())) {
+      if (cekLokasi.apakahLokasiDalamCircle()) {
+        print('iya didalam');
+        controllerJobVisit.postPresensiActivity(argument['idKunjungan'], status,
+            '(${centerCircle!.latitude}, ${centerCircle!.longitude})');
+      } else {
+        dialogWarning('Ops...', 'Maaf, anda tidak dalam wilayah presensi');
+      }
+    } else if (listTidakButuhLokasi.contains(argument['action'].toString())) {
+      controllerJobVisit.postPresensiActivity(argument['idKunjungan'], status,
+          '(${centerCircle!.latitude}, ${centerCircle!.longitude})');
+    }
+    // controllerJobVisit.postPresensiActivity(argument['idKunjungan'], status,
+    //     '(${centerPosition!.latitude}, ${centerPosition!.longitude})');
   }
 
   @override
@@ -644,7 +645,10 @@ class _MapsViewState extends State<MapsView> with WidgetsBindingObserver {
     checkLocationService();
 
     namaGedung = 'Semarang';
-    argument['route'] == 'COMPLETED' ? activityCompleted() : null;
+    if (argument != null) {
+      routeArgument = argument['route'];
+    }
+    routeArgument == 'COMPLETED' ? activityCompleted() : null;
 
     super.initState();
   }
@@ -668,7 +672,7 @@ class _MapsViewState extends State<MapsView> with WidgetsBindingObserver {
                 ? _buildLocationDisable(context)
                 : argument == null
                     ? _buildGoogleMapsPolygon(context)
-                    : argument['route'] == 'COMPLETED'
+                    : routeArgument == 'COMPLETED'
                         ? _buildGoogleMapsCircleActivityCompleted(context)
                         : _buildGoogleMapsCircle(context),
         Positioned(
@@ -895,7 +899,7 @@ class _MapsViewState extends State<MapsView> with WidgetsBindingObserver {
             ],
           )),
         ),
-        argument['route'] == 'COMPLETED'
+        routeArgument == 'COMPLETED'
             ? SizedBox()
             : Positioned(
                 bottom: 50,

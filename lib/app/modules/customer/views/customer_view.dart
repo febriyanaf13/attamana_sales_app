@@ -1,4 +1,5 @@
 import 'package:attamana_salles_app/app/components/custom_lottie_not_found.dart';
+import 'package:attamana_salles_app/app/routes/app_pages.dart';
 import 'package:attamana_salles_app/app/utils/extension_image.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
@@ -49,6 +50,11 @@ class CustomerView extends GetView<CustomerController> {
         centerTitle: true,
         backgroundColor: kPrimaryColor,
         actions: [
+          IconButton(
+              onPressed: () {
+                Get.toNamed(Routes.ADD_CUSTOMER);
+              },
+              icon: const Icon(Icons.person_add)),
           IconButton(
               onPressed: () {
                 controller.isSearchCustomer.toggle();
@@ -134,19 +140,34 @@ class CustomerView extends GetView<CustomerController> {
                                                               kSecondaryTextColor)),
                                             ],
                                           )),
-                                          Obx(
-                                            () => IconButton(
-                                                onPressed: () {
-                                                  isDetailCustomer.toggle();
-                                                },
-                                                icon: Icon(
-                                                  isDetailCustomer.isTrue
-                                                      ? Icons
-                                                          .keyboard_arrow_up_rounded
-                                                      : Icons
-                                                          .keyboard_arrow_down_rounded,
-                                                  size: 20,
-                                                )),
+                                          SizedBox(
+                                            height: 40,
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                const Icon(
+                                                  Icons.edit,
+                                                  size: 10,
+                                                  color: Colors.blue,
+                                                ).onTap(() {
+                                                  Get.toNamed(
+                                                      Routes.EDIT_CUSTOMER,
+                                                      arguments: index);
+                                                }),
+                                                Obx(() => Icon(
+                                                      isDetailCustomer.isTrue
+                                                          ? Icons
+                                                              .keyboard_arrow_up_rounded
+                                                          : Icons
+                                                              .keyboard_arrow_down_rounded,
+                                                      size: 20,
+                                                    ).onTap(() {
+                                                      isDetailCustomer.toggle();
+                                                    })),
+                                              ],
+                                            ),
                                           )
                                         ],
                                       ),

@@ -21,7 +21,7 @@ class AddActivityView extends GetView<ActivityController> {
   @override
   Widget build(BuildContext context) {
     var visitId = Get.arguments;
-    var customerType = CustomerType.newcustomer.obs;
+    var customerType = CustomerType.existingcustomer.obs;
     if (visitId != null) {
       customerType = CustomerType.existingcustomer.obs;
     }
@@ -57,43 +57,43 @@ class AddActivityView extends GetView<ActivityController> {
                                   padding: const EdgeInsets.all(20),
                                   child: Column(
                                     children: [
-                                      Row(
-                                        children: [
-                                          Expanded(
-                                            child: RadioListTile<CustomerType>(
-                                              title: const Text("New Customer"),
-                                              value: CustomerType.newcustomer,
-                                              groupValue: customerType.value,
-                                              onChanged: (CustomerType? value) {
-                                                customerType.value = value!;
-                                                controller
-                                                    .clearTextEditingController();
-                                                controller.ketcustomer.value =
-                                                    'NEW';
-                                                controller.customerId.value =
-                                                    '0';
-                                              },
-                                            ),
-                                          ),
-                                          Expanded(
-                                            child: RadioListTile<CustomerType>(
-                                              title: const Text(
-                                                  "Existing Customer"),
-                                              value:
-                                                  CustomerType.existingcustomer,
-                                              groupValue: customerType.value,
-                                              onChanged: (CustomerType? value) {
-                                                customerType.value = value!;
-                                                controller
-                                                    .getCustomerExisting();
-                                                controller.ketcustomer.value =
-                                                    'EXISTING';
-                                              },
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      const Divider(thickness: 1),
+                                      // Row(
+                                      //   children: [
+                                      //     Expanded(
+                                      //       child: RadioListTile<CustomerType>(
+                                      //         title: const Text("New Customer"),
+                                      //         value: CustomerType.newcustomer,
+                                      //         groupValue: customerType.value,
+                                      //         onChanged: (CustomerType? value) {
+                                      //           customerType.value = value!;
+                                      //           controller
+                                      //               .clearTextEditingController();
+                                      //           controller.ketcustomer.value =
+                                      //               'NEW';
+                                      //           controller.customerId.value =
+                                      //               '0';
+                                      //         },
+                                      //       ),
+                                      //     ),
+                                      //     Expanded(
+                                      //       child: RadioListTile<CustomerType>(
+                                      //         title: const Text(
+                                      //             "Existing Customer"),
+                                      //         value:
+                                      //             CustomerType.existingcustomer,
+                                      //         groupValue: customerType.value,
+                                      //         onChanged: (CustomerType? value) {
+                                      //           customerType.value = value!;
+                                      //           controller
+                                      //               .getCustomerExisting();
+                                      //           controller.ketcustomer.value =
+                                      //               'EXISTING';
+                                      //         },
+                                      //       ),
+                                      //     ),
+                                      //   ],
+                                      // ),
+                                      // const Divider(thickness: 1),
                                       20.height,
                                       Obx(
                                         () => customerType.value ==
@@ -152,27 +152,34 @@ class AddActivityView extends GetView<ActivityController> {
                                                 },
                                                 onSave: (value) {},
                                                 onSelectedItem: (value) {
+                                                  print(
+                                                      "ini test espac : $value");
                                                   controller.customerId.value =
                                                       value.item!;
                                                 },
                                                 validator: (x) {
-                                                  if (controller
-                                                          .listExistingCustomer
-                                                          .map((element) =>
-                                                              element['text']
-                                                                  ?.replaceAll(
-                                                                      RegExp(
-                                                                          '[^A-Za-z0-9]'),
-                                                                      ''))
-                                                          .where((value) =>
-                                                              value!
-                                                                  .contains(x!))
-                                                          .contains(x) ||
-                                                      x!.isEmpty) {
-                                                    return 'Please Enter a valid Data';
+                                                  // if (controller
+                                                  //         .listExistingCustomer
+                                                  //         .map((element) =>
+                                                  //             element['text']
+                                                  //                 ?.replaceAll(
+                                                  //                     RegExp(
+                                                  //                         '[^A-Za-z0-9]'),
+                                                  //                     ''))
+                                                  //         .where((value) =>
+                                                  //             value!
+                                                  //                 .contains(x!))
+                                                  //         .contains(x) ||
+                                                  //     x!.isEmpty) {
+                                                  //   return 'Please Enter a valid Data';
+                                                  // }
+                                                  //
+                                                  // return null;
+                                                  if (x == null ||
+                                                      x.trim().isEmpty) {
+                                                    return 'Please enter a valid data';
                                                   }
-
-                                                  return null;
+                                                  return null; // Jika valid, tidak ada error
                                                 },
                                               ),
                                       ),

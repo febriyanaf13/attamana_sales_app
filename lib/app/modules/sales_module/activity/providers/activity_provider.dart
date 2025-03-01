@@ -35,6 +35,14 @@ class ActivityProvider extends GetConnect {
     return get(api, headers: headers);
   }
 
+  Future<Response> getJenisKunjungan() {
+    var api = Api.jenisKunjungan;
+    if (kDebugMode) {
+      print(api);
+    }
+    return get(api, headers: headers);
+  }
+
   Future<Response> postSimpanActivity(body) {
     var api = Api.simpanActivity;
     if (kDebugMode) {

@@ -614,12 +614,12 @@ class StaffHomeView extends GetView<StaffHomeController> {
             onTap: () {
               Get.toNamed(Routes.ACTIVITY);
             }),
-        CustomMenuHome(
-            title: 'Lead',
-            icon: 'lead'.png,
-            onTap: () {
-              Get.toNamed(Routes.LEAD);
-            }),
+        // CustomMenuHome(
+        //     title: 'Lead',
+        //     icon: 'lead'.png,
+        //     onTap: () {
+        //       Get.toNamed(Routes.LEAD);
+        //     }),
         CustomMenuHome(
             title: 'Sales Order',
             icon: 'so_monitoring'.png,
@@ -638,12 +638,12 @@ class StaffHomeView extends GetView<StaffHomeController> {
             onTap: () {
               Get.toNamed(Routes.REPORT_VISIT);
             }),
-        CustomMenuHome(
-            title: 'Sample & Pricing',
-            icon: 'sample'.png,
-            onTap: () {
-              Get.toNamed(Routes.SAMPLE_AND_PRICING);
-            }),
+        // CustomMenuHome(
+        //     title: 'Sample & Pricing',
+        //     icon: 'sample'.png,
+        //     onTap: () {
+        //       Get.toNamed(Routes.SAMPLE_AND_PRICING);
+        //     }),
         controller.roles == 'SALES MANAGER' || controller.roles == 'DIREKTUR'
             ? CustomMenuHome(
                 title: 'Assign Sales',

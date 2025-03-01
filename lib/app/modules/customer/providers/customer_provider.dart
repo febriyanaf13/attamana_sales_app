@@ -18,4 +18,20 @@ class CustomerProvider extends GetConnect {
     }
     return get(api, headers: headers);
   }
+
+  Future<Response> postNewCustomer(body) {
+    var api = Api.addCustomer;
+    if (kDebugMode) {
+      print(api);
+    }
+    return post(api, body, headers: headers);
+  }
+
+  Future<Response> postUpdateCustomer(body) {
+    var api = Api.updateCustomer;
+    if (kDebugMode) {
+      print(api);
+    }
+    return post(api, body, headers: headers);
+  }
 }

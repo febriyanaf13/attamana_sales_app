@@ -41,6 +41,8 @@ abstract class Routes {
   static const BENSIN = _Paths.BENSIN;
   static const ADD_BENSIN = _Paths.ADD_BENSIN;
   static const CUSTOMER = _Paths.CUSTOMER;
+  static const ADD_CUSTOMER = _Paths.ADD_CUSTOMER;
+  static const EDIT_CUSTOMER = _Paths.EDIT_CUSTOMER;
   static const FIXEDASSET = _Paths.FIXEDASSET;
   static const MAINTENANCE = _Paths.MAINTENANCE;
   static const ADD_MAINTENANCE = _Paths.ADD_MAINTENANCE;
@@ -87,6 +89,8 @@ abstract class _Paths {
   static const BENSIN = '/bensin';
   static const ADD_BENSIN = '/add-bensin';
   static const CUSTOMER = '/customer';
+  static const ADD_CUSTOMER = '/add-customer';
+  static const EDIT_CUSTOMER = '/edit-customer';
   static const FIXEDASSET = '/fixedasset';
   static const MAINTENANCE = '/maintenance';
   static const ADD_MAINTENANCE = '/add-maintenance';

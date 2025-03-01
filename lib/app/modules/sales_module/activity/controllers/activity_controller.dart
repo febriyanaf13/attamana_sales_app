@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:attamana_salles_app/app/components/custom_dialog.dart';
 import 'package:attamana_salles_app/app/modules/maps/controllers/maps_controller.dart';
+import 'package:attamana_salles_app/app/modules/sales_module/activity/models/jenis_kunjungan.dart';
 
 import 'package:attamana_salles_app/app/routes/app_pages.dart';
 import 'package:attamana_salles_app/app/utils/string.dart';
@@ -49,19 +50,22 @@ class ActivityController extends GetxController {
   var listJunk = <Lead>[].obs;
 
   //variable
-  var ketcustomer = 'NEW'.obs;
+  var ketcustomer = 'EXISTING'.obs;
   var customerId = ''.obs;
   var action = ''.obs;
-  var listAction = [
-    {'text': 'OFFERING PRODUCT', 'value': 'OFFERING PRODUCT'},
-    {'text': 'VISIT CUSTOMER', 'value': 'VISIT CUSTOMER'},
-    {'text': 'MEETING', 'value': 'MEETING'},
-    {'text': 'AMBIL SAMPLE', 'value': 'AMBIL SAMPLE'},
-    {'text': 'CHAT / EMAIL', 'value': 'CHAT / EMAIL'},
-    {'text': 'EVENT', 'value': 'EVENT'},
-    {'text': 'OTHER', 'value': 'OTHER'},
-    {'text': 'SALES CALL / WHATSAPP', 'value': 'SALES CALL / WHATSAPP'},
-  ].obs;
+
+  // var listAction = [
+  //   {'text': 'OFFERING PRODUCT', 'value': 'OFFERING PRODUCT'},
+  //   {'text': 'VISIT CUSTOMER', 'value': 'VISIT CUSTOMER'},
+  //   {'text': 'MEETING', 'value': 'MEETING'},
+  //   {'text': 'AMBIL SAMPLE', 'value': 'AMBIL SAMPLE'},
+  //   {'text': 'CHAT / EMAIL', 'value': 'CHAT / EMAIL'},
+  //   {'text': 'EVENT', 'value': 'EVENT'},
+  //   {'text': 'OTHER', 'value': 'OTHER'},
+  //   {'text': 'SALES CALL / WHATSAPP', 'value': 'SALES CALL / WHATSAPP'},
+  // ].obs;
+  var listAction = <Map<String, Object>>[].obs;
+  var perluAbsen = '';
 
   var listButuhLokasi = [
     'OFFERING PRODUCT',
@@ -126,6 +130,7 @@ class ActivityController extends GetxController {
     // TODO: implement onInit
     getListActivity();
     getCustomerExisting();
+    getJenisKunjungan();
     getLead();
     super.onInit();
   }
@@ -192,11 +197,20 @@ class ActivityController extends GetxController {
         listExistingCustomer.value = existingCustomerFromJson(data)
             .map((e) => {'text': e.namaHotel, 'value': e.customerId.toString()})
             .toList();
-        // for (var list in listActivity) {
-        //   if (list.status == null || list.status == 'CHECK IN') {
-        //     listActivityOpenProgress.add(list);
-        //   }
-        // }
+      }
+    });
+  }
+
+  void getJenisKunjungan() {
+    ActivityProvider().getJenisKunjungan().then((value) {
+      if (kDebugMode) {
+        print(value.body);
+      }
+      if (value.status.isOk) {
+        var data = value.body['data'];
+        listAction.value = jenisKunjunganFromJson(data)
+            .map((e) => {'text': e.nama, 'value': e.nama.toString()})
+            .toList();
       }
     });
   }
@@ -286,6 +300,7 @@ class ActivityController extends GetxController {
           print(success);
           if (success) {
             Get.back();
+            getListActivity();
             dialogSuccess('Success', message);
           } else {
             dialogWarning('Ops...', message);
@@ -417,9 +432,9 @@ class ActivityController extends GetxController {
           Obx(() => boolImage.isTrue
               ? CupertinoDialogAction(
                   onPressed: () async {
-                    if (listButuhLokasi.contains(action.value)) {
+                    if (perluAbsen.contains('YA')) {
                       postImageCheckIn(activityId);
-                    } else if (listTidakButuhLokasi.contains(action.value)) {
+                    } else if (perluAbsen.contains('TIDAK')) {
                       getLokasiTerkini(activityId);
                     }
                   },

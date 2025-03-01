@@ -3,7 +3,9 @@ import 'package:get/get.dart';
 import '../modules/account/bindings/account_binding.dart';
 import '../modules/account/views/account_view.dart';
 import '../modules/customer/bindings/customer_binding.dart';
+import '../modules/customer/views/add_customer_view.dart';
 import '../modules/customer/views/customer_view.dart';
+import '../modules/customer/views/edit_customer_view.dart';
 import '../modules/cuti/bindings/cuti_binding.dart';
 import '../modules/cuti/views/ajukan_cuti_view.dart';
 import '../modules/cuti/views/cuti_view.dart';
@@ -253,6 +255,16 @@ class AppPages {
     GetPage(
       name: _Paths.CUSTOMER,
       page: () => const CustomerView(),
+      binding: CustomerBinding(),
+    ),
+    GetPage(
+      name: _Paths.ADD_CUSTOMER,
+      page: () => const AddCustomerView(),
+      binding: CustomerBinding(),
+    ),
+    GetPage(
+      name: _Paths.EDIT_CUSTOMER,
+      page: () => const EditCustomerView(),
       binding: CustomerBinding(),
     ),
     GetPage(

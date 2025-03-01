@@ -24,6 +24,7 @@ class Activity {
   dynamic waktuCheckin;
   dynamic waktuCheckout;
   String? lokasiCheckout;
+  String? perluAbsen;
 
   Activity({
     required this.kunjunganId,
@@ -39,6 +40,7 @@ class Activity {
     required this.lokasiCheckin,
     required this.waktuCheckout,
     required this.lokasiCheckout,
+    required this.perluAbsen,
   });
 
   factory Activity.fromJson(Map<String, dynamic> json) => Activity(
@@ -59,6 +61,7 @@ class Activity {
         waktuCheckout: json["waktu_checkout"] ?? '-',
         lokasiCheckin: json["lokasi_checkin"],
         lokasiCheckout: json["lokasi_checkout"],
+        perluAbsen: json["perlu_absen"],
       );
 
   Map<String, dynamic> toJson() => {

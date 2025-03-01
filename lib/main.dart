@@ -5,9 +5,11 @@ import 'package:get_storage/get_storage.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'app/routes/app_pages.dart';
 import 'app/themes/app_theme.dart';
+import 'dart:ui' as ui;
 
 void main() async {
   await GetStorage.init();
+  ui.PlatformDispatcher.instance.onPlatformMessage = null; // Disable Impeller
   Get.put(InternetConnectionChecker());
   initializeDateFormatting('id_ID', null).then((_) => runApp(
         GetMaterialApp(

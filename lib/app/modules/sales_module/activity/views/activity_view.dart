@@ -150,6 +150,8 @@ class ActivityView extends GetView<ActivityController> {
                 itemCount: controller.listActivityCompleted.length,
                 padding: const EdgeInsets.all(20),
                 itemBuilder: (context, index) {
+                  controller.perluAbsen =
+                      controller.listActivityCompleted[index].perluAbsen!;
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -173,38 +175,38 @@ class ActivityView extends GetView<ActivityController> {
                               maxLines: 1,
                             ),
                           ),
-                          Text(
-                            'Edit',
-                            style: Get.textTheme.bodySmall
-                                ?.copyWith(color: Colors.blue),
-                          ).onTap(() {
-                            controller.textEditingControllerNama.text =
-                                controller
-                                    .listActivityCompleted[index].namaHotel;
-                            // controller
-                            //         .customerId
-                            //         .value =
-                            //     controller
-                            //         .listActivityOpenProgress[
-                            //             index]
-                            //         .customerId;
-                            print(controller
-                                .listActivityCompleted[index].customerId);
-                            controller.action.value =
-                                controller.listActivityCompleted[index].action;
-                            controller.tglVisit.value =
-                                "${controller.listActivityCompleted[index].tanggalVisit.year}-${controller.listActivityCompleted[index].tanggalVisit.month}-${controller.listActivityCompleted[index].tanggalVisit.day}";
-                            controller.textEditingControllerDeskripsi.text =
-                                controller.listActivityCompleted[index].notulen;
-                            controller.customerId.value = controller
-                                .listActivityCompleted[index].customerId
-                                .toString();
-
-                            controller.getDetailActivity(
-                                controller
-                                    .listActivityCompleted[index].kunjunganId,
-                                'EDIT');
-                          }),
+                          // Text(
+                          //   'Edit',
+                          //   style: Get.textTheme.bodySmall
+                          //       ?.copyWith(color: Colors.blue),
+                          // ).onTap(() {
+                          //   controller.textEditingControllerNama.text =
+                          //       controller
+                          //           .listActivityCompleted[index].namaHotel;
+                          //   // controller
+                          //   //         .customerId
+                          //   //         .value =
+                          //   //     controller
+                          //   //         .listActivityOpenProgress[
+                          //   //             index]
+                          //   //         .customerId;
+                          //   print(controller
+                          //       .listActivityCompleted[index].customerId);
+                          //   controller.action.value =
+                          //       controller.listActivityCompleted[index].action;
+                          //   controller.tglVisit.value =
+                          //       "${controller.listActivityCompleted[index].tanggalVisit.year}-${controller.listActivityCompleted[index].tanggalVisit.month}-${controller.listActivityCompleted[index].tanggalVisit.day}";
+                          //   controller.textEditingControllerDeskripsi.text =
+                          //       controller.listActivityCompleted[index].notulen;
+                          //   controller.customerId.value = controller
+                          //       .listActivityCompleted[index].customerId
+                          //       .toString();
+                          //
+                          //   controller.getDetailActivity(
+                          //       controller
+                          //           .listActivityCompleted[index].kunjunganId,
+                          //       'EDIT');
+                          // }),
                         ],
                       ),
                       5.height,
@@ -464,6 +466,8 @@ class ActivityView extends GetView<ActivityController> {
                 itemBuilder: (context, index) {
                   print(
                       "activity open : ${controller.listActivityOpenProgress.length}");
+                  controller.perluAbsen =
+                      controller.listActivityOpenProgress[index].perluAbsen!;
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -489,7 +493,7 @@ class ActivityView extends GetView<ActivityController> {
                           ),
                           Text(
                             'Edit',
-                            style: Get.textTheme.bodySmall
+                            style: Get.textTheme.bodyLarge
                                 ?.copyWith(color: Colors.blue),
                           ).onTap(() {
                             controller.textEditingControllerNama.text =
@@ -546,11 +550,7 @@ class ActivityView extends GetView<ActivityController> {
                                       20.width,
                                       // proteksi absen
 
-                                      if (controller.listButuhLokasi.contains(
-                                          controller
-                                              .listActivityOpenProgress[index]
-                                              .action
-                                              .toString()))
+                                      if (controller.perluAbsen.contains("YA"))
                                         SizedBox(
                                           child: Card(
                                             color: Colors.green,
@@ -581,11 +581,8 @@ class ActivityView extends GetView<ActivityController> {
                                             ),
                                           ),
                                         )
-                                      else if (controller.listTidakButuhLokasi
-                                          .contains(controller
-                                              .listActivityOpenProgress[index]
-                                              .action
-                                              .toString()))
+                                      else if (controller.perluAbsen
+                                          .contains("TIDAK"))
                                         SizedBox(
                                           child: Card(
                                             color: Colors.blue,
