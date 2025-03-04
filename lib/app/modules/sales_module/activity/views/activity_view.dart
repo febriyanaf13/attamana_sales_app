@@ -541,7 +541,7 @@ class ActivityView extends GetView<ActivityController> {
                                     children: [
                                       Expanded(
                                         child: Text(
-                                          '${controller.listActivityOpenProgress[index].action} - ${controller.listActivityOpenProgress[index].lokasi}',
+                                          '${controller.listActivityOpenProgress[index].action} - ${controller.listActivityOpenProgress[index].namaHotel}',
                                           style: Get.textTheme.titleSmall
                                               ?.copyWith(
                                                   fontWeight: FontWeight.bold),

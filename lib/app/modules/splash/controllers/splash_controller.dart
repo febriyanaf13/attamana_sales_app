@@ -15,14 +15,15 @@ class SplashController extends GetxController {
 
   @override
   void onInit() {
-    reqToken();
     getVersionApp();
-    Future.delayed(const Duration(seconds: 3), () => autoLogin());
+
     super.onInit();
   }
 
   void reqToken() {
-    LoginProvider().reqToken('febri', 'febrimobile150708').then((value) {
+    LoginProvider()
+        .reqToken('febri', 'febrimobile150708', version.value)
+        .then((value) {
       if (kDebugMode) {
         print('status_code token : ${value.statusCode}');
       }
@@ -64,5 +65,7 @@ class SplashController extends GetxController {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
 
     version.value = packageInfo.version;
+    reqToken();
+    Future.delayed(const Duration(seconds: 3), () => autoLogin());
   }
 }

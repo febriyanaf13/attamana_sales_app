@@ -31,6 +31,7 @@ class MapsController extends GetxController {
   var listAllShifts = <AllShifts>[].obs;
   var listAllShiftsUntukDipilih = <Map<String, Object>>[].obs;
   var shiftId = ''.obs;
+  var userId = storage.read(kUserId);
 
   //controller
   var homeC = Get.put(StaffHomeController());
@@ -108,8 +109,10 @@ class MapsController extends GetxController {
     var dateNow = DateFormat('yyyy-MM-dd').format(DateTime.now());
     var timeNow = DateFormat('HH:mm:ss').format(DateTime.now());
 
+    print("user id $userId");
     var body = {
       'shift_id': shiftId.value,
+      'userid': userId,
       'tanggal_absen': dateNow,
       'waktu': "$dateNow $timeNow",
       'lokasi': "($lat, $lang)"
@@ -149,6 +152,7 @@ class MapsController extends GetxController {
     var dateNow = DateFormat('yyyy-MM-dd').format(DateTime.now());
     var timeNow = DateFormat('HH:mm:ss').format(DateTime.now());
     var body = {
+      'userid': userId,
       'tanggal_absen': dateNow,
       'waktu': "$dateNow $timeNow",
       'lokasi': "($lat, $lang)"

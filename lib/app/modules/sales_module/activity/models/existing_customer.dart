@@ -53,4 +53,14 @@ class ExistingCustomer {
         "email": email,
         "phone": phone,
       };
+
+  @override
+  String toString() {
+    return namaHotel;
+  }
+
+  @override
+  bool filter(String query) {
+    return namaHotel.toLowerCase().contains(query.toLowerCase());
+  }
 }

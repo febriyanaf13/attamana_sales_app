@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:attamana_salles_app/app/components/custom_dialog.dart';
+import 'package:attamana_salles_app/app/modules/customer/models/customer.dart';
 import 'package:attamana_salles_app/app/modules/maps/controllers/maps_controller.dart';
 import 'package:attamana_salles_app/app/modules/sales_module/activity/models/jenis_kunjungan.dart';
 
@@ -37,6 +38,7 @@ class ActivityController extends GetxController {
   //variable list
   var listActivity = <Activity>[].obs;
   var listExistingCustomer = <Map<String, String>>[].obs;
+  var listExistingCustomer2 = <ExistingCustomer>[].obs;
   var listNewCustomer = <Map<String, String>>[].obs;
   var listActivityOpenProgress = <Activity>[].obs;
   var listActivityCompleted = <Activity>[].obs;
@@ -190,13 +192,14 @@ class ActivityController extends GetxController {
   void getCustomerExisting() {
     ActivityProvider().getExistingCustomer().then((value) {
       if (kDebugMode) {
-        print(value.body);
+        print("ini custommer existing ${value.body['data']}");
       }
       if (value.status.isOk) {
         var data = value.body['data'];
         listExistingCustomer.value = existingCustomerFromJson(data)
             .map((e) => {'text': e.namaHotel, 'value': e.customerId.toString()})
             .toList();
+        listExistingCustomer2.value = existingCustomerFromJson(data);
       }
     });
   }

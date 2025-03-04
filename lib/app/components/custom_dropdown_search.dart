@@ -1,3 +1,4 @@
+import 'package:animated_custom_dropdown/custom_dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -100,6 +101,7 @@ class _CustomDropDownSearchState extends State<CustomDropDownSearch> {
           ),
           // Text(widget.title, style: boldTextStyle(color: black, size: 14)),
           // widget.labelSpace.validate() ? 6.height : const Offstage(),
+
           SearchField<String>(
             hint: widget.hint,
             selectedValue: widget.initialValue,
@@ -144,12 +146,12 @@ class _CustomDropDownSearchState extends State<CustomDropDownSearch> {
             onSaved: widget.onSave,
             onSearchTextChanged: (query) {
               final filter = widget.dataList!
-                  .where((element) => element['text']
+                  .where((element) => element['value']
                       .toLowerCase()
                       .contains(query.toLowerCase()))
                   .toList();
               return filter
-                  .map((e) => SearchFieldListItem<String>(e['text']))
+                  .map((e) => SearchFieldListItem<String>(e['value']))
                   .toList();
             },
             onSuggestionTap: widget.onSelectedItem,
@@ -157,12 +159,12 @@ class _CustomDropDownSearchState extends State<CustomDropDownSearch> {
             suggestions: widget.dataList!
                 .map(
                   (e) => SearchFieldListItem<String>(
-                    e['text'] ?? '-',
+                    e['value'] ?? '-',
                     item: e['value'],
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        e['text'] ?? '-',
+                        e['value'] ?? '-',
                         style: Get.textTheme.bodyMedium,
                       ),
                     ),

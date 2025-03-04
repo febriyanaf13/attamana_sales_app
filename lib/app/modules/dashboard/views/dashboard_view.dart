@@ -77,7 +77,7 @@ class DashboardView extends GetView<DashboardController> {
         // ),
         navBarStyle:
             controller.role == 'SALES' || controller.role == 'SALES MANAGER'
-                ? NavBarStyle.style9
+                ? NavBarStyle.style15
                 : NavBarStyle.style15,
       ),
     );
@@ -132,6 +132,8 @@ class DashboardView extends GetView<DashboardController> {
     return [
       const StaffHomeView(),
       // const TeamsView(),
+      const MapsView(),
+
       // const Text('data'),
       const AccountView(),
     ];
@@ -157,6 +159,12 @@ class DashboardView extends GetView<DashboardController> {
       //   activeColorPrimary: kPrimaryColor,
       //   inactiveColorPrimary: CupertinoColors.systemGrey,
       // ),
+      PersistentBottomNavBarItem(
+        icon: Image.asset('logo_attamana'.png),
+        title: ("Attendance"),
+        activeColorPrimary: kPrimaryColor,
+        inactiveColorPrimary: CupertinoColors.systemGrey,
+      ),
       PersistentBottomNavBarItem(
         icon: const Icon(CupertinoIcons.profile_circled),
         title: ("Profiles"),

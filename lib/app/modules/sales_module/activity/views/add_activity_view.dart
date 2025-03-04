@@ -10,6 +10,7 @@ import 'package:nb_utils/nb_utils.dart';
 
 import '../../../../components/custom_button.dart';
 import '../../../../components/custom_dropdown_search.dart';
+import '../../../../components/custom_dropdown_search2.dart';
 import '../../../../components/custom_text_field.dart';
 import '../../../../style/colors.dart';
 import '../../../../style/paddings.dart';
@@ -136,7 +137,7 @@ class AddActivityView extends GetView<ActivityController> {
                                                   return null;
                                                 },
                                               )
-                                            : CustomDropDownSearch(
+                                            : CustomDropDownSearch2(
                                                 controller: controller
                                                     .textEditingControllerNama,
                                                 title: 'Existing Customer Name',
@@ -146,16 +147,17 @@ class AddActivityView extends GetView<ActivityController> {
                                                 hint:
                                                     'Search existing customer...',
                                                 dataList: controller
-                                                    .listExistingCustomer.value,
+                                                    .listExistingCustomer2,
                                                 onSubmit: (value) {
                                                   print(value);
                                                 },
                                                 onSave: (value) {},
                                                 onSelectedItem: (value) {
                                                   print(
-                                                      "ini test espac : $value");
+                                                      "ini test espac : ${value?.customerId}");
                                                   controller.customerId.value =
-                                                      value.item!;
+                                                      value!.customerId
+                                                          .toString();
                                                 },
                                                 validator: (x) {
                                                   // if (controller

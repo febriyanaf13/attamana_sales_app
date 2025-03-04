@@ -50,14 +50,14 @@ class AddCustomerView extends GetView<CustomerController> {
                           CustomTextField(
                             title: 'City',
                             hint: 'Tuliskan kota customer',
-                            isRequired: true,
+                            isRequired: false,
                             controller: controller.controllerCity,
                           ),
                           20.height,
                           CustomTextField(
                             title: 'Phone',
                             hint: 'Tuliskan nomer telepon customer',
-                            isRequired: true,
+                            isRequired: false,
                             inputType: const TextInputType.numberWithOptions(),
                             controller: controller.controllerPhone,
                           ),
