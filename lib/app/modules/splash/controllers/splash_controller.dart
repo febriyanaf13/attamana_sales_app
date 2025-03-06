@@ -22,7 +22,7 @@ class SplashController extends GetxController {
 
   void reqToken() {
     LoginProvider()
-        .reqToken('febri', 'febrimobile150708', version.value)
+        .reqToken('attamanacrm', 'febrimobile150708', version.value)
         .then((value) {
       if (kDebugMode) {
         print('status_code token : ${value.statusCode}');

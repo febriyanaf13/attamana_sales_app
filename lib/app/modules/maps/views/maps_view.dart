@@ -111,7 +111,7 @@ class _MapsViewState extends State<MapsView> with WidgetsBindingObserver {
         onMapCreated: onMapCreated,
         initialCameraPosition: CameraPosition(
           target: centerPosition!,
-          zoom: 16,
+          zoom: 10,
         ),
         myLocationEnabled: true,
         myLocationButtonEnabled: false,
@@ -125,7 +125,7 @@ class _MapsViewState extends State<MapsView> with WidgetsBindingObserver {
         onMapCreated: onMapCreated,
         initialCameraPosition: CameraPosition(
           target: centerPosition!,
-          zoom: 16,
+          zoom: 10,
         ),
         myLocationEnabled: true,
         myLocationButtonEnabled: false,
@@ -141,7 +141,7 @@ class _MapsViewState extends State<MapsView> with WidgetsBindingObserver {
         onMapCreated: onMapCreated,
         initialCameraPosition: CameraPosition(
           target: centerPosition!,
-          zoom: 16,
+          zoom: 10,
         ),
         myLocationEnabled: true,
         myLocationButtonEnabled: false,
@@ -291,7 +291,7 @@ class _MapsViewState extends State<MapsView> with WidgetsBindingObserver {
           mapController!.animateCamera(
             CameraUpdate.newCameraPosition(CameraPosition(
               target: centerPosition!,
-              zoom: 17,
+              zoom: 13,
             )),
           );
           // }
@@ -310,14 +310,14 @@ class _MapsViewState extends State<MapsView> with WidgetsBindingObserver {
           circle[''] = Circle(
               circleId: CircleId('1'),
               center: centerCircle!,
-              radius: 100,
+              radius: 1000,
               strokeWidth: 1,
               fillColor: kPrimaryColor.withOpacity(0.5));
 
           mapController!.animateCamera(
             CameraUpdate.newCameraPosition(CameraPosition(
               target: centerCircle!,
-              zoom: 17,
+              zoom: 13,
             )),
           );
         }
@@ -619,20 +619,20 @@ class _MapsViewState extends State<MapsView> with WidgetsBindingObserver {
     ];
 
     // proteksi absen
-    if (listButuhLokasi.contains(argument['action'].toString())) {
-      if (cekLokasi.apakahLokasiDalamCircle()) {
-        print('iya didalam');
-        controllerJobVisit.postPresensiActivity(argument['idKunjungan'], status,
-            '(${centerCircle!.latitude}, ${centerCircle!.longitude})');
-      } else {
-        dialogWarning('Ops...', 'Maaf, anda tidak dalam wilayah presensi');
-      }
-    } else if (listTidakButuhLokasi.contains(argument['action'].toString())) {
-      controllerJobVisit.postPresensiActivity(argument['idKunjungan'], status,
-          '(${centerCircle!.latitude}, ${centerCircle!.longitude})');
-    }
-    // controllerJobVisit.postPresensiActivity(argument['idKunjungan'], status,
-    //     '(${centerPosition!.latitude}, ${centerPosition!.longitude})');
+    // if (listButuhLokasi.contains(argument['action'].toString())) {
+    //   if (cekLokasi.apakahLokasiDalamCircle()) {
+    //     print('iya didalam');
+    //     controllerJobVisit.postPresensiActivity(argument['idKunjungan'], status,
+    //         '(${centerCircle!.latitude}, ${centerCircle!.longitude})');
+    //   } else {
+    //     dialogWarning('Ops...', 'Maaf, anda tidak dalam wilayah presensi');
+    //   }
+    // } else if (listTidakButuhLokasi.contains(argument['action'].toString())) {
+    //   controllerJobVisit.postPresensiActivity(argument['idKunjungan'], status,
+    //       '(${centerCircle!.latitude}, ${centerCircle!.longitude})');
+    // }
+    controllerJobVisit.postPresensiActivity(argument['idKunjungan'], status,
+        '(${centerPosition!.latitude}, ${centerPosition!.longitude})');
   }
 
   @override

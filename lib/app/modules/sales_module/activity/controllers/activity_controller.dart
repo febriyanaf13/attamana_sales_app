@@ -14,6 +14,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import '../../../../style/colors.dart';
@@ -67,7 +68,6 @@ class ActivityController extends GetxController {
   //   {'text': 'SALES CALL / WHATSAPP', 'value': 'SALES CALL / WHATSAPP'},
   // ].obs;
   var listAction = <Map<String, Object>>[].obs;
-  var perluAbsen = '';
 
   var listButuhLokasi = [
     'OFFERING PRODUCT',
@@ -140,7 +140,12 @@ class ActivityController extends GetxController {
   void getListActivity() {
     listActivityOpenProgress.clear();
     listActivityCompleted.clear();
-    var body = {'userid': userId, 'filter_tanggal': 'ALL'};
+    DateTime now = DateTime.now(); // Tanggal saat ini
+    DateTime lastWeek =
+        now.subtract(const Duration(days: 7)); // Kurangi 1 minggu
+    String formattedDate = DateFormat('yyyy-MM-dd').format(lastWeek);
+    print(formattedDate); // Output: 2025-02-28 (jika hari ini 2025-03-07)
+    var body = {'userid': userId, 'filter_tanggal': formattedDate.toString()};
     ActivityProvider().postReqListVisit(body).then((value) {
       if (kDebugMode) {
         print(value.body);
@@ -162,7 +167,7 @@ class ActivityController extends GetxController {
     });
   }
 
-  void getDetailActivity(visitId, route) {
+  void getDetailActivity(visitId, route, perluAbsen) {
     ActivityProvider().getDetailVisit(visitId).then((value) {
       if (kDebugMode) {
         print(value.body);
@@ -336,16 +341,27 @@ class ActivityController extends GetxController {
       if (kDebugMode) {
         print(value.body);
       }
-      var message = value.body['message'];
       if (value.status.isOk) {
+        var message = value.body['message'];
         // print(object)
         if (status == 'CHECK IN') {
           boolImage(false);
-          getDialogPostImage(activityId);
+          var success = value.body['success'];
+          if (success == true) {
+            // dialogSuccess('Success', message);
+            getDialogPostImage(activityId, 'YA');
+          } else {
+            dialogWarning('Ops...', message);
+          }
         } else {
-          Get.back();
-          dialogSuccess('Success', message);
-          getListActivity();
+          var success = value.body['success'];
+          if (success == true) {
+            Get.back();
+            dialogSuccess('Success', message);
+            getListActivity();
+          } else {
+            dialogWarning('Ops...', message);
+          }
         }
       } else if (value.status.isServerError) {
         dialogError('Terjadi Kesalahan',
@@ -415,7 +431,7 @@ class ActivityController extends GetxController {
     });
   }
 
-  Future getDialogPostImage(activityId) {
+  Future getDialogPostImage(activityId, perluAbsen) {
     isLoadingUploadFotoCheckIn(false);
     return Get.dialog(CupertinoAlertDialog(
         title: const Text("Upload Foto"),
@@ -423,13 +439,13 @@ class ActivityController extends GetxController {
           CupertinoDialogAction(
               onPressed: () {
                 Get.back();
-                getImageBukti('Gallery', activityId);
+                getImageBukti('Gallery', activityId, perluAbsen);
               },
               child: const Text("Gallery")),
           CupertinoDialogAction(
               onPressed: () async {
                 Get.back();
-                getImageBukti('Camera', activityId);
+                getImageBukti('Camera', activityId, perluAbsen);
               },
               child: const Text("Camera")),
           Obx(() => boolImage.isTrue
@@ -437,7 +453,9 @@ class ActivityController extends GetxController {
                   onPressed: () async {
                     if (perluAbsen.contains('YA')) {
                       postImageCheckIn(activityId);
+                      print('masuk perlu lokasi :$perluAbsen');
                     } else if (perluAbsen.contains('TIDAK')) {
+                      print('masuk tidak perlu lokasi :$perluAbsen');
                       getLokasiTerkini(activityId);
                     }
                   },
@@ -484,7 +502,7 @@ class ActivityController extends GetxController {
         )));
   }
 
-  Future getImageBukti(String type, activityId) async {
+  Future getImageBukti(String type, activityId, perluAbsen) async {
     try {
       final photo = await ImagePicker().pickImage(
           source: type == 'Camera' ? ImageSource.camera : ImageSource.gallery,
@@ -494,7 +512,7 @@ class ActivityController extends GetxController {
       final image = File(photo.path);
       boolImage.value = true;
       imageBukti = image;
-      getDialogPostImage(activityId);
+      getDialogPostImage(activityId, perluAbsen);
     } catch (e) {
       toast('Gagal mengambil gambar : $e');
     }
@@ -530,7 +548,13 @@ class ActivityController extends GetxController {
       isLoadingUploadFotoCheckIn.toggle();
       print(value.body);
       if (value.status.isOk) {
-        dialogSuccess('Success', 'Upload Foto Berhasil');
+        var success = value.body['success'];
+        var message = value.body['message'];
+        if (success == true) {
+          dialogSuccess('Success', message);
+        } else {
+          dialogWarning('Ops...', message);
+        }
         Get.offNamed(Routes.ACTIVITY);
       } else if (value.status.isServerError) {
         dialogError('Terjadi Kesalahan',
@@ -555,11 +579,17 @@ class ActivityController extends GetxController {
       var message = value.body['message'];
       if (value.status.isOk) {
         // print(object)
-
-        Get.back();
-        // dialogSuccess('Success', message);
-        postImageCheckIn(activityId);
-        getListActivity();
+        var success = value.body['success'];
+        if (success == true) {
+          // dialogSuccess('Success', message);
+          // Get.back();
+          // dialogSuccess('Success', message);
+          postImageCheckIn(activityId);
+          getListActivity();
+          Get.back();
+        } else {
+          dialogWarning('Ops...', message);
+        }
       } else if (value.status.isServerError) {
         dialogError('Terjadi Kesalahan',
             'Terjadi masalah pada server / koneksi internet lambat');
