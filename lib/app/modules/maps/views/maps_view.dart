@@ -631,8 +631,11 @@ class _MapsViewState extends State<MapsView> with WidgetsBindingObserver {
     //   controllerJobVisit.postPresensiActivity(argument['idKunjungan'], status,
     //       '(${centerCircle!.latitude}, ${centerCircle!.longitude})');
     // }
-    controllerJobVisit.postPresensiActivity(argument['idKunjungan'], status,
-        '(${centerPosition!.latitude}, ${centerPosition!.longitude})');
+    controllerJobVisit.postPresensiActivity(
+        argument['idKunjungan'],
+        status,
+        '(${centerPosition!.latitude}, ${centerPosition!.longitude})',
+        argument['notulen']);
   }
 
   @override

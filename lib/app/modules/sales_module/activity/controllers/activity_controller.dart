@@ -17,6 +17,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:nb_utils/nb_utils.dart';
 
+import '../../../../components/custom_button.dart';
+import '../../../../components/custom_text_field.dart';
 import '../../../../style/colors.dart';
 import '../../../../utils/constants.dart';
 import '../../../maps/models/lokasi_absen.dart';
@@ -29,11 +31,13 @@ class ActivityController extends GetxController {
   //TODO: Implement ActivityController
 
   final formKey = GlobalKey<FormState>();
+  final formKeyCatatanCheckOut = GlobalKey<FormState>();
 
   //text editing controller
   var textEditingControllerNama = TextEditingController();
   var textEditingControllerAlamat = TextEditingController();
   var textEditingControllerDeskripsi = TextEditingController();
+  var textEditingControllerCatatan = TextEditingController();
   var textEditingControllerAction = TextEditingController();
 
   //variable list
@@ -93,6 +97,7 @@ class ActivityController extends GetxController {
 
   //isLoading
   var isLoadingSimpanActivity = false.obs;
+  var isLoadingSimpanCatatanCheckout = false.obs;
   var loadingAbsenMasuk = false.obs;
   var loadingAbsenPulang = false.obs;
 
@@ -184,6 +189,7 @@ class ActivityController extends GetxController {
             'lokasiCheckOut': data['lokasi_checkout'],
             'waktuCheckin': data['waktu_checkin'],
             'waktuCheckout': data['waktu_checkout'],
+            'notulen': data['notulen'],
           });
         } else if (route == 'EDIT') {
           // detailActivity = detailActivityFromJson(data);
@@ -324,53 +330,111 @@ class ActivityController extends GetxController {
     }
   }
 
-  void postPresensiActivity(activityId, status, lokasi) {
+  void postPresensiActivity(activityId, status, lokasi, notulen) {
     var body = {
       'kunjungan_id': activityId,
       'status': status,
       'lokasi': lokasi,
     };
-    status == 'CHECK IN'
-        ? loadingAbsenMasuk.toggle()
-        : loadingAbsenPulang.toggle();
-    ActivityProvider().postPresensiActivity(body).then((value) {
-      status == 'CHECK IN'
-          ? loadingAbsenMasuk.toggle()
-          : loadingAbsenPulang.toggle();
 
-      if (kDebugMode) {
-        print(value.body);
-      }
-      if (value.status.isOk) {
-        var message = value.body['message'];
-        // print(object)
-        if (status == 'CHECK IN') {
-          boolImage(false);
-          var success = value.body['success'];
-          if (success == true) {
-            // dialogSuccess('Success', message);
-            getDialogPostImage(activityId, 'YA');
-          } else {
-            dialogWarning('Ops...', message);
-          }
-        } else {
-          var success = value.body['success'];
-          if (success == true) {
-            Get.back();
-            dialogSuccess('Success', message);
-            getListActivity();
-          } else {
-            dialogWarning('Ops...', message);
-          }
-        }
-      } else if (value.status.isServerError) {
-        dialogError('Terjadi Kesalahan',
-            'Terjadi masalah pada server / koneksi internet lambat');
-      } else if (value.status.connectionError) {
-        dialogError('Tidak ada koneksi',
-            'Jaringan internet bermasalah, silahkan cek koneksi internet!');
-      }
-    });
+    textEditingControllerCatatan.text = notulen;
+    print("notulen1 : $notulen");
+    print("notulen2 : ${textEditingControllerCatatan.text}");
+
+    if (status == 'CHECK IN') {
+      boolImage(false);
+      loadingAbsenMasuk.toggle();
+
+      getDialogPostImage(activityId, body, 'YA');
+    } else {
+      Get.dialog(
+        AlertDialog(
+          title: Center(child: const Text("Notulen")),
+          content: Form(
+            key: formKeyCatatanCheckOut,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                CustomTextField(
+                  title: 'Notulen',
+                  hint: 'Tuliskan notulen...',
+                  isRequired: true,
+                  maxLine: 5,
+                  inputType: TextInputType.text,
+                  controller: textEditingControllerCatatan,
+                ),
+                30.height,
+                Obx(
+                  () => isLoadingSimpanCatatanCheckout.isTrue
+                      ? const Center(
+                          child: CircularProgressIndicator(
+                            color: kAccentColor,
+                          ),
+                        )
+                      : CustomButton(
+                          onTap: () {
+                            Get.back();
+                            isLoadingSimpanCatatanCheckout.toggle();
+                            loadingAbsenPulang.toggle();
+
+                            var body = {
+                              'kunjungan_id': activityId,
+                              'status': status,
+                              'lokasi': lokasi,
+                              'notulen': textEditingControllerCatatan.text,
+                            };
+                            ActivityProvider()
+                                .postPresensiActivity(body)
+                                .then((value) {
+                              loadingAbsenPulang.toggle();
+                              isLoadingSimpanCatatanCheckout.toggle();
+
+                              if (kDebugMode) {
+                                print(value.body);
+                              }
+                              if (value.status.isOk) {
+                                print('test body catatan : $body');
+                                var message = value.body['message'];
+                                // print(object)
+                                // if (status == 'CHECK IN') {
+                                //   boolImage(false);
+                                //   var success = value.body['success'];
+                                //   if (success == true) {
+                                //     // dialogSuccess('Success', message);
+                                //     // getDialogPostImage(activityId, 'YA');
+                                //   } else {
+                                //     dialogWarning('Ops...', message);
+                                //   }
+                                // } else {
+                                var success = value.body['success'];
+                                if (success == true) {
+                                  Get.back();
+                                  dialogSuccess('Success', message);
+                                  getListActivity();
+                                } else {
+                                  dialogWarning('Ops...', message);
+                                }
+                                // }
+                              } else if (value.status.isServerError) {
+                                dialogError('Terjadi Kesalahan',
+                                    'Terjadi masalah pada server / koneksi internet lambat');
+                              } else if (value.status.connectionError) {
+                                dialogError('Tidak ada koneksi',
+                                    'Jaringan internet bermasalah, silahkan cek koneksi internet!');
+                              }
+                            });
+                          },
+                          text: 'Kirim',
+                          border: 30,
+                          color: kAccentColor,
+                        ),
+                )
+              ],
+            ),
+          ),
+        ),
+      );
+    }
   }
 
   showDilarangMenggunakanMockLocaton() {
@@ -431,78 +495,92 @@ class ActivityController extends GetxController {
     });
   }
 
-  Future getDialogPostImage(activityId, perluAbsen) {
+  Future getDialogPostImage(activityId, bodyCheckIn, perluAbsen) {
     isLoadingUploadFotoCheckIn(false);
-    return Get.dialog(CupertinoAlertDialog(
-        title: const Text("Upload Foto"),
-        actions: [
-          CupertinoDialogAction(
-              onPressed: () {
-                Get.back();
-                getImageBukti('Gallery', activityId, perluAbsen);
-              },
-              child: const Text("Gallery")),
-          CupertinoDialogAction(
-              onPressed: () async {
-                Get.back();
-                getImageBukti('Camera', activityId, perluAbsen);
-              },
-              child: const Text("Camera")),
-          Obx(() => boolImage.isTrue
-              ? CupertinoDialogAction(
-                  onPressed: () async {
-                    if (perluAbsen.contains('YA')) {
-                      postImageCheckIn(activityId);
-                      print('masuk perlu lokasi :$perluAbsen');
-                    } else if (perluAbsen.contains('TIDAK')) {
-                      print('masuk tidak perlu lokasi :$perluAbsen');
-                      getLokasiTerkini(activityId);
-                    }
-                  },
-                  child: const Text("Kirim"))
-              : const SizedBox())
-        ],
-        content: SizedBox(
-          height: 200,
-          width: Get.width,
-          child: Container(
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: kInputBorderColor)),
-              child: Obx(
-                () => boolImage.isFalse
-                    ? Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(
-                            Icons.add_a_photo_outlined,
-                            size: 50,
-                            color: kPrimaryColor,
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Text(
-                            'Ambil Foto Bukti',
-                            style: Get.textTheme.bodyMedium
-                                ?.copyWith(color: kSecondaryTextColor),
-                          )
-                        ],
-                      )
-                    : Obx(() => isLoadingUploadFotoCheckIn.isTrue
-                        ? const Center(child: CircularProgressIndicator())
-                        : ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: Image.file(
-                              imageBukti!,
-                              fit: BoxFit.fitWidth,
-                            ),
-                          )),
-              )),
-        )));
+    return showDialog(
+        context: Get.context!,
+        barrierDismissible: false,
+        // Disables tapping outside to dismiss the dialog
+        builder: (BuildContext context) {
+          return WillPopScope(
+            onWillPop: () async {
+              return false; // Prevents the back button from dismissing the dialog
+            },
+            child: CupertinoAlertDialog(
+                title: const Text("Upload Foto"),
+                actions: [
+                  CupertinoDialogAction(
+                      onPressed: () {
+                        Get.back();
+                        getImageBukti(
+                            'Gallery', activityId, perluAbsen, bodyCheckIn);
+                      },
+                      child: const Text("Gallery")),
+                  CupertinoDialogAction(
+                      onPressed: () async {
+                        Get.back();
+                        getImageBukti(
+                            'Camera', activityId, perluAbsen, bodyCheckIn);
+                      },
+                      child: const Text("Camera")),
+                  Obx(() => boolImage.isTrue
+                      ? CupertinoDialogAction(
+                          onPressed: () async {
+                            if (perluAbsen.contains('YA')) {
+                              postImageCheckIn(activityId, bodyCheckIn);
+                              print('masuk perlu lokasi :$perluAbsen');
+                            } else if (perluAbsen.contains('TIDAK')) {
+                              print('masuk tidak perlu lokasi :$perluAbsen');
+                              getLokasiTerkini(activityId);
+                            }
+                          },
+                          child: const Text("Kirim"))
+                      : const SizedBox())
+                ],
+                content: SizedBox(
+                  height: 200,
+                  width: Get.width,
+                  child: Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: kInputBorderColor)),
+                      child: Obx(
+                        () => boolImage.isFalse
+                            ? Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(
+                                    Icons.add_a_photo_outlined,
+                                    size: 50,
+                                    color: kPrimaryColor,
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  Text(
+                                    'Ambil Foto Bukti',
+                                    style: Get.textTheme.bodyMedium
+                                        ?.copyWith(color: kSecondaryTextColor),
+                                  )
+                                ],
+                              )
+                            : Obx(() => isLoadingUploadFotoCheckIn.isTrue
+                                ? const Center(
+                                    child: CircularProgressIndicator())
+                                : ClipRRect(
+                                    borderRadius: BorderRadius.circular(10),
+                                    child: Image.file(
+                                      imageBukti!,
+                                      fit: BoxFit.fitWidth,
+                                    ),
+                                  )),
+                      )),
+                )),
+          );
+        });
   }
 
-  Future getImageBukti(String type, activityId, perluAbsen) async {
+  Future getImageBukti(String type, activityId, perluAbsen, bodyCheckIn) async {
     try {
       final photo = await ImagePicker().pickImage(
           source: type == 'Camera' ? ImageSource.camera : ImageSource.gallery,
@@ -512,7 +590,7 @@ class ActivityController extends GetxController {
       final image = File(photo.path);
       boolImage.value = true;
       imageBukti = image;
-      getDialogPostImage(activityId, perluAbsen);
+      getDialogPostImage(activityId, bodyCheckIn, perluAbsen);
     } catch (e) {
       toast('Gagal mengambil gambar : $e');
     }
@@ -535,7 +613,7 @@ class ActivityController extends GetxController {
     }
   }
 
-  void postImageCheckIn(activityId) {
+  void postImageCheckIn(activityId, bodyCheckIn) {
     isLoadingUploadFotoCheckIn.toggle();
     var body = FormData({
       'kunjungan_id': activityId,
@@ -544,26 +622,74 @@ class ActivityController extends GetxController {
           : MultipartFile(imageBukti,
               filename: '${DateTime.now().toString()}.png'),
     });
-    ActivityProvider().postImageCheckIn(body).then((value) {
-      isLoadingUploadFotoCheckIn.toggle();
-      print(value.body);
-      if (value.status.isOk) {
-        var success = value.body['success'];
-        var message = value.body['message'];
-        if (success == true) {
-          dialogSuccess('Success', message);
-        } else {
-          dialogWarning('Ops...', message);
+    if (bodyCheckIn == "TIDAK") {
+      ActivityProvider().postImageCheckIn(body).then((value) {
+        isLoadingUploadFotoCheckIn.toggle();
+        print(value.body);
+        if (value.status.isOk) {
+          var success = value.body['success'];
+          var message = value.body['message'];
+          if (success == true) {
+            dialogSuccess('Success', message);
+          } else {
+            dialogWarning('Ops...', message);
+          }
+          Get.offNamed(Routes.ACTIVITY);
+        } else if (value.status.isServerError) {
+          dialogError('Terjadi Kesalahan',
+              'Terjadi masalah pada server / koneksi internet lambat');
+        } else if (value.status.connectionError) {
+          dialogError('Tidak ada koneksi',
+              'Jaringan internet bermasalah, silahkan cek koneksi internet!');
         }
-        Get.offNamed(Routes.ACTIVITY);
-      } else if (value.status.isServerError) {
-        dialogError('Terjadi Kesalahan',
-            'Terjadi masalah pada server / koneksi internet lambat');
-      } else if (value.status.connectionError) {
-        dialogError('Tidak ada koneksi',
-            'Jaringan internet bermasalah, silahkan cek koneksi internet!');
-      }
-    });
+      });
+    } else {
+      ActivityProvider().postImageCheckIn(body).then((value) {
+        isLoadingUploadFotoCheckIn.toggle();
+        print(value.body);
+        if (value.status.isOk) {
+          var success = value.body['success'];
+          var message = value.body['message'];
+          if (success == true) {
+            dialogSuccess('Success', message);
+          } else {
+            dialogWarning('Ops...', message);
+          }
+          Get.offNamed(Routes.ACTIVITY);
+        } else if (value.status.isServerError) {
+          // dialogError('Terjadi Kesalahan',
+          //     'Terjadi masalah pada server / koneksi internet lambat');
+        } else if (value.status.connectionError) {
+          // dialogError('Tidak ada koneksi',
+          //     'Jaringan internet bermasalah, silahkan cek koneksi internet!');
+        }
+      });
+      ActivityProvider().postPresensiActivity(bodyCheckIn).then((value) {
+        loadingAbsenMasuk.toggle();
+
+        if (kDebugMode) {
+          print(value.body);
+        }
+        if (value.status.isOk) {
+          var message = value.body['message'];
+
+          var success = value.body['success'];
+          if (success == true) {
+            Get.back();
+            dialogSuccess('Success', message);
+            getListActivity();
+          } else {
+            dialogWarning('Ops...', message);
+          }
+        } else if (value.status.isServerError) {
+          dialogError('Terjadi Kesalahan',
+              'Terjadi masalah pada server / koneksi internet lambat');
+        } else if (value.status.connectionError) {
+          dialogError('Tidak ada koneksi',
+              'Jaringan internet bermasalah, silahkan cek koneksi internet!');
+        }
+      });
+    }
   }
 
   void postKunjunganAutoCheckOutActivity(activityId, lokasi) {
@@ -584,7 +710,7 @@ class ActivityController extends GetxController {
           // dialogSuccess('Success', message);
           // Get.back();
           // dialogSuccess('Success', message);
-          postImageCheckIn(activityId);
+          postImageCheckIn(activityId, 'TIDAK');
           getListActivity();
           Get.back();
         } else {
