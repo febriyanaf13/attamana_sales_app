@@ -225,7 +225,7 @@ class ActivityView extends GetView<ActivityController> {
                                     children: [
                                       Expanded(
                                         child: Text(
-                                          '${controller.listActivityCompleted[index].action} - ${controller.listActivityCompleted[index].lokasi}',
+                                          '${controller.listActivityCompleted[index].action} - ${controller.listActivityCompleted[index].namaHotel}',
                                           style: Get.textTheme.titleSmall
                                               ?.copyWith(
                                                   fontWeight: FontWeight.bold),
@@ -287,6 +287,8 @@ class ActivityView extends GetView<ActivityController> {
                                   //   ],
                                   // ),
                                   Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       const Icon(
                                         Icons.share_location_outlined,
@@ -313,6 +315,8 @@ class ActivityView extends GetView<ActivityController> {
                                   ),
                                   5.height,
                                   Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       const Icon(
                                         Icons.note_alt_outlined,
@@ -659,6 +663,8 @@ class ActivityView extends GetView<ActivityController> {
                                   //   ],
                                   // ),
                                   Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       const Icon(
                                         Icons.share_location_outlined,
@@ -685,6 +691,8 @@ class ActivityView extends GetView<ActivityController> {
                                   ),
                                   5.height,
                                   Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       const Icon(
                                         Icons.note_alt_outlined,

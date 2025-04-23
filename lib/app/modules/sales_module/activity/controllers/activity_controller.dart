@@ -254,6 +254,7 @@ class ActivityController extends GetxController {
       if (kDebugMode) {
         print(body);
       }
+      print('coba cek error');
 
       ActivityProvider().postSimpanActivity(body).then((value) {
         isLoadingSimpanActivity.toggle();
