@@ -8,29 +8,41 @@ class CekLokasi {
   double? lngTitikCircle;
   List<double>? listLatPolygon;
   List<double>? listLngPolygon;
-  List<LatLng>? listPolygonPoints = [];
+  List<LatLng> listPolygonPoints = [];
 
   CekLokasi({
     this.latTitikSekarang,
     this.lngTitikSekarang,
     this.latTitikCircle,
     this.lngTitikCircle,
-    this.listPolygonPoints,
     this.listLatPolygon,
     this.listLngPolygon,
   });
 
   bool apakahLokasiDalamPolygon() {
     if (listLatPolygon != null && listLngPolygon != null) {
+      print('Masuk ke polygon');
+
+      // 🔹 Pastikan list kosong sebelum diisi ulang
+      listPolygonPoints.clear();
+
       for (var i = 0; i < listLatPolygon!.length; i++) {
-        listPolygonPoints!.add(LatLng(listLatPolygon![i], listLngPolygon![i]));
+        listPolygonPoints.add(LatLng(listLatPolygon![i], listLngPolygon![i]));
       }
 
-      return PolygonUtil.containsLocation(
-        LatLng(latTitikSekarang!, lngTitikSekarang!),
-        listPolygonPoints!,
+      final titikSekarang = LatLng(latTitikSekarang!, lngTitikSekarang!);
+
+      final inside = PolygonUtil.containsLocation(
+        titikSekarang,
+        listPolygonPoints,
         true,
       );
+
+      print('Titik sekarang: $titikSekarang');
+      print('Polygon points: $listPolygonPoints');
+      print('Apakah di dalam polygon: $inside');
+
+      return inside;
     } else {
       return false;
     }

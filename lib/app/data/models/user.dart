@@ -20,7 +20,7 @@ class User {
   String initial;
   dynamic lokasiAbsen;
   String geometryLokasi;
-  String geometryAbsen;
+  List<String> geometryAbsen;
   String statusKaryawan;
   List<Role> roles;
 
@@ -49,7 +49,7 @@ class User {
         initial: json["initial"],
         lokasiAbsen: json["lokasi_absen"],
         geometryLokasi: json["geometry_lokasi"],
-        geometryAbsen: json["geometry_absen"],
+        geometryAbsen: List<String>.from(json["geometry_absen"].map((x) => x)),
         statusKaryawan: json["status_karyawan"],
         roles: List<Role>.from(json["roles"].map((x) => Role.fromJson(x))),
       );

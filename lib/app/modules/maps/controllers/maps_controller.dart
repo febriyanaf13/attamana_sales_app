@@ -22,7 +22,9 @@ class MapsController extends GetxController {
   var loadingCheckOut = false.obs;
   var userData = storage.read('userData');
   var token = storage.read('token');
-  var listKoorPolygonGedung = <LatLng>[].obs;
+
+  // var listKoorPolygonGedung = <LatLng>[].obs; // untuk satu polygon
+  var listKoorPolygonGedung = <List<LatLng>>[].obs; // untuk list polygon
 
   var jamMasuk = ''.obs;
   var jamPulang = ''.obs;

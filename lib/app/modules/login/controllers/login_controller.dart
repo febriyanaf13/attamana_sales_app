@@ -48,7 +48,7 @@ class LoginController extends GetxController {
           var data = value.body['data'];
           print(value.body);
           print(success);
-          List<String> listStringGedung = [];
+          List<String>? listStringGedung = [];
           List<String> listNamaGedung = [];
 
           if (success == true) {
@@ -100,7 +100,10 @@ class LoginController extends GetxController {
                             storage.write(kRoleName, roles[index].roleName);
                             storage.write(kStatusKaryawan, statusKaryawan);
 
-                            listStringGedung.add(jsonData[0].geometryAbsen);
+                            // listStringGedung.add(jsonData[0].geometryAbsen);
+                            listStringGedung = jsonData[0].geometryAbsen;
+                            debugPrint("ini list poligon absen : " +
+                                listStringGedung.toString());
                             storage.write(
                                 kLokasiAbsen, jsonData[0].lokasiAbsen);
                             storage.write(

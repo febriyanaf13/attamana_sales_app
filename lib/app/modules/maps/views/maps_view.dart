@@ -204,7 +204,8 @@ class _MapsViewState extends State<MapsView> with WidgetsBindingObserver {
         listStringLatLngGedung = storage.read(kGeometryAbsen);
       });
     }
-    print('sini ${storage.read(kGeometryAbsen)}');
+    print(
+        'ini list polygon gedung saat pertama peta dibuka ${storage.read(kGeometryAbsen)}');
 
     prosesStringLatLang();
     // presensiHariIniController.loadDataHariIni(nomorInduk!);
@@ -212,7 +213,6 @@ class _MapsViewState extends State<MapsView> with WidgetsBindingObserver {
 
   void onMapCreated(GoogleMapController controller) {
     mapController = controller;
-
     googleMapsInitilization();
   }
 
@@ -225,9 +225,9 @@ class _MapsViewState extends State<MapsView> with WidgetsBindingObserver {
 
     int idx = 0;
     List<Gedung> listGedungData = [];
-
     for (var koordinatGedung in listStringLatLngGedung!) {
-      List<String> stringlatlngsplitted = koordinatGedung.split("),(");
+      debugPrint('ini koordinat gedung $koordinatGedung');
+      List<String> stringlatlngsplitted = koordinatGedung.split(");(");
       List<LatLng> listLatLngGedung = [];
 
       for (var latlng in stringlatlngsplitted) {
@@ -242,29 +242,24 @@ class _MapsViewState extends State<MapsView> with WidgetsBindingObserver {
         ));
       }
 
-      if (kDebugMode) {
-        print('latlangGedung $listLatLngGedung');
-      }
-
-      controller.listKoorPolygonGedung.value = listLatLngGedung;
-
       listGedungData.add(Gedung(
         // namaGedung: listNamaGedung![idx],
-        namaGedung: 'Semarang',
         listLatLng: listLatLngGedung,
       ));
+      debugPrint('ini list latlng gedung $listLatLngGedung');
       idx++;
     }
 
     if (mounted) {
       setState(() {
-        // listGedungDanKoordinat = listGedungData;
+        listGedungDanKoordinat = listGedungData;
         reloadMaps = false;
       });
     }
   }
 
   googleMapsInitilization() {
+    debugPrint('masuk ke google maps initilization');
     if (mounted) {
       setState(() {
         markers.clear();
@@ -278,27 +273,40 @@ class _MapsViewState extends State<MapsView> with WidgetsBindingObserver {
         );
 
         polygons.clear();
-        // for (var gedung in listGedungDanKoordinat!) {
-        print('pol ${controller.listKoorPolygonGedung}');
         if (argument == null) {
-          polygons[namaGedung!] = Polygon(
-            polygonId: PolygonId(namaGedung!),
-            points: controller.listKoorPolygonGedung,
-            fillColor: kPrimaryColor.withOpacity(0.3),
-            strokeColor: kPrimaryColor,
-            strokeWidth: 1,
-          );
+          // for (var gedung in listGedungDanKoordinat!) {
+          //   polygons[gedung.namaGedung ?? 'Gedung'] = Polygon(
+          //     polygonId: PolygonId(gedung.namaGedung ?? 'Gedung'),
+          //     points: gedung.listLatLng!,
+          //     fillColor: kPrimaryColor.withOpacity(0.3),
+          //     strokeColor: kPrimaryColor,
+          //     strokeWidth: 1,
+          //   );
+          //   debugPrint('ini list polygon gedung maps initilization ${gedung}');
+          // }
+          for (int i = 0; i < listGedungDanKoordinat!.length; i++) {
+            polygons["Gedung_${i + 1}"] = Polygon(
+              polygonId: PolygonId("Gedung_${i + 1}"),
+              points: listGedungDanKoordinat![i].listLatLng!,
+              fillColor: kPrimaryColor.withOpacity(0.3),
+              strokeColor: kPrimaryColor,
+              strokeWidth: 1,
+            );
+            debugPrint(
+                'ini list polygon gedung maps initilization ${listGedungDanKoordinat![i].listLatLng!}');
+          }
+
           mapController!.animateCamera(
             CameraUpdate.newCameraPosition(CameraPosition(
               target: centerPosition!,
               zoom: 13,
             )),
           );
-          // }
         } else {
           var lokasiRadius = argument['lokasiRadius'];
 
-          print(lokasiRadius);
+          // print('ini data argument ' + argument);
+          print('ini lokasi radius ' + lokasiRadius);
           centerCircle = stringlatlngsplitted(lokasiRadius);
 
           if (kDebugMode) {
@@ -325,26 +333,37 @@ class _MapsViewState extends State<MapsView> with WidgetsBindingObserver {
     }
   }
 
-  LatLng? stringlatlngsplitted(stringLatLng) {
-    // for (var koordinat in lokasiRadius!) {
+  // LatLng? stringlatlngsplitted(stringLatLng) {
+  //   for (var koordinat in stringLatLng!) {
+  //     List<String> stringlatlngsplitted = koordinat.split(");(");
+  //     var hasilLatLng;
+  //
+  //     for (var latlng in stringlatlngsplitted) {
+  //       String removeSquareBracket = latlng.replaceAll("(", "");
+  //       String removeSquareBracket2 = removeSquareBracket.replaceAll(")", "");
+  //       String removeSpace = removeSquareBracket2.replaceAll(" ", "");
+  //       List<String> strLatLngSplitted = removeSpace.split(",");
+  //
+  //       hasilLatLng = LatLng(
+  //         double.parse(strLatLngSplitted[0]),
+  //         double.parse(strLatLngSplitted[1]),
+  //       );
+  //     }
+  //     return hasilLatLng;
+  //   }
+  // }
 
-    List<String> stringlatlngsplitted = stringLatLng.split("),(");
-    var hasilLatLng;
+  LatLng stringlatlngsplitted(String stringLatLng) {
+    // Buang tanda kurung
+    String cleaned = stringLatLng.replaceAll("(", "").replaceAll(")", "");
 
-    for (var latlng in stringlatlngsplitted) {
-      String removeSquareBracket = latlng.replaceAll("(", "");
-      String removeSquareBracket2 = removeSquareBracket.replaceAll(")", "");
-      String removeSpace = removeSquareBracket2.replaceAll(" ", "");
-      List<String> strLatLngSplitted = removeSpace.split(",");
+    // Split menjadi [lat, lng]
+    List<String> parts = cleaned.split(",");
 
-      hasilLatLng = LatLng(
-        double.parse(strLatLngSplitted[0]),
-        double.parse(strLatLngSplitted[1]),
-      );
-    }
-    return hasilLatLng;
-
-    // }
+    return LatLng(
+      double.parse(parts[0]),
+      double.parse(parts[1]),
+    );
   }
 
   checkLocationService() async {
@@ -411,6 +430,13 @@ class _MapsViewState extends State<MapsView> with WidgetsBindingObserver {
         loadingLocation = false;
       });
     }
+    // setState(() {
+    //   centerPosition = LatLng(position.latitude, position.longitude);
+    //   loadingLocation = false;
+    // });
+    // debugPrint('masuk ke lokasi terkini : $position');
+    // centerPosition = LatLng(position.latitude, position.longitude);
+    // loadingLocation = false;
   }
 
   lokasiTerkiniOnResumed() async {
@@ -427,6 +453,13 @@ class _MapsViewState extends State<MapsView> with WidgetsBindingObserver {
           loadingLocation = false;
         });
       }
+      debugPrint('masuk ke lokasi terkini on resume');
+
+      // setState(() {
+      //   centerPosition = LatLng(position.latitude, position.longitude);
+      //   reloadMaps = false;
+      //   loadingLocation = false;
+      // });
     }
   }
 
@@ -514,26 +547,41 @@ class _MapsViewState extends State<MapsView> with WidgetsBindingObserver {
   }
 
   onTapPresensiButton(String jenis) async {
-    if (mounted) {
-      setState(() {});
+    if (mounted) setState(() {});
+
+    bool isInsideAnyPolygon = false;
+
+    for (var i = 0; i < listGedungDanKoordinat!.length; i++) {
+      List<double> listLat = [];
+      List<double> listLng = [];
+
+      for (var latlng in listGedungDanKoordinat![i].listLatLng!) {
+        listLat.add(latlng.latitude);
+        listLng.add(latlng.longitude);
+      }
+
+      debugPrint("listLat : $listLat");
+      debugPrint("listLng : $listLng");
+      debugPrint("titik sekarang lat : ${centerPosition!.latitude}");
+      debugPrint("titik sekarang lng : ${centerPosition!.longitude}");
+
+      CekLokasi cekLokasi = CekLokasi(
+        latTitikSekarang: centerPosition!.latitude,
+        lngTitikSekarang: centerPosition!.longitude,
+        listLatPolygon: listLat,
+        listLngPolygon: listLng,
+      );
+
+      if (cekLokasi.apakahLokasiDalamPolygon()) {
+        isInsideAnyPolygon = true;
+        break; // cukup satu polygon true, langsung boleh presensi
+      }
     }
-    List<double> listLat = [];
-    List<double> listLng = [];
 
-    for (var latlng in controller.listKoorPolygonGedung) {
-      listLat.add(latlng.latitude);
-      listLng.add(latlng.longitude);
-    }
+    // 🧭 Setelah loop semua polygon
+    if (isInsideAnyPolygon) {
+      debugPrint('✅ Lokasi di dalam salah satu area presensi');
 
-    CekLokasi cekLokasi = CekLokasi(
-      latTitikSekarang: centerPosition!.latitude,
-      lngTitikSekarang: centerPosition!.longitude,
-      listLatPolygon: listLat,
-      listLngPolygon: listLng,
-      listPolygonPoints: [],
-    );
-
-    if (cekLokasi.apakahLokasiDalamPolygon()) {
       switch (jenis) {
         case 'Masuk':
           if (statusKaryawan == 'STAFF') {
@@ -549,10 +597,7 @@ class _MapsViewState extends State<MapsView> with WidgetsBindingObserver {
               title: 'Pilih Shift',
               body: Column(
                 children: [
-                  Text(
-                    'Pilih Shift',
-                    style: Get.textTheme.titleLarge,
-                  ),
+                  Text('Pilih Shift', style: Get.textTheme.titleLarge),
                   Padding(
                     padding: const EdgeInsets.all(20),
                     child: CustomDropdownButton(
@@ -581,17 +626,15 @@ class _MapsViewState extends State<MapsView> with WidgetsBindingObserver {
             ).show();
           }
           break;
+
         case 'Pulang':
           controller.postSimpanAbsensiPulang(
               centerPosition!.latitude, centerPosition!.longitude);
           break;
       }
-
-      // controller.postSimpanAbsensi(
-      //     centerPosition!.latitude, centerPosition!.longitude);
     } else {
+      debugPrint('❌ Tidak dalam area presensi mana pun');
       dialogWarning('Ops...', 'Maaf, anda tidak dalam wilayah presensi');
-      // controller.loadingAbsen.toggle();
     }
   }
 
@@ -603,7 +646,6 @@ class _MapsViewState extends State<MapsView> with WidgetsBindingObserver {
       lngTitikCircle: centerCircle!.longitude,
       listLatPolygon: [],
       listLngPolygon: [],
-      listPolygonPoints: [],
     );
     var listButuhLokasi = [
       'OFFERING PRODUCT',
