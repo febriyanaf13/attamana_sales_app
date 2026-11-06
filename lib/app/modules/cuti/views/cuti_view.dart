@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:nb_utils/nb_utils.dart';
 import '../controllers/cuti_controller.dart';
 
 class CutiView extends GetView<CutiController> {
@@ -102,7 +101,9 @@ class CutiView extends GetView<CutiController> {
                                               ?.copyWith(
                                                   fontWeight: FontWeight.bold),
                                         ),
-                                        5.height,
+                                        SizedBox(
+                                          height: 5,
+                                        ),
                                         SizedBox(
                                           height: 15,
                                           child: Row(
@@ -129,7 +130,9 @@ class CutiView extends GetView<CutiController> {
                                                 size: 15,
                                                 color: Colors.grey,
                                               ),
-                                              2.width,
+                                              SizedBox(
+                                                height: 2,
+                                              ),
                                               Text(
                                                 '${controller.listAllCutiSaya[index].days} Days',
                                                 style: Get.textTheme.bodySmall
@@ -147,80 +150,104 @@ class CutiView extends GetView<CutiController> {
                                                 size: 15,
                                                 color: Colors.grey,
                                               ),
-                                              2.width,
-                                              Text(
-                                                '1 Bukti',
-                                                style: Get.textTheme.bodySmall
-                                                    ?.copyWith(
-                                                        color: Colors.grey,
-                                                        fontWeight:
-                                                            FontWeight.w600),
-                                              ).onTap(() {
-                                                showDialog<Widget>(
-                                                  context: context,
-                                                  builder:
-                                                      (BuildContext context) =>
-                                                          Dialog(
-                                                    alignment: Alignment.center,
-                                                    shape:
-                                                        RoundedRectangleBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        20)),
-                                                    child: Container(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              10),
-                                                      decoration:
-                                                          boxDecorationRoundedWithShadow(
-                                                              12,
-                                                              backgroundColor:
-                                                                  context
-                                                                      .cardColor),
-                                                      child: Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        mainAxisSize:
-                                                            MainAxisSize.min,
-                                                        children: [
-                                                          ClipRRect(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        10),
-                                                            child: Center(
-                                                              child:
-                                                                  Image.network(
-                                                                '${controller.listAllCutiSaya[index].bukti}',
-                                                                width:
-                                                                    Get.width,
-                                                                fit:
-                                                                    BoxFit.fill,
-                                                                errorBuilder:
-                                                                    (context,
-                                                                        error,
-                                                                        stackTrace) {
-                                                                  return Image
-                                                                      .asset(
-                                                                    'bg_terlambat'
-                                                                        .jpg,
-                                                                    width: 100,
-                                                                    height: 100,
-                                                                    fit: BoxFit
-                                                                        .fill,
-                                                                  );
-                                                                },
+                                              SizedBox(
+                                                height: 2,
+                                              ),
+
+                                              GestureDetector(
+                                                onTap: () {
+                                                  showDialog<Widget>(
+                                                    context: context,
+                                                    builder: (BuildContext
+                                                            context) =>
+                                                        Dialog(
+                                                      alignment:
+                                                          Alignment.center,
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          20)),
+                                                      child: Container(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(10),
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          color:
+                                                              Theme.of(context)
+                                                                  .cardColor,
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(12),
+                                                          boxShadow: [
+                                                            BoxShadow(
+                                                              color: Colors
+                                                                  .black
+                                                                  .withOpacity(
+                                                                      0.15),
+                                                              blurRadius: 10,
+                                                              offset:
+                                                                  const Offset(
+                                                                      0, 4),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        child: Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          mainAxisSize:
+                                                              MainAxisSize.min,
+                                                          children: [
+                                                            ClipRRect(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          10),
+                                                              child: Center(
+                                                                child: Image
+                                                                    .network(
+                                                                  '${controller.listAllCutiSaya[index].bukti}',
+                                                                  width:
+                                                                      Get.width,
+                                                                  fit: BoxFit
+                                                                      .fill,
+                                                                  errorBuilder:
+                                                                      (context,
+                                                                          error,
+                                                                          stackTrace) {
+                                                                    return Image
+                                                                        .asset(
+                                                                      'bg_terlambat'
+                                                                          .jpg,
+                                                                      width:
+                                                                          100,
+                                                                      height:
+                                                                          100,
+                                                                      fit: BoxFit
+                                                                          .fill,
+                                                                    );
+                                                                  },
+                                                                ),
                                                               ),
                                                             ),
-                                                          ),
-                                                        ],
+                                                          ],
+                                                        ),
                                                       ),
                                                     ),
-                                                  ),
-                                                );
-                                              }),
+                                                  );
+                                                },
+                                                child: Text(
+                                                  '1 Bukti',
+                                                  style: Get.textTheme.bodySmall
+                                                      ?.copyWith(
+                                                          color: Colors.grey,
+                                                          fontWeight:
+                                                              FontWeight.w600),
+                                                ),
+                                              ),
                                             ],
                                           ),
                                         )
@@ -232,7 +259,9 @@ class CutiView extends GetView<CutiController> {
                             );
                           },
                           separatorBuilder: (BuildContext context, int index) {
-                            return 20.height;
+                            return SizedBox(
+                              height: 20,
+                            );
                           },
                         )))
         ],

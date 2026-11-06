@@ -3,7 +3,6 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
-import 'package:nb_utils/nb_utils.dart';
 
 import '../../../style/colors.dart';
 import '../controllers/teams_controller.dart';
@@ -61,7 +60,7 @@ class TeamsView extends GetView<TeamsController> {
                               children: [
                                 Card(
                                     elevation: 2,
-                                    color: white,
+                                    color: Colors.white,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(150),
                                     ),
@@ -72,7 +71,9 @@ class TeamsView extends GetView<TeamsController> {
                                         scale: 20,
                                       ),
                                     )),
-                                10.width,
+                                SizedBox(
+                                  height: 10,
+                                ),
                                 Text(
                                   'Attamana Teams',
                                   style: Theme.of(context)
@@ -108,7 +109,7 @@ class TeamsView extends GetView<TeamsController> {
                                 child: Container(
                                   padding: const EdgeInsets.all(10),
                                   decoration: BoxDecoration(
-                                      color: greenColor,
+                                      color: Colors.green,
                                       borderRadius: BorderRadius.circular(10)),
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
@@ -117,21 +118,23 @@ class TeamsView extends GetView<TeamsController> {
                                         '5',
                                         style: Get.textTheme.titleLarge
                                             ?.copyWith(
-                                                color: white,
+                                                color: Colors.white,
                                                 fontWeight: FontWeight.bold),
                                       ),
                                       Expanded(
                                         child: AutoSizeText(
                                           'Aktif',
                                           style: Get.textTheme.bodySmall
-                                              ?.copyWith(color: white),
+                                              ?.copyWith(color: Colors.white),
                                         ),
                                       ),
                                     ],
                                   ),
                                 ),
                               ),
-                              15.width,
+                              SizedBox(
+                                height: 15,
+                              ),
                               Expanded(
                                 child: Container(
                                   padding: const EdgeInsets.all(10),
@@ -145,26 +148,28 @@ class TeamsView extends GetView<TeamsController> {
                                         '5',
                                         style: Get.textTheme.titleLarge
                                             ?.copyWith(
-                                                color: white,
+                                                color: Colors.white,
                                                 fontWeight: FontWeight.bold),
                                       ),
                                       Expanded(
                                         child: AutoSizeText(
                                           'Izin',
                                           style: Get.textTheme.bodySmall
-                                              ?.copyWith(color: white),
+                                              ?.copyWith(color: Colors.white),
                                         ),
                                       ),
                                     ],
                                   ),
                                 ),
                               ),
-                              15.width,
+                              SizedBox(
+                                height: 15,
+                              ),
                               Expanded(
                                 child: Container(
                                   padding: const EdgeInsets.all(10),
                                   decoration: BoxDecoration(
-                                      color: errorColor,
+                                      color: Colors.red,
                                       borderRadius: BorderRadius.circular(10)),
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
@@ -173,14 +178,14 @@ class TeamsView extends GetView<TeamsController> {
                                         '5',
                                         style: Get.textTheme.titleLarge
                                             ?.copyWith(
-                                                color: white,
+                                                color: Colors.white,
                                                 fontWeight: FontWeight.bold),
                                       ),
                                       Expanded(
                                         child: AutoSizeText(
                                           'Cuti',
                                           style: Get.textTheme.bodySmall
-                                              ?.copyWith(color: white),
+                                              ?.copyWith(color: Colors.white),
                                         ),
                                       ),
                                     ],
@@ -219,19 +224,23 @@ class TeamsView extends GetView<TeamsController> {
                             Container(
                                 height: Get.height,
                                 decoration: BoxDecoration(
-                                    color: greenColor,
+                                    color: Colors.green,
                                     borderRadius: BorderRadius.circular(10)),
                                 child: ClipRRect(
                                     borderRadius: BorderRadius.circular(10),
                                     child: Image.asset('user_profile'.jpg))),
-                            10.width,
+                            SizedBox(
+                              width: 10,
+                            ),
                             Expanded(
                                 child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 AutoSizeText('Karyawan ${index + 1}',
                                     style: Get.textTheme.titleMedium),
-                                5.height,
+                                SizedBox(
+                                  height: 5,
+                                ),
                                 Expanded(
                                   child: AutoSizeText('08123456789',
                                       style: Get.textTheme.bodyMedium?.copyWith(

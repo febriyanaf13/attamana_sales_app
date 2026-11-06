@@ -33,8 +33,6 @@ class LoginController extends GetxController {
   }
 
   Future<void> onTapLogin() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-
     if (formKey.currentState!.validate()) {
       isLoadingLogin.toggle();
 
@@ -132,14 +130,16 @@ class LoginController extends GetxController {
             // Get.offNamed(Routes.HOME);
           } else {
             // dialogWarning('Opss... ', '$message');
-            dialogWarning('Ops...', message);
+            dialogWarning('Ops...', '$message');
           }
         } else if (value.status.isServerError) {
           dialogError('Terjadi Kesalahan',
               'Terjadi masalah pada server / koneksi internet lambat');
         } else if (value.status.connectionError) {
-          dialogError('Tidak ada koneksi',
-              'Jaringan internet bermasalah, silahkan cek koneksi internet!');
+          dialogError(
+              'Koneksi Gagal',
+              'Tidak dapat terhubung ke server.\n'
+                  'Pastikan internet aktif atau server dapat diakses.');
         }
       });
     }

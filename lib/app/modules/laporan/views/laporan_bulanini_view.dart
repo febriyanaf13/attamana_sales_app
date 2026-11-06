@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-
 import 'package:timelines_plus/timelines_plus.dart';
 
 import '../../../style/colors.dart';

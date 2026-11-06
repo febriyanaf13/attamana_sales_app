@@ -18,4 +18,12 @@ class AccountProvider extends GetConnect {
     }
     return post(api, body, headers: headers);
   }
+
+  Future<Response> getIdFromListUser() {
+    var api = Api.getUser;
+    if (kDebugMode) {
+      print(api);
+    }
+    return get(api, headers: headers);
+  }
 }

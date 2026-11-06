@@ -7,9 +7,6 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:nb_utils/nb_utils.dart';
-import 'package:time_range_picker/time_range_picker.dart';
-
 import '../controllers/lembur_controller.dart';
 
 class LemburView extends GetView<LemburController> {
@@ -49,7 +46,9 @@ class LemburView extends GetView<LemburController> {
                   )),
               Expanded(
                   child: Obx(() => ListView.separated(
-                        separatorBuilder: (context, index) => 20.height,
+                        separatorBuilder: (context, index) => SizedBox(
+                          height: 20,
+                        ),
                         itemCount: controller.listRiwayatLembur.length,
                         padding: const EdgeInsets.all(20),
                         itemBuilder: (context, index) {
@@ -84,7 +83,9 @@ class LemburView extends GetView<LemburController> {
                                                 fontWeight: FontWeight.bold),
                                       ),
                                       const Divider(),
-                                      5.height,
+                                      SizedBox(
+                                        height: 5,
+                                      ),
                                       SizedBox(
                                         height: 15,
                                         child: Row(
@@ -94,7 +95,9 @@ class LemburView extends GetView<LemburController> {
                                               size: 15,
                                               color: Colors.green,
                                             ),
-                                            2.width,
+                                            SizedBox(
+                                              width: 2,
+                                            ),
                                             Text(
                                               controller
                                                   .listRiwayatLembur[index]
@@ -105,18 +108,24 @@ class LemburView extends GetView<LemburController> {
                                                       fontWeight:
                                                           FontWeight.w600),
                                             ),
-                                            20.width,
+                                            SizedBox(
+                                              width: 20,
+                                            ),
                                             const Icon(
                                               Icons.arrow_forward_rounded,
                                               size: 15,
                                             ),
-                                            20.width,
+                                            SizedBox(
+                                              width: 20,
+                                            ),
                                             const Icon(
                                               Icons.timer_rounded,
                                               size: 15,
                                               color: Colors.red,
                                             ),
-                                            2.width,
+                                            SizedBox(
+                                              width: 2,
+                                            ),
                                             Text(
                                               controller
                                                   .listRiwayatLembur[index]

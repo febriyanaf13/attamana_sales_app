@@ -7,7 +7,6 @@ import 'package:attamana_salles_app/app/modules/cuti/providers/cuti_provider.dar
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:nb_utils/nb_utils.dart';
 
 class CutiController extends GetxController {
   //TODO: Implement CutiController
@@ -54,7 +53,12 @@ class CutiController extends GetxController {
       boolImageCuti.value = true;
       imageCuti = image;
     } catch (e) {
-      toast('Gagal mengambil gambar : $e');
+      Get.snackbar(
+        "Error",
+        "Gagal mengambil gambar: $e",
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      // toast('Gagal mengambil gambar : $e');
     }
     update();
   }
@@ -106,7 +110,7 @@ class CutiController extends GetxController {
       var body = {
         'tipe_cuti_id': jenisCuti.value,
         'start_date': tglMulai.value,
-        'days': controllerLamaCuti.text.toInt(),
+        'days': int.parse(controllerLamaCuti.text),
         'note': controllerAlasan.text.toString(),
       };
       print(body);
@@ -135,7 +139,7 @@ class CutiController extends GetxController {
       var body = {
         'tipe_cuti_id': jenisCuti.value,
         'start_date': controllerFrom.text.toString(),
-        'days': controllerLamaCuti.text.toInt(),
+        'days': int.parse(controllerLamaCuti.text),
         'note': controllerAlasan.text.toString(),
       };
       CutiProvider().updatePengajuanCuti(id, body).then((value) {

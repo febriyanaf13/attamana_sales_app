@@ -4,7 +4,6 @@ import 'package:attamana_salles_app/app/utils/extension_image.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
-import 'package:nb_utils/nb_utils.dart';
 
 import '../../../components/custom_button.dart';
 import '../../../components/custom_datepicker_dialog.dart';
@@ -46,7 +45,9 @@ class AddBensinView extends GetView<KendaraanController> {
                       validator: 'Jenis kendaraan harus dipilih...!',
                     ),
                   ),
-                  20.height,
+                  SizedBox(
+                    height: 20,
+                  ),
                   CustomDateTimePickerDialog(
                     title: '',
                     onDataChange: (value) {
@@ -88,7 +89,9 @@ class AddBensinView extends GetView<KendaraanController> {
                           controller: controller.controllerLiter,
                         ),
                       ),
-                      20.width,
+                      SizedBox(
+                        width: 20,
+                      ),
                       Expanded(
                         flex: 2,
                         child: CustomTextField(
@@ -136,7 +139,9 @@ class AddBensinView extends GetView<KendaraanController> {
                             : null,
                         onTap: controller.getImageBukti,
                       )),
-                  50.height,
+                  SizedBox(
+                    height: 50,
+                  ),
                   Obx(
                     () => controller.isLoadingSimpanBensin.isTrue
                         ? const Center(child: CircularProgressIndicator())

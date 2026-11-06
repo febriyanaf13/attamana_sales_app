@@ -6,7 +6,6 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:nb_utils/nb_utils.dart';
 
 import '../../../../components/custom_lottie_not_found.dart';
 import '../../../../style/colors.dart';
@@ -141,7 +140,9 @@ class CustomListLead extends StatelessWidget {
     return Obx(() => listData.isEmpty
         ? const CustomLottieNotFound()
         : ListView.separated(
-            separatorBuilder: (context, index) => 20.height,
+            separatorBuilder: (context, index) => SizedBox(
+              height: 20,
+            ),
             itemCount: listData.length,
             padding: const EdgeInsets.all(20),
             itemBuilder: (context, index) {
@@ -170,7 +171,9 @@ class CustomListLead extends StatelessWidget {
                               Row(
                                 children: [
                                   const Icon(Icons.hotel_rounded),
-                                  10.width,
+                                  SizedBox(
+                                    width: 10,
+                                  ),
                                   Expanded(
                                     child: Text(
                                       listData[index].namaHotel.toString(),
@@ -180,11 +183,15 @@ class CustomListLead extends StatelessWidget {
                                   ),
                                 ],
                               ),
-                              5.height,
+                              SizedBox(
+                                height: 5,
+                              ),
                               Row(
                                 children: [
                                   const Icon(Icons.account_balance_rounded),
-                                  10.width,
+                                  SizedBox(
+                                    width: 10,
+                                  ),
                                   Expanded(
                                     child: Text(
                                       listData[index].companyName.toString(),
@@ -194,11 +201,15 @@ class CustomListLead extends StatelessWidget {
                                   ),
                                 ],
                               ),
-                              5.height,
+                              SizedBox(
+                                height: 5,
+                              ),
                               Row(
                                 children: [
                                   const Icon(Icons.star),
-                                  10.width,
+                                  SizedBox(
+                                    width: 10,
+                                  ),
                                   RatingBar.builder(
                                     initialRating: listData[index]
                                         .categoryHotel
@@ -222,7 +233,7 @@ class CustomListLead extends StatelessWidget {
                             ],
                           ),
                           const Divider(),
-                          10.height,
+                          SizedBox(height: 10),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -239,7 +250,7 @@ class CustomListLead extends StatelessWidget {
                               ),
                             ],
                           ),
-                          10.height,
+                          SizedBox(height: 10),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -256,7 +267,7 @@ class CustomListLead extends StatelessWidget {
                               ),
                             ],
                           ),
-                          10.height,
+                          SizedBox(height: 10),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -273,7 +284,7 @@ class CustomListLead extends StatelessWidget {
                               ),
                             ],
                           ),
-                          10.height,
+                          SizedBox(height: 10),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -290,7 +301,7 @@ class CustomListLead extends StatelessWidget {
                               ),
                             ],
                           ),
-                          10.height,
+                          SizedBox(height: 10),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [

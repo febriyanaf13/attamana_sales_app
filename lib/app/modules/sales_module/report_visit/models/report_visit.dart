@@ -72,7 +72,7 @@ class ReportVisit {
             ? null
             : DateTime.parse(json["waktu_checkout"]),
         lokasiCheckout: json["lokasi_checkout"],
-        alamat: json["alamat"],
+        alamat: json["alamat"].toString(),
       );
 
   Map<String, dynamic> toJson() => {

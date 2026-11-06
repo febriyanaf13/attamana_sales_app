@@ -15,3 +15,4 @@ const String kRoleName = 'roleName';
 const String kStatusKaryawan = 'statusKaryawan';
 const String kSesionInstall = 'sesion_install';
 const String kSesionAuth = 'sesion_auth';
+const String kBiomatricAuth = 'biomatricAuth';

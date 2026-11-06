@@ -2,7 +2,6 @@ import 'package:attamana_salles_app/app/modules/slip_gaji/controllers/slip_gaji_
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:nb_utils/nb_utils.dart';
 
 import '../../../style/colors.dart';
 
@@ -11,26 +10,30 @@ class DetailSlipGajiView extends GetView<SlipGajiController> {
 
   @override
   Widget build(BuildContext context) {
-    var totalPendapatan = controller.slipGajiById!.tunjangan.toInt() +
-        controller.slipGajiById!.homeBase.toInt() +
-        controller.slipGajiById!.bonus.toInt() +
-        controller.slipGajiById!.lembur.toInt() +
-        controller.slipGajiById!.revisi.toInt();
+    int totalPendapatan =
+        int.parse(controller.slipGajiById!.tunjangan.toString()) +
+            int.parse(controller.slipGajiById!.homeBase.toString()) +
+            int.parse(controller.slipGajiById!.bonus.toString()) +
+            int.parse(controller.slipGajiById!.lembur.toString()) +
+            int.parse(controller.slipGajiById!.revisi.toString());
 
-    var totalPotongan = controller.slipGajiById!.potonganAbsensi.toInt() +
-        controller.slipGajiById!.terlambat.toInt() +
-        controller.slipGajiById!.bpjsKes.toInt() +
-        controller.slipGajiById!.jht.toInt() +
-        controller.slipGajiById!.jkk.toInt() +
-        controller.slipGajiById!.jkm.toInt() +
-        controller.slipGajiById!.jp.toInt() +
-        controller.slipGajiById!.pinjaman.toInt() +
-        controller.slipGajiById!.lainLain.toInt();
+    int totalPotongan =
+        int.parse(controller.slipGajiById!.potonganAbsensi.toString()) +
+            int.parse(controller.slipGajiById!.terlambat.toString()) +
+            int.parse(controller.slipGajiById!.bpjsKes.toString()) +
+            int.parse(controller.slipGajiById!.jht.toString()) +
+            int.parse(controller.slipGajiById!.jkk.toString()) +
+            int.parse(controller.slipGajiById!.jkm.toString()) +
+            int.parse(controller.slipGajiById!.jp.toString()) +
+            int.parse(controller.slipGajiById!.pinjaman.toString()) +
+            int.parse(controller.slipGajiById!.lainLain.toString());
 
-    var bpjsKetenagakerjaan = controller.slipGajiById!.jht.toInt() +
-        controller.slipGajiById!.jkk.toInt() +
-        controller.slipGajiById!.jkm.toInt() +
-        controller.slipGajiById!.jp.toInt();
+    int bpjsKetenagakerjaan =
+        int.parse(controller.slipGajiById!.jht.toString()) +
+            int.parse(controller.slipGajiById!.jkk.toString()) +
+            int.parse(controller.slipGajiById!.jkm.toString()) +
+            int.parse(controller.slipGajiById!.jp.toString());
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Detail Slip Gaji'),
@@ -55,7 +58,9 @@ class DetailSlipGajiView extends GetView<SlipGajiController> {
                 ),
               ],
             ),
-            10.height,
+            SizedBox(
+              height: 10,
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -70,7 +75,7 @@ class DetailSlipGajiView extends GetView<SlipGajiController> {
                 ),
               ],
             ),
-            10.height,
+            SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -84,7 +89,7 @@ class DetailSlipGajiView extends GetView<SlipGajiController> {
                 ),
               ],
             ),
-            10.height,
+            SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -115,7 +120,7 @@ class DetailSlipGajiView extends GetView<SlipGajiController> {
                         style: Get.textTheme.titleSmall
                             ?.copyWith(color: Colors.green),
                       ),
-                      10.height,
+                      SizedBox(height: 10),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -124,13 +129,13 @@ class DetailSlipGajiView extends GetView<SlipGajiController> {
                             style: Get.textTheme.bodyMedium,
                           ),
                           Text(
-                            controller.setRupiah(
-                                controller.slipGajiById!.gajiPokok.toInt()),
+                            controller.setRupiah(int.parse(
+                                controller.slipGajiById!.gajiPokok.toString())),
                             style: Get.textTheme.titleSmall,
                           ),
                         ],
                       ),
-                      10.height,
+                      SizedBox(height: 10),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -139,13 +144,13 @@ class DetailSlipGajiView extends GetView<SlipGajiController> {
                             style: Get.textTheme.bodyMedium,
                           ),
                           Text(
-                            controller.setRupiah(
-                                controller.slipGajiById!.tunjangan.toInt()),
+                            controller.setRupiah(int.parse(
+                                controller.slipGajiById!.tunjangan.toString())),
                             style: Get.textTheme.titleSmall,
                           ),
                         ],
                       ),
-                      10.height,
+                      SizedBox(height: 10),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -154,13 +159,13 @@ class DetailSlipGajiView extends GetView<SlipGajiController> {
                             style: Get.textTheme.bodyMedium,
                           ),
                           Text(
-                            controller.setRupiah(
-                                controller.slipGajiById!.homeBase.toInt()),
+                            controller.setRupiah(int.parse(
+                                controller.slipGajiById!.homeBase.toString())),
                             style: Get.textTheme.titleSmall,
                           ),
                         ],
                       ),
-                      10.height,
+                      SizedBox(height: 10),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -169,13 +174,13 @@ class DetailSlipGajiView extends GetView<SlipGajiController> {
                             style: Get.textTheme.bodyMedium,
                           ),
                           Text(
-                            controller.setRupiah(
-                                controller.slipGajiById!.bonus.toInt()),
+                            controller.setRupiah(int.parse(
+                                controller.slipGajiById!.bonus.toString())),
                             style: Get.textTheme.titleSmall,
                           ),
                         ],
                       ),
-                      10.height,
+                      SizedBox(height: 10),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -184,13 +189,13 @@ class DetailSlipGajiView extends GetView<SlipGajiController> {
                             style: Get.textTheme.bodyMedium,
                           ),
                           Text(
-                            controller.setRupiah(
-                                controller.slipGajiById!.lembur.toInt()),
+                            controller.setRupiah(int.parse(
+                                controller.slipGajiById!.lembur.toString())),
                             style: Get.textTheme.titleSmall,
                           ),
                         ],
                       ),
-                      10.height,
+                      SizedBox(height: 10),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -199,8 +204,8 @@ class DetailSlipGajiView extends GetView<SlipGajiController> {
                             style: Get.textTheme.bodyMedium,
                           ),
                           Text(
-                            controller.setRupiah(
-                                controller.slipGajiById!.revisi.toInt()),
+                            controller.setRupiah(int.parse(
+                                controller.slipGajiById!.revisi.toString())),
                             style: Get.textTheme.titleSmall,
                           ),
                         ],
@@ -216,7 +221,8 @@ class DetailSlipGajiView extends GetView<SlipGajiController> {
                             style: Get.textTheme.titleSmall,
                           ),
                           Text(
-                            controller.setRupiah(totalPendapatan.toInt()),
+                            controller.setRupiah(
+                                int.parse(totalPendapatan.toString())),
                             style: Get.textTheme.titleSmall,
                           ),
                         ],
@@ -226,7 +232,9 @@ class DetailSlipGajiView extends GetView<SlipGajiController> {
                 ),
               ),
             ),
-            20.height,
+            SizedBox(
+              height: 20,
+            ),
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(10),
@@ -240,7 +248,7 @@ class DetailSlipGajiView extends GetView<SlipGajiController> {
                         style: Get.textTheme.titleSmall
                             ?.copyWith(color: Colors.red),
                       ),
-                      10.height,
+                      SizedBox(height: 10),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -249,14 +257,14 @@ class DetailSlipGajiView extends GetView<SlipGajiController> {
                             style: Get.textTheme.bodyMedium,
                           ),
                           Text(
-                            controller.setRupiah(controller
+                            controller.setRupiah(int.parse(controller
                                 .slipGajiById!.potonganAbsensi
-                                .toInt()),
+                                .toString())),
                             style: Get.textTheme.titleSmall,
                           ),
                         ],
                       ),
-                      10.height,
+                      SizedBox(height: 10),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -265,13 +273,13 @@ class DetailSlipGajiView extends GetView<SlipGajiController> {
                             style: Get.textTheme.bodyMedium,
                           ),
                           Text(
-                            controller.setRupiah(
-                                controller.slipGajiById!.terlambat.toInt()),
+                            controller.setRupiah(int.parse(
+                                controller.slipGajiById!.terlambat.toString())),
                             style: Get.textTheme.titleSmall,
                           ),
                         ],
                       ),
-                      10.height,
+                      SizedBox(height: 10),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -280,12 +288,13 @@ class DetailSlipGajiView extends GetView<SlipGajiController> {
                             style: Get.textTheme.bodyMedium,
                           ),
                           Text(
-                            controller.setRupiah(bpjsKetenagakerjaan.toInt()),
+                            controller.setRupiah(
+                                int.parse(bpjsKetenagakerjaan.toString())),
                             style: Get.textTheme.titleSmall,
                           ),
                         ],
                       ),
-                      10.height,
+                      SizedBox(height: 10),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -294,13 +303,13 @@ class DetailSlipGajiView extends GetView<SlipGajiController> {
                             style: Get.textTheme.bodyMedium,
                           ),
                           Text(
-                            controller.setRupiah(
-                                controller.slipGajiById!.bpjsKes.toInt()),
+                            controller.setRupiah(int.parse(
+                                controller.slipGajiById!.bpjsKes.toString())),
                             style: Get.textTheme.titleSmall,
                           ),
                         ],
                       ),
-                      10.height,
+                      SizedBox(height: 10),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -309,13 +318,13 @@ class DetailSlipGajiView extends GetView<SlipGajiController> {
                             style: Get.textTheme.bodyMedium,
                           ),
                           Text(
-                            controller.setRupiah(
-                                controller.slipGajiById!.pinjaman.toInt()),
+                            controller.setRupiah(int.parse(
+                                controller.slipGajiById!.pinjaman.toString())),
                             style: Get.textTheme.titleSmall,
                           ),
                         ],
                       ),
-                      10.height,
+                      SizedBox(height: 10),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -324,8 +333,8 @@ class DetailSlipGajiView extends GetView<SlipGajiController> {
                             style: Get.textTheme.bodyMedium,
                           ),
                           Text(
-                            controller.setRupiah(
-                                controller.slipGajiById!.lainLain.toInt()),
+                            controller.setRupiah(int.parse(
+                                controller.slipGajiById!.lainLain.toString())),
                             style: Get.textTheme.titleSmall,
                           ),
                         ],
@@ -341,7 +350,8 @@ class DetailSlipGajiView extends GetView<SlipGajiController> {
                             style: Get.textTheme.titleSmall,
                           ),
                           Text(
-                            controller.setRupiah(totalPotongan.toInt()),
+                            controller
+                                .setRupiah(int.parse(totalPotongan.toString())),
                             style: Get.textTheme.titleSmall,
                           ),
                         ],
@@ -367,12 +377,12 @@ class DetailSlipGajiView extends GetView<SlipGajiController> {
                             style: Get.textTheme.bodyMedium,
                           ),
                           Text(
-                            controller.setRupiah(0.toInt()),
+                            controller.setRupiah(0),
                             style: Get.textTheme.titleSmall,
                           ),
                         ],
                       ),
-                      10.height,
+                      SizedBox(height: 10),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -381,12 +391,12 @@ class DetailSlipGajiView extends GetView<SlipGajiController> {
                             style: Get.textTheme.bodyMedium,
                           ),
                           Text(
-                            controller.setRupiah(0.toInt()),
+                            controller.setRupiah(0),
                             style: Get.textTheme.titleSmall,
                           ),
                         ],
                       ),
-                      10.height,
+                      SizedBox(height: 10),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -395,12 +405,12 @@ class DetailSlipGajiView extends GetView<SlipGajiController> {
                             style: Get.textTheme.bodyMedium,
                           ),
                           Text(
-                            controller.setRupiah(0.toInt()),
+                            controller.setRupiah(0),
                             style: Get.textTheme.titleSmall,
                           ),
                         ],
                       ),
-                      10.height,
+                      SizedBox(height: 10),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -409,7 +419,7 @@ class DetailSlipGajiView extends GetView<SlipGajiController> {
                             style: Get.textTheme.bodyMedium,
                           ),
                           Text(
-                            controller.setRupiah(0.toInt()),
+                            controller.setRupiah(0),
                             style: Get.textTheme.titleSmall,
                           ),
                         ],
@@ -425,8 +435,9 @@ class DetailSlipGajiView extends GetView<SlipGajiController> {
                             style: Get.textTheme.titleSmall,
                           ),
                           Text(
-                            controller.setRupiah(
-                                controller.slipGajiById!.gajiDiterima.toInt()),
+                            controller.setRupiah(int.parse(controller
+                                .slipGajiById!.gajiDiterima
+                                .toString())),
                             style: Get.textTheme.titleSmall
                                 ?.copyWith(color: Colors.green),
                           ),

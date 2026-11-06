@@ -1,19 +1,14 @@
 import 'package:animated_custom_dropdown/custom_dropdown.dart';
-import 'package:attamana_salles_app/app/modules/customer/models/customer.dart';
-import 'package:attamana_salles_app/app/modules/sales_module/activity/models/existing_customer.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nb_utils/nb_utils.dart';
-import 'package:searchfield/searchfield.dart';
-
 import '../style/colors.dart';
 
-class CustomDropDownSearch2 extends StatefulWidget {
+class CustomDropDownSearch<T> extends StatefulWidget {
   final bool isRequired;
   final String title;
   final bool? withTitle;
   final String? hint;
-  final List<ExistingCustomer>? dataList;
+  final List<T>? dataList;
   final double? width;
   final TextEditingController controller;
   final bool? autoFocus;
@@ -21,11 +16,11 @@ class CustomDropDownSearch2 extends StatefulWidget {
   final Function(String?) onSubmit;
   final Function(String?) onSave;
   final String? Function(String?) validator;
+  final Function(T?)? onSelectedItem;
+  final T? initialValue;
+  final String Function(T) itemLabel;
 
-  final Function(ExistingCustomer?)? onSelectedItem;
-  final SearchFieldListItem<String>? initialValue;
-
-  const CustomDropDownSearch2({
+  const CustomDropDownSearch({
     super.key,
     required this.controller,
     this.width,
@@ -41,84 +36,107 @@ class CustomDropDownSearch2 extends StatefulWidget {
     required this.isRequired,
     this.withTitle,
     this.initialValue,
+    required this.itemLabel,
   });
 
   @override
-  State<CustomDropDownSearch2> createState() => _CustomDropDownSearchState();
+  State<CustomDropDownSearch<T>> createState() =>
+      _CustomDropDownSearchState<T>();
 }
 
-class _CustomDropDownSearchState extends State<CustomDropDownSearch2> {
-  var checkText = '';
-  String? selectedItem;
-
-  // final List<String> suggestions = [
-  //   'United States',
-  //   'Germany',
-  //   'Washington',
-  //   'Paris',
-  //   'Jakarta',
-  //   'Australia',
-  //   'India',
-  //   'Czech Republic',
-  //   'Lorem Ipsum',
-  // ];
-
+class _CustomDropDownSearchState<T> extends State<CustomDropDownSearch<T>> {
   @override
   Widget build(BuildContext context) {
-    // print(widget.controller?.text);
     return SizedBox(
-      width: Get.width,
+      width: widget.width ?? Get.width,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          widget.withTitle == true
-              ? Align(
-                  alignment: Alignment.centerLeft,
-                  child: RichText(
-                    text: TextSpan(
-                      text: widget.isRequired ? '* ' : widget.title,
-                      style: widget.isRequired
-                          ? const TextStyle(color: kErrorColor)
-                          : const TextStyle(
-                              color: kPrimaryTextColor,
-                              fontWeight: FontWeight.bold),
-                      children: <TextSpan>[
-                        TextSpan(
-                            text:
-                                widget.isRequired ? widget.title : '(Optional)',
-                            style: widget.isRequired
-                                ? const TextStyle(
-                                    color: kPrimaryTextColor,
-                                    fontWeight: FontWeight.bold)
-                                : const TextStyle(
-                                    color: kSecondaryTextColor,
-                                    fontWeight: FontWeight.normal)),
-                      ],
+          // --- TITLE LABEL ---
+          if (widget.withTitle == true) ...[
+            RichText(
+              text: TextSpan(
+                text: widget.title,
+                style: const TextStyle(
+                  color: Color(0xFF475569), // Slate 600
+                  fontWeight: FontWeight.w700,
+                  fontSize: 13,
+                ),
+                children: [
+                  if (widget.isRequired)
+                    const TextSpan(
+                      text: ' *',
+                      style: TextStyle(color: Colors.red, fontSize: 14),
                     ),
-                  ))
-              : const SizedBox(),
-          const SizedBox(
-            height: 10,
-          ),
-          // Text(widget.title, style: boldTextStyle(color: black, size: 14)),
-          // widget.labelSpace.validate() ? 6.height : const Offstage(),
-          CustomDropdown<ExistingCustomer>.search(
-              hintText: widget.hint,
-              items: widget.dataList,
-              headerBuilder: (context, selectedItem, enabled) =>
-                  Text(selectedItem.namaHotel),
-              listItemBuilder: (context, item, isSelected, onItemSelect) {
-                return Text(item.namaHotel);
-              },
-              excludeSelected: false,
-              decoration: CustomDropdownDecoration(
-                closedBorderRadius: BorderRadius.circular(10),
-                expandedBorderRadius: BorderRadius.circular(10),
-                closedBorder: Border.all(color: grey),
-                expandedBorder: Border.all(color: grey),
+                ],
               ),
-              onChanged: widget.onSelectedItem),
+            ),
+            const SizedBox(height: 8),
+          ],
+
+          // --- DROPDOWN CORE ---
+          CustomDropdown<T>.search(
+            hintText: widget.hint ?? 'Pilih...',
+            items: widget.dataList ?? [],
+            initialItem: widget.initialValue,
+            headerBuilder: (context, selectedItem, enabled) {
+              return Text(
+                selectedItem != null
+                    ? widget.itemLabel(selectedItem)
+                    : (widget.hint ?? 'Pilih...'),
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: selectedItem != null
+                      ? FontWeight.w600
+                      : FontWeight.normal,
+                  color: selectedItem != null
+                      ? const Color(0xFF1E293B)
+                      : Colors.grey.shade400,
+                ),
+              );
+            },
+            listItemBuilder: (context, item, isSelected, onItemSelect) {
+              return Text(
+                widget.itemLabel(item),
+                style: TextStyle(
+                  fontSize: 14,
+                  color: isSelected ? kPrimaryColor : const Color(0xFF475569),
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                ),
+              );
+            },
+            decoration: CustomDropdownDecoration(
+              closedBorderRadius: BorderRadius.circular(12),
+              expandedBorderRadius: BorderRadius.circular(12),
+              closedFillColor: Colors.white,
+              closedBorder:
+                  Border.all(color: const Color(0xFFE2E8F0), width: 1.5),
+              expandedBorder:
+                  Border.all(color: kPrimaryColor.withOpacity(0.5), width: 1.5),
+
+              // PERBAIKAN DI SINI:
+              searchFieldDecoration: SearchFieldDecoration(
+                fillColor: const Color(0xFFF8FAFC),
+                // Menggunakan border OutlineInputBorder alih-alih BorderSide langsung
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: kPrimaryColor.withOpacity(0.5)),
+                ),
+                prefixIcon:
+                    Icon(Icons.search, color: Colors.grey.shade400, size: 20),
+                hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 13),
+              ),
+            ),
+            onChanged: (value) {
+              if (value != null) {
+                widget.onSelectedItem?.call(value);
+              }
+            },
+          ),
         ],
       ),
     );

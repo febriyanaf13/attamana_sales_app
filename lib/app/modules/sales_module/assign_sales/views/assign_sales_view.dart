@@ -4,7 +4,6 @@ import 'package:awesome_dialog/awesome_dialog.dart' as awd;
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
-import 'package:nb_utils/nb_utils.dart';
 
 import '../../../../components/custom_lottie_loading.dart';
 import '../../../../components/custom_lottie_not_found.dart';
@@ -141,41 +140,45 @@ class ListCustomerAssign extends StatelessWidget {
                                                                     .bold),
                                                   ),
                                                 ),
-                                                const Icon(
-                                                  Icons.edit_document,
-                                                  color: Colors.blue,
-                                                  size: 20,
-                                                ).onTap(() {
-                                                  controller
-                                                      .dataListCustomerSalesUpdate
-                                                      .clear();
-                                                  controller
-                                                      .dataListCustomerSalesUpdate
-                                                      .canUpdate;
-                                                  Get.toNamed(
-                                                      Routes.EDIT_ASSIGN_SALES,
-                                                      arguments: index);
-                                                  controller.getDataCustomerSales(
-                                                      controller
-                                                          .dataListCustomerAssign[
-                                                              index]
-                                                          .customerId);
-                                                }),
+                                                GestureDetector(
+                                                  onTap: () {
+                                                    controller
+                                                        .dataListCustomerSalesUpdate
+                                                        .clear();
+                                                    controller
+                                                        .dataListCustomerSalesUpdate
+                                                        .canUpdate;
+                                                    Get.toNamed(
+                                                        Routes
+                                                            .EDIT_ASSIGN_SALES,
+                                                        arguments: index);
+                                                    controller.getDataCustomerSales(
+                                                        controller
+                                                            .dataListCustomerAssign[
+                                                                index]
+                                                            .customerId);
+                                                  },
+                                                  child: const Icon(
+                                                    Icons.edit_document,
+                                                    color: Colors.blue,
+                                                    size: 20,
+                                                  ),
+                                                )
                                               ],
                                             ),
-                                            5.height,
+                                            SizedBox(height: 5),
                                             const Divider(),
-                                            5.height,
+                                            SizedBox(height: 5),
                                             Row(
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
                                               children: [
                                                 const Icon(
                                                   Icons.corporate_fare_outlined,
-                                                  color: grey,
+                                                  color: Colors.grey,
                                                   size: 20,
                                                 ),
-                                                5.width,
+                                                SizedBox(width: 5),
                                                 Expanded(
                                                   child: Text(
                                                     'Corporate Id',
@@ -201,17 +204,17 @@ class ListCustomerAssign extends StatelessWidget {
                                                 ),
                                               ],
                                             ),
-                                            5.height,
+                                            SizedBox(height: 5),
                                             Row(
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
                                               children: [
                                                 const Icon(
                                                   Icons.share_location_rounded,
-                                                  color: grey,
+                                                  color: Colors.grey,
                                                   size: 20,
                                                 ),
-                                                5.width,
+                                                SizedBox(width: 5),
                                                 Expanded(
                                                   child: Text(
                                                     'Alamat',
@@ -237,17 +240,17 @@ class ListCustomerAssign extends StatelessWidget {
                                                 ),
                                               ],
                                             ),
-                                            5.height,
+                                            SizedBox(height: 5),
                                             Row(
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
                                               children: [
                                                 const Icon(
                                                   Icons.person_3_outlined,
-                                                  color: grey,
+                                                  color: Colors.grey,
                                                   size: 20,
                                                 ),
-                                                5.width,
+                                                SizedBox(width: 5),
                                                 Expanded(
                                                   child: Text(
                                                     'Sales',
@@ -300,7 +303,9 @@ class ListCustomerAssign extends StatelessWidget {
                       );
                     },
                     separatorBuilder: (BuildContext context, int index) {
-                      return 10.height;
+                      return SizedBox(
+                        height: 10,
+                      );
                     },
                   ),
       ),
@@ -444,9 +449,9 @@ class ListCustomerNotAssign extends StatelessWidget {
                                                             )
                                                           ],
                                                         ),
-                                                        5.height,
+                                                        SizedBox(height: 5),
                                                         const Divider(),
-                                                        5.height,
+                                                        SizedBox(height: 5),
                                                         Row(
                                                           crossAxisAlignment:
                                                               CrossAxisAlignment
@@ -455,10 +460,11 @@ class ListCustomerNotAssign extends StatelessWidget {
                                                             const Icon(
                                                               Icons
                                                                   .corporate_fare_outlined,
-                                                              color: grey,
+                                                              color:
+                                                                  Colors.grey,
                                                               size: 20,
                                                             ),
-                                                            5.width,
+                                                            SizedBox(width: 5),
                                                             Expanded(
                                                               child: Text(
                                                                 'Corporate Id',
@@ -487,7 +493,7 @@ class ListCustomerNotAssign extends StatelessWidget {
                                                             ),
                                                           ],
                                                         ),
-                                                        5.height,
+                                                        SizedBox(height: 5),
                                                         Row(
                                                           crossAxisAlignment:
                                                               CrossAxisAlignment
@@ -496,10 +502,11 @@ class ListCustomerNotAssign extends StatelessWidget {
                                                             const Icon(
                                                               Icons
                                                                   .share_location_rounded,
-                                                              color: grey,
+                                                              color:
+                                                                  Colors.grey,
                                                               size: 20,
                                                             ),
-                                                            5.width,
+                                                            SizedBox(width: 5),
                                                             Expanded(
                                                               child: Text(
                                                                 'Alamat',
@@ -557,7 +564,9 @@ class ListCustomerNotAssign extends StatelessWidget {
                                 },
                                 separatorBuilder:
                                     (BuildContext context, int index) {
-                                  return 10.height;
+                                  return SizedBox(
+                                    height: 10,
+                                  );
                                 },
                               ),
                   ),

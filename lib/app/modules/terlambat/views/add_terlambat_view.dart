@@ -2,7 +2,6 @@ import 'package:attamana_salles_app/app/utils/extension_image.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
-import 'package:nb_utils/nb_utils.dart';
 
 import '../../../components/custom_button.dart';
 import '../../../components/custom_datepicker_dialog.dart';
@@ -102,7 +101,9 @@ class AddTerlambatView extends GetView<TerlambatController> {
                                       onTap: controller.getImageTerlambat,
                                       validator: controller.validatorImage,
                                     )),
-                                50.height,
+                                SizedBox(
+                                  height: 50,
+                                ),
                                 Obx(() => controller
                                         .isLoadingSimpanterlambat.isTrue
                                     ? const Center(

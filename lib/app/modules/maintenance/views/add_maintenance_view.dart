@@ -5,7 +5,6 @@ import 'package:attamana_salles_app/app/utils/extension_image.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
-import 'package:nb_utils/nb_utils.dart';
 
 import '../../../components/custom_button.dart';
 import '../../../components/custom_datepicker_dialog.dart';
@@ -58,7 +57,9 @@ class AddMaintenanceView extends GetView<MaintenanceController> {
                       validator: 'Jenis services harus dipilih...!',
                     ),
                   ),
-                  20.height,
+                  SizedBox(
+                    height: 20,
+                  ),
                   Obx(
                     () => CustomDropdownButton(
                       title: 'Jenis Services',
@@ -95,7 +96,9 @@ class AddMaintenanceView extends GetView<MaintenanceController> {
                     isRequired: true,
                     controller: controller.textEditingControllerTotalBiaya,
                   ),
-                  20.height,
+                  SizedBox(
+                    height: 20,
+                  ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -111,7 +114,9 @@ class AddMaintenanceView extends GetView<MaintenanceController> {
                                   controller.isGantiSparePart.value = value;
                                 }),
                           ),
-                          10.width,
+                          SizedBox(
+                            width: 10,
+                          ),
                           Align(
                               alignment: Alignment.centerLeft,
                               child: RichText(
@@ -127,7 +132,9 @@ class AddMaintenanceView extends GetView<MaintenanceController> {
                           ),
                         ],
                       ),
-                      20.width,
+                      SizedBox(
+                        width: 20,
+                      ),
                       Obx(
                         () => controller.isGantiSparePart.isTrue
                             ? CustomTextField(
@@ -171,7 +178,9 @@ class AddMaintenanceView extends GetView<MaintenanceController> {
                     isRequired: true,
                     controller: controller.textEditingControllerNoMaintenance,
                   ),
-                  20.height,
+                  SizedBox(
+                    height: 20,
+                  ),
                   Obx(
                     () => CustomDropdownButton(
                       title: 'Vendor Service Agent',
@@ -185,7 +194,9 @@ class AddMaintenanceView extends GetView<MaintenanceController> {
                       validator: 'Vendor harus dipilih...!',
                     ),
                   ),
-                  20.height,
+                  SizedBox(
+                    height: 20,
+                  ),
                   CustomTextField(
                     title: 'Notes',
                     hint: 'Tuliskan catatan...',
@@ -205,7 +216,9 @@ class AddMaintenanceView extends GetView<MaintenanceController> {
                             : null,
                         onTap: controller.getImageBukti,
                       )),
-                  50.height,
+                  SizedBox(
+                    height: 20,
+                  ),
                   Obx(
                     () => controller.isLoadingSimpanMaintenance.isTrue
                         ? const Center(child: CircularProgressIndicator())

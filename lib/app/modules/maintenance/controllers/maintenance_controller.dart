@@ -7,7 +7,6 @@ import 'package:attamana_salles_app/app/modules/maintenance/providers/maintenanc
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:nb_utils/nb_utils.dart';
 
 import '../models/vendors.dart';
 
@@ -113,7 +112,11 @@ class MaintenanceController extends GetxController {
       boolImageMaintenance.value = true;
       imageMaintenance = image;
     } catch (e) {
-      toast('Gagal mengambil gambar : $e');
+      Get.snackbar(
+        "Error",
+        "Gagal mengambil gambar: $e",
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
     update();
   }

@@ -6,7 +6,6 @@ import 'package:floating_bottom_navigation_bar/floating_bottom_navigation_bar.da
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
-import 'package:nb_utils/nb_utils.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import '../../../../utils/calendar.dart';
@@ -54,9 +53,9 @@ class AgendaView extends GetView<AgendaController> {
                               ),
                             ],
                           ),
-                          10.height,
+                          SizedBox(height: 10),
                           const Divider(),
-                          10.height,
+                          SizedBox(height: 10),
                           Expanded(
                             child: SingleChildScrollView(
                               child: Column(
@@ -76,7 +75,7 @@ class AgendaView extends GetView<AgendaController> {
                                       Text('Pilih lewat Peta'),
                                     ],
                                   ),
-                                  20.height,
+                                  SizedBox(height: 20),
                                   CustomTextFieldTitle(
                                     withTitle: false,
                                     title: 'Notes',
@@ -84,7 +83,7 @@ class AgendaView extends GetView<AgendaController> {
                                     controller: TextEditingController(),
                                     maxLine: 4,
                                   ),
-                                  20.height,
+                                  SizedBox(height: 20),
                                   ElevatedButton(
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: kPrimaryColor,
@@ -210,10 +209,10 @@ class AgendaView extends GetView<AgendaController> {
                             },
                             itemBorderRadius: 30,
                             borderRadius: 30,
-                            backgroundColor: lightGray,
-                            selectedItemColor: black,
-                            unselectedItemColor: black,
-                            selectedBackgroundColor: white,
+                            backgroundColor: Colors.grey.shade300,
+                            selectedItemColor: Colors.black,
+                            unselectedItemColor: Colors.black,
+                            selectedBackgroundColor: Colors.white,
                             currentIndex: controller.currentIndex.value,
                             items: [
                               FloatingNavbarItem(
@@ -261,7 +260,7 @@ class AgendaView extends GetView<AgendaController> {
                                                           Icons.home,
                                                           color: kPrimaryColor,
                                                         ),
-                                                        5.width,
+                                                        SizedBox(width: 5),
                                                         Text(
                                                           'Hotel Louise Kiene',
                                                           style: Get.textTheme
@@ -275,7 +274,7 @@ class AgendaView extends GetView<AgendaController> {
                                                           Icons.location_on,
                                                           color: Colors.green,
                                                         ),
-                                                        5.width,
+                                                        SizedBox(width: 5),
                                                         Text(
                                                           'Jalan Pemuda, Semarang',
                                                           style: Get.textTheme
@@ -289,7 +288,7 @@ class AgendaView extends GetView<AgendaController> {
                                                           Icons.event_note,
                                                           color: Colors.blue,
                                                         ),
-                                                        5.width,
+                                                        SizedBox(width: 5),
                                                         Column(
                                                           crossAxisAlignment:
                                                               CrossAxisAlignment

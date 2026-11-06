@@ -1,8 +1,7 @@
+import 'dart:ui';
 import 'package:attamana_salles_app/app/utils/extension_image.dart';
 import 'package:flutter/material.dart';
-
 import 'package:get/get.dart';
-import 'package:nb_utils/nb_utils.dart';
 
 import '../../../components/custom_button.dart';
 import '../../../style/colors.dart';
@@ -14,108 +13,168 @@ class SplashView extends GetView<SplashController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: kPrimaryColor,
-      body: Container(
-        decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              begin: Alignment.topRight,
-              end: Alignment.bottomLeft,
-              colors: [
-                Colors.blue,
-                Colors.red,
-              ],
-            ),
-            image: DecorationImage(
-                image: AssetImage('bg'.png), repeat: ImageRepeat.repeat)),
-        child: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                kPrimaryColor.withOpacity(0.9),
-                kPrimaryColor,
-              ],
-            ),
-          ),
-          child: SafeArea(
-            child: Center(
-              child: Column(
-                children: [
-                  Expanded(
-                    flex: 2,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        // Lottie.asset(
-                        //   'logo_splash'.json,
-                        //   width: Get.width * 0.5,
-                        // ),
-                        Card(
-                            elevation: 2,
-                            color: kPrimaryColor,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(150),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(5),
-                              child: Image.asset(
-                                'logo_attamana'.png,
-                                scale: 5,
-                              ),
-                            )),
-                        20.height,
-                        RichText(
-                            text: TextSpan(
-                                text: 'ATTAMANA',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .headlineLarge
-                                    ?.copyWith(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                        letterSpacing: 2),
-                                children: [
-                              TextSpan(
-                                text: '',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleLarge
-                                    ?.copyWith(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold),
-                              ),
-                            ])),
-                      ],
-                    ),
-                  ),
-                  Obx(
-                    () => Text(
-                      'Version ${controller.version}',
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyMedium
-                          ?.copyWith(color: kSecondaryTextColor),
-                    ),
-                  ),
-                  controller.session == null
-                      ? Expanded(
-                          flex: 1,
-                          child: Center(
-                            child: CustomButton(
-                                onTap: controller.onTapLogin,
-                                width: 200,
-                                height: 50,
-                                border: 30,
-                                color: Colors.red,
-                                text: 'Login'),
-                          ))
-                      : Container()
+      body: Stack(
+        children: [
+          // 1. Background Gradient
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  kPrimaryColor,
+                  kPrimaryColor.withOpacity(0.8),
+                  Colors.blue.shade900,
                 ],
               ),
             ),
           ),
-        ),
+
+          // 2. Pattern Overlay
+          Opacity(
+            opacity: 0.1,
+            child: Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('bg'.png),
+                  repeat: ImageRepeat.repeat,
+                ),
+              ),
+            ),
+          ),
+
+          // 3. Decorative Circles
+          Positioned(
+            top: -50,
+            left: -50,
+            child: _buildCircle(200, Colors.white.withOpacity(0.05)),
+          ),
+
+          // 4. Main Content
+          SafeArea(
+            child: SizedBox(
+              width: double.infinity,
+              // Memastikan lebar penuh agar Center bekerja
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                // Centering Vertikal
+                crossAxisAlignment: CrossAxisAlignment.center,
+                // Centering Horizontal
+                children: [
+                  Expanded(
+                    flex: 4,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // Animated Logo Container
+                        Hero(
+                          tag: 'logo',
+                          child: Container(
+                            padding: const EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.2),
+                                  blurRadius: 30,
+                                  offset: const Offset(0, 15),
+                                )
+                              ],
+                            ),
+                            child: Image.asset(
+                              'logo_attamana'.png,
+                              height: 120,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 30),
+                        Text(
+                          'ATTAMANA',
+                          textAlign: TextAlign.center, // Centering Teks
+                          style: Get.textTheme.displaySmall?.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 8,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            'SALES MANAGEMENT SYSTEM',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(0.7),
+                              fontSize: 10,
+                              letterSpacing: 2,
+                              fontWeight: FontWeight.w300,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // 5. Bottom Section (Version & Action)
+                  Expanded(
+                    flex: 1,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        if (controller.session == null)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 50),
+                            child: CustomButton(
+                              onTap: controller.onTapLogin,
+                              text: "GET STARTED",
+                              border: 15,
+                              height: 55,
+                              gradient: LinearGradient(
+                                colors: [
+                                  kPrimaryColor,
+                                  const Color(0xFF1E3C72)
+                                ],
+                              ),
+                            ),
+                          ),
+                        const SizedBox(height: 20),
+                        Obx(
+                          () => Text(
+                            'Version ${controller.version}',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(0.5),
+                              fontSize: 12,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCircle(double size, Color color) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: color,
       ),
     );
   }

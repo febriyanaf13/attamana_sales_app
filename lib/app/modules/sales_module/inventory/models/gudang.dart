@@ -44,4 +44,14 @@ class Gudang {
         "deskripsi": deskripsi,
         "status": status,
       };
+
+  @override
+  String toString() {
+    return namaGudang;
+  }
+
+  @override
+  bool filter(String query) {
+    return namaGudang.toLowerCase().contains(query.toLowerCase());
+  }
 }

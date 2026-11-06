@@ -35,6 +35,8 @@ import '../modules/maintenance/views/add_maintenance_view.dart';
 import '../modules/maintenance/views/maintenance_view.dart';
 import '../modules/maps/bindings/maps_binding.dart';
 import '../modules/maps/views/maps_view.dart';
+import '../modules/notification/bindings/notification_binding.dart';
+import '../modules/notification/views/notification_view.dart';
 import '../modules/permohonan_ijin/bindings/permohonan_ijin_binding.dart';
 import '../modules/permohonan_ijin/views/permohonan_ijin_view.dart';
 import '../modules/reimburse/bindings/reimburse_binding.dart';
@@ -296,6 +298,11 @@ class AppPages {
       name: _Paths.SAMPLE_AND_PRICING,
       page: () => const SampleAndPricingView(),
       binding: SampleAndPricingBinding(),
+    ),
+    GetPage(
+      name: _Paths.NOTIFICATION,
+      page: () => const NotificationView(),
+      binding: NotificationBinding(),
     ),
   ];
 }

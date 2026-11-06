@@ -28,4 +28,14 @@ class Sales {
         "pegawai_id": pegawaiId,
         "nama": nama,
       };
+
+  @override
+  String toString() {
+    return nama;
+  }
+
+  @override
+  bool filter(String query) {
+    return nama.toLowerCase().contains(query.toLowerCase());
+  }
 }

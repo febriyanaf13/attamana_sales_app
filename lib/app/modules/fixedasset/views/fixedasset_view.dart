@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:nb_utils/nb_utils.dart';
-
 import '../../../components/custom_lottie_not_found.dart';
 import '../../../style/colors.dart';
 import '../controllers/fixedasset_controller.dart';
@@ -61,7 +59,9 @@ class FixedassetView extends GetView<FixedassetController> {
                                                         FontWeight.bold),
                                           ),
                                           const Divider(),
-                                          5.height,
+                                          SizedBox(
+                                            height: 5,
+                                          ),
                                           Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceBetween,
@@ -73,7 +73,9 @@ class FixedassetView extends GetView<FixedassetController> {
                                                       Get.textTheme.bodySmall,
                                                 ),
                                               ),
-                                              5.width,
+                                              SizedBox(
+                                                width: 5,
+                                              ),
                                               Text(
                                                 controller.listFixedasset[index]
                                                     .metode
@@ -82,7 +84,9 @@ class FixedassetView extends GetView<FixedassetController> {
                                               ),
                                             ],
                                           ),
-                                          5.height,
+                                          SizedBox(
+                                            height: 5,
+                                          ),
                                           Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceBetween,
@@ -94,7 +98,9 @@ class FixedassetView extends GetView<FixedassetController> {
                                                       Get.textTheme.bodySmall,
                                                 ),
                                               ),
-                                              5.width,
+                                              SizedBox(
+                                                width: 5,
+                                              ),
                                               Text(
                                                 DateFormat("EEE, dd MMM yyyy",
                                                         "id_ID")
@@ -105,7 +111,9 @@ class FixedassetView extends GetView<FixedassetController> {
                                               ),
                                             ],
                                           ),
-                                          5.height,
+                                          SizedBox(
+                                            height: 5,
+                                          ),
                                           Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceBetween,
@@ -117,14 +125,18 @@ class FixedassetView extends GetView<FixedassetController> {
                                                       Get.textTheme.bodySmall,
                                                 ),
                                               ),
-                                              5.width,
+                                              SizedBox(
+                                                width: 5,
+                                              ),
                                               Text(
                                                 '${controller.listFixedasset[index].umur} (Tahun)',
                                                 style: Get.textTheme.bodySmall,
                                               ),
                                             ],
                                           ),
-                                          5.height,
+                                          SizedBox(
+                                            height: 5,
+                                          ),
                                           Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceBetween,
@@ -136,14 +148,18 @@ class FixedassetView extends GetView<FixedassetController> {
                                                       Get.textTheme.bodySmall,
                                                 ),
                                               ),
-                                              5.width,
+                                              SizedBox(
+                                                width: 5,
+                                              ),
                                               Text(
                                                 '${controller.listFixedasset[index].hargaBeli} ${controller.listFixedasset[index].matauang}',
                                                 style: Get.textTheme.bodySmall,
                                               ),
                                             ],
                                           ),
-                                          5.height,
+                                          SizedBox(
+                                            height: 5,
+                                          ),
                                           Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceBetween,
@@ -155,7 +171,9 @@ class FixedassetView extends GetView<FixedassetController> {
                                                       Get.textTheme.bodySmall,
                                                 ),
                                               ),
-                                              5.width,
+                                              SizedBox(
+                                                width: 5,
+                                              ),
                                               Text(
                                                 '${controller.listFixedasset[index].statusAktif}',
                                                 style: Get.textTheme.bodySmall,
@@ -204,7 +222,9 @@ class FixedassetView extends GetView<FixedassetController> {
                     );
                   },
                   separatorBuilder: (BuildContext context, int index) {
-                    return 10.height;
+                    return SizedBox(
+                      height: 10,
+                    );
                   },
                 ),
         ),

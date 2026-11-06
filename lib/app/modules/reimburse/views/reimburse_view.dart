@@ -3,7 +3,6 @@ import 'package:attamana_salles_app/app/utils/extension_image.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
-import 'package:nb_utils/nb_utils.dart';
 
 import '../../../components/custom_button.dart';
 import '../../../components/custom_datepicker_dialog.dart';
@@ -119,7 +118,9 @@ class ReimburseView extends GetView<ReimburseController> {
                                               : null,
                                       onTap: controller.getImageReimburse,
                                     )),
-                                50.height,
+                                SizedBox(
+                                  height: 50,
+                                ),
                                 CustomButton(
                                   onTap: () {},
                                   text: 'Ajukan',

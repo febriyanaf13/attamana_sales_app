@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:nb_utils/nb_utils.dart';
 
 import '../controllers/slip_gaji_controller.dart';
 
@@ -39,104 +38,125 @@ class SlipGajiView extends GetView<SlipGajiController> {
                       return Column(
                         children: [
                           const Divider(),
-                          10.height,
+                          SizedBox(
+                            height: 10,
+                          ),
                         ],
                       );
                     },
                     itemBuilder: (context, index) {
-                      var tambahan = controller.listAllSlipGaji[index].tunjangan
-                              .toInt() +
-                          controller.listAllSlipGaji[index].homeBase.toInt() +
-                          controller.listAllSlipGaji[index].bonus.toInt() +
-                          controller.listAllSlipGaji[index].lembur.toInt() +
-                          controller.listAllSlipGaji[index].revisi.toInt();
+                      var tambahan = int.parse(controller
+                              .listAllSlipGaji[index].tunjangan
+                              .toString()) +
+                          int.parse(controller.listAllSlipGaji[index].homeBase
+                              .toString()) +
+                          int.parse(controller.listAllSlipGaji[index].bonus
+                              .toString()) +
+                          int.parse(controller.listAllSlipGaji[index].lembur
+                              .toString()) +
+                          int.parse(controller.listAllSlipGaji[index].revisi
+                              .toString());
 
-                      var potongan = controller
+                      var potongan = int.parse(controller
                               .listAllSlipGaji[index].potonganAbsensi
-                              .toInt() +
-                          controller.listAllSlipGaji[index].terlambat.toInt() +
-                          controller.listAllSlipGaji[index].bpjsKes.toInt() +
-                          controller.listAllSlipGaji[index].jht.toInt() +
-                          controller.listAllSlipGaji[index].jkk.toInt() +
-                          controller.listAllSlipGaji[index].jkm.toInt() +
-                          controller.listAllSlipGaji[index].jp.toInt() +
-                          controller.listAllSlipGaji[index].pinjaman.toInt() +
-                          controller.listAllSlipGaji[index].lainLain.toInt();
+                              .toString()) +
+                          int.parse(controller.listAllSlipGaji[index].terlambat
+                              .toString()) +
+                          int.parse(controller.listAllSlipGaji[index].bpjsKes
+                              .toString()) +
+                          int.parse(controller.listAllSlipGaji[index].jht
+                              .toString()) +
+                          int.parse(controller.listAllSlipGaji[index].jkk
+                              .toString()) +
+                          int.parse(controller.listAllSlipGaji[index].jkm
+                              .toString()) +
+                          int.parse(controller.listAllSlipGaji[index].jp.toString()) +
+                          int.parse(controller.listAllSlipGaji[index].pinjaman.toString()) +
+                          int.parse(controller.listAllSlipGaji[index].lainLain.toString());
 
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                DateFormat("EEE, dd MMM yyyy", "id_ID").format(
-                                    controller
-                                        .listAllSlipGaji[index].tanggalAwal),
-                                style: Get.textTheme.titleMedium
-                                    ?.copyWith(fontWeight: FontWeight.bold),
-                              ),
-                              Text(
-                                  controller.setRupiah(controller
-                                      .listAllSlipGaji[index].gajiDiterima
-                                      .toInt()),
-                                  style: Get.textTheme.titleMedium?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color: kPrimaryColor)),
-                            ],
-                          ),
-                          10.height,
-                          Row(
-                            children: [
-                              Expanded(
-                                  child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Gaji',
-                                      style: Get.textTheme.bodySmall
-                                          ?.copyWith(color: grey)),
-                                  Text(
-                                      controller.setRupiah(controller
-                                          .listAllSlipGaji[index].gajiPokok
-                                          .toInt()),
-                                      style: Get.textTheme.bodyMedium?.copyWith(
-                                          color: grey,
-                                          fontWeight: FontWeight.bold)),
-                                ],
-                              )),
-                              Expanded(
-                                  child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Tambahan',
-                                      style: Get.textTheme.bodySmall
-                                          ?.copyWith(color: grey)),
-                                  Text(controller.setRupiah(tambahan.toInt()),
-                                      style: Get.textTheme.bodyMedium?.copyWith(
-                                          color: grey,
-                                          fontWeight: FontWeight.bold)),
-                                ],
-                              )),
-                              Expanded(
-                                  child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Potongan',
-                                      style: Get.textTheme.bodySmall
-                                          ?.copyWith(color: grey)),
-                                  Text(controller.setRupiah(potongan.toInt()),
-                                      style: Get.textTheme.bodyMedium?.copyWith(
-                                          color: grey,
-                                          fontWeight: FontWeight.bold)),
-                                ],
-                              )),
-                            ],
-                          ),
-                        ],
-                      ).onTap(() {
-                        controller.getSlipGajiById(
-                            controller.listAllSlipGaji[index].id.toInt());
-                      });
+                      return GestureDetector(
+                        onTap: () {
+                          controller.getSlipGajiById(int.parse(
+                              controller.listAllSlipGaji[index].id.toString()));
+                        },
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  DateFormat("EEE, dd MMM yyyy", "id_ID")
+                                      .format(controller
+                                          .listAllSlipGaji[index].tanggalAwal),
+                                  style: Get.textTheme.titleMedium
+                                      ?.copyWith(fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                    controller.setRupiah(int.parse(controller
+                                        .listAllSlipGaji[index].gajiDiterima
+                                        .toString())),
+                                    style: Get.textTheme.titleMedium?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: kPrimaryColor)),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Row(
+                              children: [
+                                Expanded(
+                                    child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('Gaji',
+                                        style: Get.textTheme.bodySmall
+                                            ?.copyWith(color: Colors.grey)),
+                                    Text(
+                                        controller.setRupiah(int.parse(
+                                            controller.listAllSlipGaji[index]
+                                                .gajiPokok
+                                                .toString())),
+                                        style: Get.textTheme.bodyMedium
+                                            ?.copyWith(
+                                                color: Colors.grey,
+                                                fontWeight: FontWeight.bold)),
+                                  ],
+                                )),
+                                Expanded(
+                                    child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('Tambahan',
+                                        style: Get.textTheme.bodySmall
+                                            ?.copyWith(color: Colors.grey)),
+                                    Text(controller.setRupiah(tambahan),
+                                        style: Get.textTheme.bodyMedium
+                                            ?.copyWith(
+                                                color: Colors.grey,
+                                                fontWeight: FontWeight.bold)),
+                                  ],
+                                )),
+                                Expanded(
+                                    child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('Potongan',
+                                        style: Get.textTheme.bodySmall
+                                            ?.copyWith(color: Colors.grey)),
+                                    Text(controller.setRupiah(potongan),
+                                        style: Get.textTheme.bodyMedium
+                                            ?.copyWith(
+                                                color: Colors.grey,
+                                                fontWeight: FontWeight.bold)),
+                                  ],
+                                )),
+                              ],
+                            ),
+                          ],
+                        ),
+                      );
                     },
                   ),
           ),

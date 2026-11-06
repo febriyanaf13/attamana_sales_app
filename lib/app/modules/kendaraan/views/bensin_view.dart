@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:nb_utils/nb_utils.dart';
 
 import '../../../components/custom_awesome_dialog.dart';
 import '../../../routes/app_pages.dart';
@@ -44,7 +43,9 @@ class BensinView extends GetView<KendaraanController> {
             () => controller.listBensin.isEmpty
                 ? const CustomLottieNotFound()
                 : ListView.separated(
-                    separatorBuilder: (context, index) => 10.height,
+                    separatorBuilder: (context, index) => SizedBox(
+                      height: 10,
+                    ),
                     itemCount: controller.listBensin.length,
                     padding: const EdgeInsets.all(20),
                     itemBuilder: (context, index) {
@@ -63,7 +64,9 @@ class BensinView extends GetView<KendaraanController> {
                                     width: 50,
                                     height: 50,
                                   ),
-                                  10.width,
+                                  SizedBox(
+                                    width: 10,
+                                  ),
                                   Expanded(
                                     child: Column(
                                       mainAxisAlignment:
@@ -79,7 +82,9 @@ class BensinView extends GetView<KendaraanController> {
                                               ?.copyWith(
                                                   fontWeight: FontWeight.bold),
                                         ),
-                                        10.height,
+                                        SizedBox(
+                                          height: 10,
+                                        ),
                                         Row(
                                           children: [
                                             Expanded(
@@ -93,57 +98,68 @@ class BensinView extends GetView<KendaraanController> {
                                                     ?.copyWith(),
                                               ),
                                             ),
-                                            const Icon(
-                                              Icons.edit,
-                                              size: 20,
-                                              color: Colors.blue,
-                                            ).onTap(() {
-                                              controller
-                                                      .controllerJenisKendaraan
-                                                      .text =
-                                                  controller.listBensin[index]
-                                                      .namaFixedAsset;
-                                              // controller
-                                              //         .controllerTanggal.text =
-                                              //     controller.listBensin[index]
-                                              //         .fillUpDate
-                                              //         .toString();
-                                              controller.controllerLiter.text =
-                                                  controller
-                                                      .listBensin[index].liter
-                                                      .toString();
-                                              controller.controllerHargaPerLiter
-                                                      .text =
-                                                  controller.listBensin[index]
-                                                      .hargaPerLiter
-                                                      .toString();
-                                              controller
-                                                      .controllerOdometer.text =
-                                                  controller.listBensin[index]
-                                                      .odometer
-                                                      .toString();
-                                              controller.controllerNotes.text =
-                                                  controller
-                                                      .listBensin[index].notes
-                                                      .toString();
+                                            GestureDetector(
+                                              onTap: () {
+                                                controller
+                                                        .controllerJenisKendaraan
+                                                        .text =
+                                                    controller.listBensin[index]
+                                                        .namaFixedAsset;
+                                                // controller
+                                                //         .controllerTanggal.text =
+                                                //     controller.listBensin[index]
+                                                //         .fillUpDate
+                                                //         .toString();
+                                                controller
+                                                        .controllerLiter.text =
+                                                    controller
+                                                        .listBensin[index].liter
+                                                        .toString();
+                                                controller
+                                                        .controllerHargaPerLiter
+                                                        .text =
+                                                    controller.listBensin[index]
+                                                        .hargaPerLiter
+                                                        .toString();
+                                                controller.controllerOdometer
+                                                        .text =
+                                                    controller.listBensin[index]
+                                                        .odometer
+                                                        .toString();
+                                                controller
+                                                        .controllerNotes.text =
+                                                    controller
+                                                        .listBensin[index].notes
+                                                        .toString();
 
-                                              Get.toNamed(Routes.ADD_BENSIN,
-                                                  arguments: controller
-                                                      .listBensin[index].id);
-                                            }),
-                                            10.width,
-                                            const Icon(
-                                              Icons.delete_forever_rounded,
-                                              color: Colors.red,
-                                            ).onTap(() {
-                                              awesomeDialogQuestion(
-                                                'Hapus Catatan Bensin',
-                                                'Yakin ingin menghapus item ini?',
-                                                () {
-                                                  print('object');
-                                                },
-                                              ).show();
-                                            })
+                                                Get.toNamed(Routes.ADD_BENSIN,
+                                                    arguments: controller
+                                                        .listBensin[index].id);
+                                              },
+                                              child: const Icon(
+                                                Icons.edit,
+                                                size: 20,
+                                                color: Colors.blue,
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              width: 10,
+                                            ),
+                                            GestureDetector(
+                                              onTap: () {
+                                                awesomeDialogQuestion(
+                                                  'Hapus Catatan Bensin',
+                                                  'Yakin ingin menghapus item ini?',
+                                                  () {
+                                                    print('object');
+                                                  },
+                                                ).show();
+                                              },
+                                              child: const Icon(
+                                                Icons.delete_forever_rounded,
+                                                color: Colors.red,
+                                              ),
+                                            )
                                           ],
                                         ),
                                       ],
@@ -152,7 +168,9 @@ class BensinView extends GetView<KendaraanController> {
                                 ],
                               ),
                               const Divider(),
-                              10.height,
+                              SizedBox(
+                                height: 10,
+                              ),
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
@@ -167,7 +185,9 @@ class BensinView extends GetView<KendaraanController> {
                                   ),
                                 ],
                               ),
-                              10.height,
+                              SizedBox(
+                                height: 10,
+                              ),
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
@@ -183,7 +203,9 @@ class BensinView extends GetView<KendaraanController> {
                                   ),
                                 ],
                               ),
-                              10.height,
+                              SizedBox(
+                                height: 10,
+                              ),
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
@@ -199,7 +221,9 @@ class BensinView extends GetView<KendaraanController> {
                                   ),
                                 ],
                               ),
-                              10.height,
+                              SizedBox(
+                                height: 10,
+                              ),
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
@@ -215,7 +239,9 @@ class BensinView extends GetView<KendaraanController> {
                                   ),
                                 ],
                               ),
-                              10.height,
+                              SizedBox(
+                                height: 10,
+                              ),
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
@@ -224,37 +250,40 @@ class BensinView extends GetView<KendaraanController> {
                                     'Bukti :',
                                     style: Get.textTheme.bodySmall?.copyWith(),
                                   ),
-                                  Text(
-                                    'Lihat Bukti',
-                                    style: Get.textTheme.bodySmall
-                                        ?.copyWith(color: Colors.blue),
-                                  ).onTap(() {
-                                    Get.defaultDialog(
-                                        title: 'Bukti Pengisian Bensin',
-                                        content: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(0),
-                                          // Image border
-                                          child: SizedBox.fromSize(
-                                            // Image radius
-                                            child: Image.network(
-                                              controller
-                                                  .listBensin[index].bukti,
-                                              fit: BoxFit.fill,
-                                              width: 50,
-                                              height: 50,
-                                              errorBuilder: (context, error,
-                                                      stackTrace) =>
-                                                  Image.asset(
-                                                'bensin'.png,
-                                                fit: BoxFit.contain,
+                                  GestureDetector(
+                                    onTap: () {
+                                      Get.defaultDialog(
+                                          title: 'Bukti Pengisian Bensin',
+                                          content: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(0),
+                                            // Image border
+                                            child: SizedBox.fromSize(
+                                              // Image radius
+                                              child: Image.network(
+                                                controller
+                                                    .listBensin[index].bukti,
+                                                fit: BoxFit.fill,
                                                 width: 50,
                                                 height: 50,
+                                                errorBuilder: (context, error,
+                                                        stackTrace) =>
+                                                    Image.asset(
+                                                  'bensin'.png,
+                                                  fit: BoxFit.contain,
+                                                  width: 50,
+                                                  height: 50,
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                        ));
-                                  })
+                                          ));
+                                    },
+                                    child: Text(
+                                      'Lihat Bukti',
+                                      style: Get.textTheme.bodySmall
+                                          ?.copyWith(color: Colors.blue),
+                                    ),
+                                  )
                                 ],
                               ),
                             ],

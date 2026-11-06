@@ -1,18 +1,10 @@
-import 'dart:ffi';
-import 'dart:math';
-
 import 'package:animated_custom_dropdown/custom_dropdown.dart';
-import 'package:attamana_salles_app/app/components/custom_dropdown_sales_model_search.dart';
 import 'package:attamana_salles_app/app/modules/sales_module/assign_sales/controllers/assign_sales_controller.dart';
-import 'package:attamana_salles_app/app/modules/sales_module/assign_sales/models/customer_sales_update.dart';
-import 'package:attamana_salles_app/app/style/paddings.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nb_utils/nb_utils.dart';
 
 import '../../../../components/custom_button.dart';
-import '../../../../components/custom_dropdown_search.dart';
 import '../../../../style/colors.dart';
 import '../../report_visit/models/sales.dart';
 
@@ -91,7 +83,9 @@ class EditAssignSalesView extends GetView<AssignSalesController> {
                   )
                 ],
               ),
-              20.height,
+              SizedBox(
+                height: 20,
+              ),
               Obx(
                 () => Expanded(
                     child: ListView.separated(
@@ -124,7 +118,9 @@ class EditAssignSalesView extends GetView<AssignSalesController> {
                             'Sales ${index + 1}',
                             style: Get.textTheme.bodyLarge,
                           ),
-                          10.height,
+                          SizedBox(
+                            height: 10,
+                          ),
                           CustomDropdown<Sales>.search(
                             hintText: 'Select Sales',
                             headerBuilder: (context, selectedItem, enable) =>
@@ -147,7 +143,7 @@ class EditAssignSalesView extends GetView<AssignSalesController> {
                               pegawaiId.value = value!.pegawaiId.toString();
                               // controller.dataListCustomerSalesUpdate
                               //     .add(value.pegawaiId.toString());
-                              log('changing value to: ${value!.nama}');
+                              // log('changing value to: ${value!.nama}');
                             },
                             validator: (p0) {
                               if (p0?.pegawaiId == null) {
@@ -186,7 +182,9 @@ class EditAssignSalesView extends GetView<AssignSalesController> {
                                   'Sales ${index + 1}',
                                   style: Get.textTheme.bodyLarge,
                                 ),
-                                10.height,
+                                SizedBox(
+                                  height: 10,
+                                ),
                                 CustomDropdown<Sales>.search(
                                   hintText: 'Select Sales',
                                   headerBuilder:
@@ -208,7 +206,7 @@ class EditAssignSalesView extends GetView<AssignSalesController> {
                                       controller.dataListCustomerSalesUpdate[
                                           index] = id.toString();
                                     }
-                                    log('changing value to: ${value!.nama}');
+                                    // log('changing value to: ${value!.nama}');
                                   },
                                   validator: (p0) {
                                     if (p0!.pegawaiId == null) {
@@ -223,11 +221,15 @@ class EditAssignSalesView extends GetView<AssignSalesController> {
                   },
                   itemCount: controller.listLength.value,
                   separatorBuilder: (BuildContext context, int index) {
-                    return 15.height;
+                    return SizedBox(
+                      height: 15,
+                    );
                   },
                 )),
               ),
-              20.height,
+              SizedBox(
+                height: 20,
+              ),
               controller.isLoadingUpdateAssignSales.isTrue
                   ? const Center(
                       child: CircularProgressIndicator(

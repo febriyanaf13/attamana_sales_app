@@ -1,21 +1,25 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:attamana_salles_app/app/components/custom_dialog.dart';
 import 'package:attamana_salles_app/app/modules/customer/models/customer.dart';
 import 'package:attamana_salles_app/app/modules/maps/controllers/maps_controller.dart';
 import 'package:attamana_salles_app/app/modules/sales_module/activity/models/jenis_kunjungan.dart';
+import 'package:attamana_salles_app/app/modules/splash/controllers/splash_controller.dart';
 
 import 'package:attamana_salles_app/app/routes/app_pages.dart';
 import 'package:attamana_salles_app/app/utils/string.dart';
+import 'package:awesome_dialog/awesome_dialog.dart' as awd;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:nb_utils/nb_utils.dart';
 
 import '../../../../components/custom_button.dart';
 import '../../../../components/custom_text_field.dart';
@@ -60,6 +64,8 @@ class ActivityController extends GetxController {
   var ketcustomer = 'EXISTING'.obs;
   var customerId = ''.obs;
   var action = ''.obs;
+  var selectedLatitude = 0.0.obs;
+  var selectedLongitude = 0.0.obs;
 
   // var listAction = [
   //   {'text': 'OFFERING PRODUCT', 'value': 'OFFERING PRODUCT'},
@@ -139,7 +145,20 @@ class ActivityController extends GetxController {
     getCustomerExisting();
     getJenisKunjungan();
     getLead();
+
     super.onInit();
+  }
+
+  void resetForm() {
+    customerId.value = '';
+    action.value = '';
+    tglVisit.value = DateFormat('yyyy-MM-dd').format(DateTime.now());
+
+    // Bersihkan semua text controller
+    textEditingControllerDeskripsi.clear();
+    textEditingControllerAction.clear();
+    textEditingControllerNama.clear();
+    textEditingControllerAlamat.clear();
   }
 
   void getListActivity() {
@@ -149,7 +168,7 @@ class ActivityController extends GetxController {
     DateTime lastWeek =
         now.subtract(const Duration(days: 7)); // Kurangi 1 minggu
     String formattedDate = DateFormat('yyyy-MM-dd').format(lastWeek);
-    print(formattedDate); // Output: 2025-02-28 (jika hari ini 2025-03-07)
+    print(formattedDate);
     var body = {'userid': userId, 'filter_tanggal': formattedDate.toString()};
     ActivityProvider().postReqListVisit(body).then((value) {
       if (kDebugMode) {
@@ -157,9 +176,9 @@ class ActivityController extends GetxController {
       }
       if (value.status.isOk) {
         var data = value.body['data'];
+        print("data list activity $data");
         listActivity.value = activityFromJson(data);
         for (var list in listActivity) {
-          print('masuk sini');
           if (list.status == null ||
               list.status == "" ||
               list.status == 'CHECK IN') {
@@ -200,7 +219,7 @@ class ActivityController extends GetxController {
     });
   }
 
-  void getCustomerExisting() {
+  Future<void> getCustomerExisting() async {
     ActivityProvider().getExistingCustomer().then((value) {
       if (kDebugMode) {
         print("ini custommer existing ${value.body['data']}");
@@ -240,6 +259,7 @@ class ActivityController extends GetxController {
   }
 
   void postSimpanActivity() {
+    SplashController().reqToken();
     if (formKey.currentState!.validate()) {
       isLoadingSimpanActivity.toggle();
       var body = {
@@ -256,31 +276,101 @@ class ActivityController extends GetxController {
       }
       print('coba cek error');
 
+      // ActivityProvider().postSimpanActivity(body).then((value) {
+      //   isLoadingSimpanActivity.toggle();
+      //
+      //   if (kDebugMode) {
+      //     print(value.body);
+      //   }
+      //
+      //   if (value.status.isOk) {
+      //     var success = value.body['success'];
+      //     var message = value.body['message'];
+      //     print(success);
+      //     if (success) {
+      //       Get.back();
+      //       getListActivity();
+      //       dialogSuccess('Success', message);
+      //     } else {
+      //       dialogWarning('Ops...', message);
+      //     }
+      //   } else if (value.status.isServerError) {
+      //     dialogError('Terjadi Kesalahan',
+      //         'Terjadi masalah pada server / koneksi internet lambat');
+      //   } else if (value.status.connectionError) {
+      //     dialogError('Koneksi Gagal',
+      //         'Tidak dapat terhubung ke server. Silakan periksa koneksi internet Anda dan coba lagi!');
+      //   }
+      // });
+
       ActivityProvider().postSimpanActivity(body).then((value) {
         isLoadingSimpanActivity.toggle();
 
         if (kDebugMode) {
           print(value.body);
+          print(value.status.code); // debug status
         }
 
         if (value.status.isOk) {
-          var success = value.body['success'];
-          var message = value.body['message'];
-          print(success);
+          final success = value.body['success'] ?? false;
+          final message = value.body['message'] ?? '';
+
           if (success) {
-            Get.back();
+            Get.until((route) => route.settings.name == Routes.ACTIVITY);
             getListActivity();
             dialogSuccess('Success', message);
           } else {
             dialogWarning('Ops...', message);
           }
         } else if (value.status.isServerError) {
-          dialogError('Terjadi Kesalahan',
-              'Terjadi masalah pada server / koneksi internet lambat');
+          dialogError(
+            'Terjadi Kesalahan',
+            'Terjadi masalah pada server / koneksi internet lambat',
+          );
         } else if (value.status.connectionError) {
-          dialogError('Tidak ada koneksi',
-              'Jaringan internet bermasalah, silahkan cek koneksi internet!');
+          // dialogError('Koneksi Gagal',
+          //     'Tidak dapat terhubung ke server. Silakan periksa koneksi internet Anda dan coba lagi!');
+
+          awd.AwesomeDialog(
+                  context: Get.context!,
+                  dialogType: awd.DialogType.error,
+                  animType: awd.AnimType.topSlide,
+                  title: 'Koneksi Gagal',
+                  desc:
+                      'Tidak dapat terhubung ke server. Silakan periksa koneksi internet Anda dan coba lagi!',
+                  btnOkText: 'Refresh Page',
+                  btnOkOnPress: () async {
+                    final SplashController splashC =
+                        Get.find<SplashController>();
+                    await splashC.reqToken();
+                    await Get.offNamed(Routes.ACTIVITY);
+                  },
+                  btnCancelText: 'Re-login',
+                  btnCancelOnPress: () async {
+                    await storage.remove('session');
+                    // storage.remove('userData');
+
+                    Get.offAllNamed(
+                      Routes.LOGIN,
+                    );
+                  },
+                  btnOkIcon: Icons.refresh,
+                  btnOkColor: Colors.blue,
+                  btnCancelIcon: Icons.login,
+                  btnCancelColor: Colors.green)
+              .show();
+        } else {
+          dialogError(
+            'Gagal',
+            'Kode error: ${value.status.code}',
+          );
         }
+      }).catchError((e) {
+        isLoadingSimpanActivity.toggle();
+        dialogError(
+          'Error',
+          e.toString(),
+        );
       });
     }
   }
@@ -364,7 +454,9 @@ class ActivityController extends GetxController {
                   inputType: TextInputType.text,
                   controller: textEditingControllerCatatan,
                 ),
-                30.height,
+                SizedBox(
+                  height: 30,
+                ),
                 Obx(
                   () => isLoadingSimpanCatatanCheckout.isTrue
                       ? const Center(
@@ -593,7 +685,11 @@ class ActivityController extends GetxController {
       imageBukti = image;
       getDialogPostImage(activityId, bodyCheckIn, perluAbsen);
     } catch (e) {
-      toast('Gagal mengambil gambar : $e');
+      Get.snackbar(
+        "Error",
+        "Gagal mengambil gambar: $e",
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
     update();
   }
@@ -767,4 +863,314 @@ class ActivityController extends GetxController {
 //
 //   // if (formKey.currentState!.validate()) {}
 // }
+
+  Future<void> pickAddressFromMap() async {
+    // ✅ GUNAKAN GET.DIALOG UNTUK POPUP
+    final result = await Get.dialog(
+      const MapPickerPopup(), // Widget Popup yang akan kita buat di bawah
+      barrierDismissible: false, // User harus klik tombol untuk menutup
+    );
+
+    if (result != null) {
+      selectedLatitude.value = result['lat'];
+      selectedLongitude.value = result['lng'];
+
+      try {
+        List<Placemark> placemarks = await placemarkFromCoordinates(
+          result['lat'],
+          result['lng'],
+        );
+
+        if (placemarks.isNotEmpty) {
+          Placemark place = placemarks[0];
+
+          String fullAddress =
+              "${place.street}, ${place.subLocality}, ${place.locality}, ${place.subAdministrativeArea}, ${place.postalCode}";
+          fullAddress = fullAddress
+              .replaceAll(", ,", ",")
+              .replaceAll(RegExp(r'^,\s*'), '');
+
+          textEditingControllerAlamat.text = fullAddress;
+        }
+      } catch (e) {
+        Get.snackbar("Error", "Gagal mendapatkan nama alamat: $e");
+      }
+    }
+  }
+}
+
+class MapPickerPopup extends StatefulWidget {
+  const MapPickerPopup({Key? key}) : super(key: key);
+
+  @override
+  State<MapPickerPopup> createState() => _MapPickerPopupState();
+}
+
+class _MapPickerPopupState extends State<MapPickerPopup> {
+  late GoogleMapController mapController;
+  LatLng _selectedLocation = const LatLng(-6.200000, 106.816666);
+  final TextEditingController _searchController = TextEditingController();
+
+  // State untuk Autocomplete
+  List<PlaceSuggestion> _suggestions = [];
+  bool _isLoadingSuggestions = false;
+
+  // Ganti dengan API KEY Google Maps Anda (yang ada Places API)
+  final String _apiKey = 'AIzaSyD2xvFq92XW4_jYTpPJ8DdCjeac-AUE4Qc';
+
+  void _onMapCreated(GoogleMapController controller) {
+    mapController = controller;
+  }
+
+  // --- FUNGSI MENCARI REKOMENDASI ALAMAT ---
+  Future<void> _getPlaceSuggestions(String input) async {
+    if (input.isEmpty) {
+      setState(() => _suggestions = []);
+      return;
+    }
+
+    setState(() => _isLoadingSuggestions = true);
+
+    try {
+      final url = Uri.parse(
+          'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$input&key=$_apiKey&language=id');
+
+      final response = await http.get(url);
+      final data = json.decode(response.body);
+
+      if (data['status'] == 'OK') {
+        setState(() {
+          _suggestions = (data['predictions'] as List).map((e) {
+            return PlaceSuggestion(
+              description: e['description'],
+              placeId: e['place_id'],
+            );
+          }).toList();
+        });
+      } else {
+        setState(() => _suggestions = []);
+      }
+    } catch (e) {
+      print("Error fetch suggestions: $e");
+    } finally {
+      setState(() => _isLoadingSuggestions = false);
+    }
+  }
+
+  // --- FUNGSI MEMILIH REKOMENDASI & PINDAH KAMERA ---
+  Future<void> _onSuggestionSelected(PlaceSuggestion suggestion) async {
+    // Sembunyikan keyboard & hapus list rekomendasi
+    FocusScope.of(context).unfocus();
+    setState(() {
+      _searchController.text = suggestion.description;
+      _suggestions = [];
+    });
+
+    try {
+      // Dapatkan koordinat dari Place ID menggunakan Geocoding (atau Place Details API)
+      // Karena place_id tidak bisa langsung ke koordinat via package geocoding, kita pakai getLocationFromAddress sementara.
+      // *Sebaiknya gunakan Place Details API untuk hasil paling akurat.
+      List<Location> locations =
+          await locationFromAddress(suggestion.description);
+
+      if (locations.isNotEmpty) {
+        final loc = locations.first;
+        LatLng newLocation = LatLng(loc.latitude, loc.longitude);
+
+        mapController.animateCamera(
+          CameraUpdate.newLatLngZoom(newLocation, 16.0),
+        );
+
+        setState(() {
+          _selectedLocation = newLocation;
+        });
+      }
+    } catch (e) {
+      Get.snackbar('Error', 'Gagal mendapatkan titik koordinat alamat.');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      insetPadding: const EdgeInsets.all(20),
+      child: Container(
+        height: 600, // Tinggi ditambah untuk search bar
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(24),
+          color: Colors.white,
+        ),
+        child: Column(
+          children: [
+            // --- HEADER POPUP ---
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 12, 12),
+              child: Row(
+                children: [
+                  const Icon(Icons.map_rounded, color: kPrimaryColor),
+                  const SizedBox(width: 10),
+                  const Text(
+                    'Pilih Lokasi',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF1E293B),
+                    ),
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    onPressed: () => Get.back(),
+                    icon: const Icon(Icons.close_rounded, color: Colors.grey),
+                  ),
+                ],
+              ),
+            ),
+
+            // --- SEARCH BAR & REKOMENDASI ALAMAT ---
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                children: [
+                  TextField(
+                    controller: _searchController,
+                    onChanged: (value) {
+                      // Panggil API setiap kali user mengetik (bisa ditambahkan debounce)
+                      _getPlaceSuggestions(value);
+                    },
+                    decoration: InputDecoration(
+                      hintText: 'Ketik alamat untuk mencari...',
+                      hintStyle:
+                          TextStyle(fontSize: 13, color: Colors.grey.shade400),
+                      filled: true,
+                      fillColor: const Color(0xFFF8FAFC),
+                      prefixIcon: const Icon(Icons.search_rounded,
+                          color: kPrimaryColor, size: 20),
+                      suffixIcon: _isLoadingSuggestions
+                          ? const Padding(
+                              padding: EdgeInsets.all(14),
+                              child: SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                    strokeWidth: 2, color: kPrimaryColor),
+                              ),
+                            )
+                          : _searchController.text.isNotEmpty
+                              ? IconButton(
+                                  icon: const Icon(Icons.clear_rounded,
+                                      size: 20, color: Colors.grey),
+                                  onPressed: () {
+                                    _searchController.clear();
+                                    setState(() => _suggestions = []);
+                                  },
+                                )
+                              : null,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 0),
+                    ),
+                  ),
+
+                  // --- DAFTAR REKOMENDASI (MUNCUL SAAT MENGETIK) ---
+                  if (_suggestions.isNotEmpty)
+                    Container(
+                      margin: const EdgeInsets.only(top: 4),
+                      constraints: const BoxConstraints(maxHeight: 200),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: const Color(0xFFF1F5F9)),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          )
+                        ],
+                      ),
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: _suggestions.length,
+                        itemBuilder: (context, index) {
+                          final suggestion = _suggestions[index];
+                          return ListTile(
+                            dense: true,
+                            leading: const Icon(Icons.location_on_rounded,
+                                size: 18, color: Colors.grey),
+                            title: Text(
+                              suggestion.description,
+                              style: const TextStyle(
+                                  fontSize: 12, color: Color(0xFF1E293B)),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            onTap: () => _onSuggestionSelected(suggestion),
+                          );
+                        },
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            // --- PETA ---
+            Expanded(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(0),
+                child: GoogleMap(
+                  onMapCreated: _onMapCreated,
+                  initialCameraPosition: CameraPosition(
+                    target: _selectedLocation,
+                    zoom: 15.0,
+                  ),
+                  onTap: (LatLng position) {
+                    setState(() {
+                      _selectedLocation = position;
+                    });
+                  },
+                  markers: {
+                    Marker(
+                      markerId: const MarkerId('selected-location'),
+                      position: _selectedLocation,
+                    ),
+                  },
+                ),
+              ),
+            ),
+
+            // --- TOMBOL PILIH ---
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: CustomButton(
+                onTap: () {
+                  Get.back(result: {
+                    'lat': _selectedLocation.latitude,
+                    'lng': _selectedLocation.longitude,
+                  });
+                },
+                text: 'PILIH LOKASI INI',
+                border: 15,
+                height: 55,
+                gradient: LinearGradient(
+                  colors: [kPrimaryColor, const Color(0xFF1E3C72)],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// --- MODEL UNTUK MENAMPUNG REKOMENDASI ---
+class PlaceSuggestion {
+  final String description;
+  final String placeId;
+
+  PlaceSuggestion({required this.description, required this.placeId});
 }

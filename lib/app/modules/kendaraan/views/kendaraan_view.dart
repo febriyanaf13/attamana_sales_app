@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:nb_utils/nb_utils.dart';
 
 import '../../../style/colors.dart';
 import '../controllers/kendaraan_controller.dart';
@@ -30,7 +29,9 @@ class KendaraanView extends GetView<KendaraanController> {
           },
           child: Obx(
             () => ListView.separated(
-              separatorBuilder: (context, index) => 10.height,
+              separatorBuilder: (context, index) => SizedBox(
+                height: 10,
+              ),
               itemCount: controller.listKendaraan.length,
               padding: const EdgeInsets.all(20),
               itemBuilder: (context, index) {
@@ -71,7 +72,9 @@ class KendaraanView extends GetView<KendaraanController> {
                                     ),
                                   ),
                                 ),
-                                10.width,
+                                SizedBox(
+                                  width: 10,
+                                ),
                                 Expanded(
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.start,
@@ -85,7 +88,8 @@ class KendaraanView extends GetView<KendaraanController> {
                                             ?.copyWith(
                                                 fontWeight: FontWeight.bold),
                                       ),
-                                      // 10.height,
+                                      //SizedBox(height: 10,),
+
                                       // Row(
                                       //   mainAxisAlignment:
                                       //       MainAxisAlignment.spaceBetween,
@@ -95,7 +99,8 @@ class KendaraanView extends GetView<KendaraanController> {
                                       //       style: Get.textTheme.bodySmall
                                       //           ?.copyWith(),
                                       //     ),
-                                      //     10.width,
+                                      //    SizedBox(width: 10,),
+
                                       //     const Icon(
                                       //       Icons.local_gas_station_rounded,
                                       //       color: Colors.red,
@@ -109,7 +114,9 @@ class KendaraanView extends GetView<KendaraanController> {
                               ],
                             ),
                             const Divider(),
-                            10.height,
+                            SizedBox(
+                              height: 10,
+                            ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -123,7 +130,9 @@ class KendaraanView extends GetView<KendaraanController> {
                                 ),
                               ],
                             ),
-                            10.height,
+                            SizedBox(
+                              height: 10,
+                            ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -137,7 +146,9 @@ class KendaraanView extends GetView<KendaraanController> {
                                 ),
                               ],
                             ),
-                            10.height,
+                            SizedBox(
+                              height: 10,
+                            ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -153,7 +164,9 @@ class KendaraanView extends GetView<KendaraanController> {
                                 ),
                               ],
                             ),
-                            10.height,
+                            SizedBox(
+                              height: 10,
+                            ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [

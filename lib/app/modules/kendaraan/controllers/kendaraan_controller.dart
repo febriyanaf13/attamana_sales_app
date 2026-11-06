@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:nb_utils/nb_utils.dart';
 
 import '../../../components/custom_dialog.dart';
 
@@ -147,7 +146,11 @@ class KendaraanController extends GetxController {
       boolImageBensin.value = true;
       imageBensin = image;
     } catch (e) {
-      toast('Gagal mengambil gambar : $e');
+      Get.snackbar(
+        "Error",
+        "Gagal mengambil gambar: $e",
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
     update();
   }

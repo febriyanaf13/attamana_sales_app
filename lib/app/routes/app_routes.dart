@@ -49,6 +49,7 @@ abstract class Routes {
   static const ASSIGN_SALES = _Paths.ASSIGN_SALES;
   static const EDIT_ASSIGN_SALES = _Paths.EDIT_ASSIGN_SALES;
   static const SAMPLE_AND_PRICING = _Paths.SAMPLE_AND_PRICING;
+  static const NOTIFICATION = _Paths.NOTIFICATION;
 }
 
 abstract class _Paths {
@@ -97,4 +98,5 @@ abstract class _Paths {
   static const ASSIGN_SALES = '/assign-sales';
   static const EDIT_ASSIGN_SALES = '/edit-assign-sales';
   static const SAMPLE_AND_PRICING = '/sample-and-pricing';
+  static const NOTIFICATION = '/notification';
 }

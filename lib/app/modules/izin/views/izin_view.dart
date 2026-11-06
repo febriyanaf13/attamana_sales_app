@@ -2,7 +2,6 @@ import 'package:attamana_salles_app/app/utils/extension_image.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
-import 'package:nb_utils/nb_utils.dart';
 
 import '../../../components/custom_button.dart';
 import '../../../components/custom_datepicker_dialog.dart';
@@ -44,7 +43,10 @@ class IzinView extends GetView<IzinController> {
                 //   validator: 'Data harus diisi...!',
                 //   onChangeValue: (value) {},
                 // ),
-                20.height,
+                SizedBox(
+                  height: 20,
+                ),
+
                 SizedBox(
                   height: 50,
                   child: Row(
@@ -53,7 +55,9 @@ class IzinView extends GetView<IzinController> {
                         title: 'Tanggal Izin',
                         isRequired: true,
                       ),
-                      20.width,
+                      SizedBox(
+                        width: 20,
+                      ),
                       const CustomTimePickerDialog(
                         title: '',
                         isRequired: true,
@@ -61,7 +65,10 @@ class IzinView extends GetView<IzinController> {
                     ],
                   ),
                 ),
-                20.height,
+                SizedBox(
+                  height: 20,
+                ),
+
                 SizedBox(
                   height: 124,
                   width: Get.width,
@@ -79,13 +86,13 @@ class IzinView extends GetView<IzinController> {
                                     const Icon(
                                       Icons.camera_alt_outlined,
                                       size: 50,
-                                      color: grey,
+                                      color: Colors.grey,
                                     ),
-                                    Text(
-                                      'Ambil Foto Bukti',
-                                      style:
-                                          boldTextStyle(color: grey, size: 14),
-                                    )
+                                    Text('Ambil Foto Bukti',
+                                        style: TextStyle(
+                                            color: Colors.grey,
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold))
                                   ],
                                 )
                               : Padding(
@@ -103,7 +110,10 @@ class IzinView extends GetView<IzinController> {
                     },
                   ),
                 ),
-                20.height,
+                SizedBox(
+                  height: 20,
+                ),
+
                 CustomTextFieldTitle(
                   withTitle: false,
                   controller: TextEditingController(),
@@ -111,7 +121,9 @@ class IzinView extends GetView<IzinController> {
                   hint: 'Masukan Deskripsi',
                   maxLine: 4,
                 ),
-                50.height,
+                SizedBox(
+                  height: 50,
+                ),
                 SizedBox(
                   width: Get.width,
                   child: CustomButton(

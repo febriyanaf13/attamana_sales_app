@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 import '../style/colors.dart';
 
@@ -39,28 +40,41 @@ class _CustomDateTimePickerDialogState
 
   _selectDate(BuildContext context) async {
     selectedDate = DateTime.now();
+
+    // Perbaikan DatePicker dengan Tema Modern
     final DateTime? selected = await showDatePicker(
       context: context,
       initialDate: selectedDate,
-      firstDate:
-          // widget.firstDate == null
-          //     ?
-          DateTime.parse('1000-01-01'),
-      // DateTime.parse('${DateTime.now().year.toString()}-01-01'),
-      // :
-      // DateTime.parse(widget.firstDate!),
-      lastDate: widget.lastDate == null
-          ? DateTime.parse('${DateTime.now().year.toInt() + 1}-12-31')
-          : DateTime.parse('${widget.firstDate}'),
+      firstDate: DateTime.parse(widget.firstDate ?? '1000-01-01'),
+      lastDate: DateTime.parse(
+          widget.lastDate ?? '${DateTime.now().year.toInt() + 1}-12-31'),
       initialDatePickerMode: DatePickerMode.day,
       initialEntryMode: DatePickerEntryMode.calendarOnly,
       builder: (context, child) {
-        return Center(
-            child: SizedBox(
-          width: 500,
-          height: Get.height / 2,
-          child: child,
-        ));
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary: kPrimaryColor, // Header & Lingkaran seleksi
+              onPrimary: Colors.white, // Teks di atas primary
+              onSurface: const Color(0xFF1E293B), // Teks tanggal (Slate 900)
+            ),
+            // Perbaikan error: Menggunakan DialogThemeData untuk parameter dialogTheme
+            dialogTheme: DialogThemeData(
+              backgroundColor: Colors.white,
+              elevation: 10,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(24),
+              ),
+            ),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                foregroundColor: kPrimaryColor,
+                textStyle: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+          child: child!,
+        );
       },
     );
 
@@ -73,8 +87,6 @@ class _CustomDateTimePickerDialogState
             '${selectedDate.day.toString().padLeft(2, '0')}-${selectedDate.month.toString().padLeft(2, '0')}-${selectedDate.year.toString().padLeft(2, '0')}';
       });
     }
-    // print(DateTime.parse(
-    //     '${DateTime.now().year.toString().padLeft(2, '0')}-${DateTime.december.toString().padLeft(2, '0')}-${DateUtils.getDaysInMonth(DateTime.now().year, DateTime.now().month).toString().padLeft(2, '0')}'));
 
     widget.onDataChange?.call(valueDate);
   }
@@ -82,45 +94,88 @@ class _CustomDateTimePickerDialogState
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Align(
-            alignment: Alignment.centerLeft,
-            child: RichText(
-              text: TextSpan(
-                text: widget.isRequired ? '* ' : 'Tanggal ${widget.title}',
-                style: widget.isRequired
-                    ? const TextStyle(color: kErrorColor)
-                    : const TextStyle(
-                        color: kPrimaryTextColor, fontWeight: FontWeight.bold),
-                children: <TextSpan>[
-                  TextSpan(
-                      text: widget.isRequired
-                          ? 'Tanggal ${widget.title}'
-                          : '(Optional)',
-                      style: widget.isRequired
-                          ? const TextStyle(
-                              color: kPrimaryTextColor,
-                              fontWeight: FontWeight.bold)
-                          : const TextStyle(
-                              color: kSecondaryTextColor,
-                              fontWeight: FontWeight.normal)),
-                ],
-              ),
-            )),
-        const SizedBox(
-          height: 10,
+        // --- LABEL MODERN (Slate 600) ---
+        RichText(
+          text: TextSpan(
+            text: widget.title,
+            style: const TextStyle(
+              color: Color(0xFF475569),
+              fontWeight: FontWeight.w700,
+              fontSize: 13,
+            ),
+            children: <TextSpan>[
+              if (widget.isRequired)
+                const TextSpan(
+                  text: ' *',
+                  style: TextStyle(color: kErrorColor, fontSize: 14),
+                )
+              else
+                TextSpan(
+                  text: ' (Optional)',
+                  style: TextStyle(
+                    color: Colors.grey.shade400,
+                    fontWeight: FontWeight.w400,
+                    fontSize: 11,
+                  ),
+                ),
+            ],
+          ),
         ),
-        SizedBox(
-          child: TextFormField(
-            readOnly: true,
-            decoration: InputDecoration(
-                hintText: 'Pilih', hintStyle: Get.textTheme.bodyMedium),
-            controller:
-                TextEditingController(text: widget.setDateValue ?? textDate),
-            validator: widget.validator,
-            onTap: () {
-              if (widget.enabled == true) _selectDate(context);
-            },
+        const SizedBox(height: 8),
+
+        // --- INPUT FIELD MODERN ---
+        TextFormField(
+          readOnly: true,
+          enabled: widget.enabled,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF1E293B), // Slate 900
+          ),
+          // Menggunakan nilai setDateValue jika ada, jika tidak gunakan textDate (dd-MM-yyyy)
+          controller:
+              TextEditingController(text: widget.setDateValue ?? textDate),
+          validator: widget.validator,
+          onTap: () {
+            if (widget.enabled == true) _selectDate(context);
+          },
+          decoration: InputDecoration(
+            hintText: 'Pilih Tanggal',
+            hintStyle: TextStyle(
+              color: Colors.grey.shade400,
+              fontWeight: FontWeight.w400,
+              fontSize: 14,
+            ),
+            prefixIcon: Icon(
+              Icons.calendar_today_rounded,
+              size: 18,
+              color: widget.enabled ? kPrimaryColor : Colors.grey.shade300,
+            ),
+            filled: true,
+            fillColor: widget.enabled ? Colors.white : const Color(0xFFF8FAFC),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            // Border Design: Soft Slate
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide:
+                  const BorderSide(color: Color(0xFFE2E8F0), width: 1.5),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: kPrimaryColor, width: 1.5),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: kErrorColor, width: 1.5),
+            ),
+            disabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide:
+                  const BorderSide(color: Color(0xFFF1F5F9), width: 1.5),
+            ),
           ),
         ),
       ],

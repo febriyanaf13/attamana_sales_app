@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:nb_utils/nb_utils.dart';
 
 class ReimburseController extends GetxController {
   //TODO: Implement ReimburseController
@@ -19,9 +18,6 @@ class ReimburseController extends GetxController {
 
   final count = 0.obs;
 
-
-
-
   void increment() => count.value++;
 
   Future getImageReimburse() async {
@@ -33,7 +29,11 @@ class ReimburseController extends GetxController {
       boolImageReimburse.value = true;
       imageReimburse = image;
     } catch (e) {
-      toast('Gagal mengambil gambar : $e');
+      Get.snackbar(
+        "Error",
+        "Gagal mengambil gambar: $e",
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
     update();
   }

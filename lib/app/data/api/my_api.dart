@@ -1,7 +1,7 @@
 abstract class Api {
-  // static const baseUrl = 'https://attamana.freightapp.in:444/api';
+  static const baseUrl = 'https://attamana.freightapp.in:444/api';
 
-  static const baseUrl = 'https://demoerp.freightapp.in:444/api';
+  // static const baseUrl = 'https://demoerp.freightapp.in:444/api';
 
   // static const baseUrl = '192.168.18.15:8000/api';
 
@@ -81,4 +81,13 @@ abstract class Api {
 
   //acoount
   static const updatePassword = '$baseUrl/updatepassword';
+
+  //get user
+  static const getUser = '$baseUrl/get_user';
+
+  //get provinsi
+  static const getProvinsi = '$baseUrl/list_provinsi';
+
+  //get kabupaten
+  static const getKabupaten = '$baseUrl/list_kabupaten';
 }

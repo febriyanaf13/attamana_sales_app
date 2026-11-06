@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:nb_utils/nb_utils.dart';
 
 import '../../../components/custom_lottie_not_found.dart';
 import '../../../style/colors.dart';
@@ -81,7 +80,7 @@ class MaintenanceView extends GetView<MaintenanceController> {
                                                     size: 20,
                                                     color: Colors.blue,
                                                   ),
-                                                  10.height,
+                                                  SizedBox(height: 10),
                                                   const Icon(
                                                     Icons
                                                         .delete_forever_rounded,
@@ -93,7 +92,9 @@ class MaintenanceView extends GetView<MaintenanceController> {
                                             ],
                                           ),
                                           const Divider(),
-                                          5.height,
+                                          SizedBox(
+                                            height: 5,
+                                          ),
                                           Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceBetween,
@@ -105,7 +106,9 @@ class MaintenanceView extends GetView<MaintenanceController> {
                                                       Get.textTheme.bodySmall,
                                                 ),
                                               ),
-                                              5.width,
+                                              SizedBox(
+                                                width: 5,
+                                              ),
                                               Text(
                                                 DateFormat("EEE, dd MMM yyyy",
                                                         "id_ID")
@@ -116,7 +119,9 @@ class MaintenanceView extends GetView<MaintenanceController> {
                                               ),
                                             ],
                                           ),
-                                          5.height,
+                                          SizedBox(
+                                            height: 5,
+                                          ),
                                           Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceBetween,
@@ -128,7 +133,9 @@ class MaintenanceView extends GetView<MaintenanceController> {
                                                       Get.textTheme.bodySmall,
                                                 ),
                                               ),
-                                              5.width,
+                                              SizedBox(
+                                                width: 5,
+                                              ),
                                               Text(
                                                 controller
                                                     .listMaintenance[index]
@@ -138,7 +145,9 @@ class MaintenanceView extends GetView<MaintenanceController> {
                                               ),
                                             ],
                                           ),
-                                          5.height,
+                                          SizedBox(
+                                            height: 5,
+                                          ),
                                           Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceBetween,
@@ -150,7 +159,9 @@ class MaintenanceView extends GetView<MaintenanceController> {
                                                       Get.textTheme.bodySmall,
                                                 ),
                                               ),
-                                              5.width,
+                                              SizedBox(
+                                                width: 5,
+                                              ),
                                               Text(
                                                 controller
                                                     .listMaintenance[index]
@@ -159,7 +170,9 @@ class MaintenanceView extends GetView<MaintenanceController> {
                                               ),
                                             ],
                                           ),
-                                          5.height,
+                                          SizedBox(
+                                            height: 5,
+                                          ),
                                           Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceBetween,
@@ -171,44 +184,51 @@ class MaintenanceView extends GetView<MaintenanceController> {
                                                       Get.textTheme.bodySmall,
                                                 ),
                                               ),
-                                              5.width,
-                                              Text(
-                                                'Lihat Bukti',
-                                                style: Get.textTheme.bodySmall
-                                                    ?.copyWith(
-                                                        color: Colors.blue),
-                                              ).onTap(() {
-                                                Get.defaultDialog(
-                                                    title:
-                                                        'Bukti Pengisian Bensin',
-                                                    content: ClipRRect(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              0),
-                                                      // Image border
-                                                      child: SizedBox.fromSize(
-                                                        // Image radius
-                                                        child: Image.network(
-                                                          controller
-                                                              .listMaintenance[
-                                                                  index]
-                                                              .bukti,
-                                                          fit: BoxFit.fill,
-                                                          width: 50,
-                                                          height: 50,
-                                                          errorBuilder: (context,
-                                                                  error,
-                                                                  stackTrace) =>
-                                                              Image.asset(
-                                                            'maintenance'.png,
-                                                            fit: BoxFit.contain,
+                                              SizedBox(
+                                                width: 5,
+                                              ),
+                                              GestureDetector(
+                                                onTap: () {
+                                                  Get.defaultDialog(
+                                                      title:
+                                                          'Bukti Pengisian Bensin',
+                                                      content: ClipRRect(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(0),
+                                                        // Image border
+                                                        child:
+                                                            SizedBox.fromSize(
+                                                          // Image radius
+                                                          child: Image.network(
+                                                            controller
+                                                                .listMaintenance[
+                                                                    index]
+                                                                .bukti,
+                                                            fit: BoxFit.fill,
                                                             width: 50,
                                                             height: 50,
+                                                            errorBuilder: (context,
+                                                                    error,
+                                                                    stackTrace) =>
+                                                                Image.asset(
+                                                              'maintenance'.png,
+                                                              fit: BoxFit
+                                                                  .contain,
+                                                              width: 50,
+                                                              height: 50,
+                                                            ),
                                                           ),
                                                         ),
-                                                      ),
-                                                    ));
-                                              })
+                                                      ));
+                                                },
+                                                child: Text(
+                                                  'Lihat Bukti',
+                                                  style: Get.textTheme.bodySmall
+                                                      ?.copyWith(
+                                                          color: Colors.blue),
+                                                ),
+                                              )
                                             ],
                                           ),
                                         ],
@@ -253,7 +273,9 @@ class MaintenanceView extends GetView<MaintenanceController> {
                     );
                   },
                   separatorBuilder: (BuildContext context, int index) {
-                    return 10.height;
+                    return SizedBox(
+                      height: 10,
+                    );
                   },
                 ),
         ),

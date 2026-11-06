@@ -1,18 +1,19 @@
 name: attamana_salles_app
-version: 1.0.10+2
+version: 1.1.0+2
 publish_to: none
 description: A new Flutter project.
 environment:
-  sdk: '>=2.18.0 <3.0.0'
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
   archive: ^3.6.1
   animated_custom_dropdown: ^3.0.0
+  app_settings: any
   auto_size_text: ^3.0.0
   awesome_dialog: ^3.2.1
   collection: ^1.18.0
   cupertino_icons: ^1.0.2
-  fl_chart: any
+  fl_chart: ^0.68.0
   change_app_package_name: ^1.1.0
   #  carousel_slider: any
   floating_bottom_navigation_bar: ^1.5.2
@@ -23,38 +24,49 @@ dependencies:
   flutter_plugin_android_lifecycle: ^2.0.20
   #  file_picker: any
   flutter_rating_bar: any
+  flutter_typeahead: ^5.2.0
   fluttertoast: ^8.2.9
   #  geolocator: ^9.0.2
-  geolocator: ^10.1.0
-  geocoding: ^2.1.1
+  geolocator: ^14.0.2
+  geocoding: ^4.0.0
   get: ^4.6.6
   get_storage: ^2.0.3
   google_maps_flutter: ^2.9.0
+  gsheets: ^0.5.0
   http: ^1.2.2
-  internet_connection_checker_plus: ^2.5.2
-  intl: ^0.17.0
-  lottie: ^1.3.0
-  maps_toolkit: ^2.0.1
-  nb_utils: any
+  internet_connection_checker_plus: any
+  intl: ^0.20.2
+  jwt_decoder: any
+  local_auth: ^2.3.0
+  lottie: ^3.3.0
+  maps_toolkit: ^3.1.0
   number_pagination: ^1.1.5
-  package_info_plus: ^8.0.2
+  package_info_plus: any
   persistent_bottom_nav_bar: any
+  pdf: ^3.10.8
+  printing: ^5.12.0
   remove_emoji_input_formatter: ^0.0.1+1
-  responsive_builder: ^0.4.3
-  rive: ^0.13.12
+  responsive_builder: ^0.7.1
+  rive: ^0.14.2
   rive_common: ^0.4.10
-  searchfield: any
   table_calendar: ^3.0.8
   timelines_plus: any
   time_range_picker: ^2.3.0
   dropdown_button2: ^2.3.9
-  image_picker: ^0.8.6
+  image_picker: ^1.2.1
   win32: ^5.5.4
+
+  #  untuk export excel
+  excel: ^4.0.6
+  permission_handler: ^12.0.1
+  path_provider: ^2.0.11
+  open_file: ^3.3.2
+
 
 
 
 dev_dependencies:
-  flutter_lints: ^2.0.0
+  flutter_lints: ^5.0.0
   flutter_test:
     sdk: flutter
 
@@ -74,6 +86,7 @@ flutter:
     - assets/lottie/
     - assets/png/
     - assets/jpg/
+    - assets/fonts/
 
   fonts:
     - family: Digital

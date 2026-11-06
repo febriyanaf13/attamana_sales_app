@@ -1,12 +1,10 @@
 import 'package:attamana_salles_app/app/components/custom_lottie_loading.dart';
 import 'package:attamana_salles_app/app/components/custom_lottie_not_found.dart';
+import 'package:attamana_salles_app/app/modules/sales_module/inventory/models/gudang.dart';
 import 'package:flutter/material.dart';
-
 import 'package:get/get.dart';
-import 'package:nb_utils/nb_utils.dart';
-import 'package:number_pagination/number_pagination.dart';
 
-import '../../../../components/custom_dropdown_search.dart';
+import '../../../../components/custom_dropdown_search2.dart';
 import '../../../../style/colors.dart';
 import '../controllers/inventory_controller.dart';
 
@@ -16,254 +14,351 @@ class InventoryView extends GetView<InventoryController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF8FAFC), // Slate 50 background
       appBar: AppBar(
         title: Obx(
           () => controller.isSearchInventory.isFalse
-              ? const Text('Inventory')
-              : SizedBox(
-                  height: 50,
+              ? const Text('Inventory',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18))
+              : Container(
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                   child: TextFormField(
                     controller: controller.controllerSearch,
+                    style: const TextStyle(fontSize: 14),
                     decoration: InputDecoration(
-                      hintText: 'Search...',
-                      hintStyle: Get.textTheme.bodyMedium?.copyWith(
-                          letterSpacing: 1, fontStyle: FontStyle.italic),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(
-                          color: kInputBorderColor,
-                        ),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: kInputBorderColor),
-                      ),
+                      hintText: 'Cari nama produk...',
+                      hintStyle: TextStyle(
+                          color: Colors.white.withOpacity(0.6), fontSize: 14),
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 15, vertical: 10),
+                      prefixIcon: const Icon(Icons.search, size: 20),
                     ),
                     onChanged: (value) {
                       controller.page.value = 1;
                       controller.getListStockBarang(controller.gudangId.value);
-                      // controller.getlistSCustomerSearch(value);
                     },
                   ),
                 ),
         ),
         backgroundColor: kPrimaryColor,
         centerTitle: true,
+        elevation: 0,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+        ),
         actions: [
           IconButton(
-              onPressed: () {
-                controller.isSearchInventory.toggle();
-              },
-              icon: const Icon(Icons.search_rounded))
+            onPressed: () => controller.isSearchInventory.toggle(),
+            icon: Obx(() => Icon(controller.isSearchInventory.isTrue
+                ? Icons.close_rounded
+                : Icons.search_rounded)),
+          ),
+          const SizedBox(width: 8),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.only(right: 20, left: 20, top: 20),
-        child: Column(
-          children: [
-            Obx(
-              () => CustomDropDownSearch(
+      body: Column(
+        children: [
+          // --- FILTER GUDANG ---
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+            child: Obx(
+              () => CustomDropDownSearch<Gudang>(
                 controller: controller.textEditingControllerGudang,
-                title: 'Gudang',
-                labelSpace: true,
+                title: 'Pilih Gudang',
                 isRequired: true,
                 withTitle: true,
-                hint: 'Search list gudang...',
-                dataList: controller.listGudang.value,
-                onSubmit: (value) {
-                  print(value);
-                },
-                onSave: (value) {},
-                onSelectedItem: (value) {
-                  controller.gudangId.value = value.item!;
-                  controller.getListStockBarang(value.item);
-                },
-                validator: (x) {
-                  if (controller.listGudang
-                          .map((element) => element['text']
-                              ?.replaceAll(RegExp('[^A-Za-z0-9]'), ''))
-                          .where((value) => value!.contains(x!))
-                          .contains(x) ||
-                      x!.isEmpty) {
-                    return 'Please Enter a valid Data';
+                hint: 'Cari list gudang...',
+                dataList: controller.listGudang,
+                itemLabel: (item) => item.namaGudang,
+                onSelectedItem: (Gudang? value) {
+                  if (value != null) {
+                    controller.gudangId.value = value.gudangId.toString();
+                    controller.textEditingControllerGudang.text =
+                        value.namaGudang;
+                    controller.getListStockBarang(value.gudangId);
                   }
-
-                  return null;
                 },
+                onSubmit: (_) {},
+                onSave: (_) {},
+                validator: (x) => null,
               ),
             ),
-            20.height,
+          ),
+
+          // --- LIST STOCK BARANG ---
+          Expanded(
+            child: RefreshIndicator(
+              color: kPrimaryColor,
+              onRefresh: () async {
+                controller.getListStockBarang(controller.gudangId.value);
+              },
+              child: Obx(
+                () => controller.isLoadingListStockBarang.isTrue
+                    ? const CustomLottieLoading()
+                    : controller.listStockBarangSearch.isEmpty
+                        ? const CustomLottieNotFound()
+                        : ListView.separated(
+                            itemCount: controller.listStockBarangSearch.length,
+                            padding: const EdgeInsets.all(20),
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(height: 12),
+                            itemBuilder: (context, index) =>
+                                _buildStockCard(index),
+                          ),
+              ),
+            ),
+          ),
+
+          // --- PAGINATION (Opsi A) ---
+          _buildPaginationSection(),
+        ],
+      ),
+    );
+  }
+
+  // ============================================================
+  // PAGINATION SECTION — gaya customer_view.dart
+  // ============================================================
+  Widget _buildPaginationSection() {
+    return Obx(() {
+      final totalPages = controller.numberPage.value;
+      final currentPage = controller.page.value;
+
+      if (totalPages <= 1) return const SizedBox(height: 8);
+
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+        child: Container(
+          height: 65,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF1E293B).withOpacity(0.06),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
+              ),
+            ],
+            border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // Tombol Previous
+              _buildNavButton(
+                icon: Icons.chevron_left_rounded,
+                isEnabled: currentPage > 1,
+                onTap: () {
+                  controller.page.value = currentPage - 1;
+                  controller.getListStockBarang(controller.gudangId.value);
+                },
+              ),
+
+              // Info Halaman
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "HALAMAN",
+                    style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.grey.shade400,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  RichText(
+                    text: TextSpan(
+                      text: "$currentPage ",
+                      style: const TextStyle(
+                        color: Color(0xFF1E293B),
+                        fontWeight: FontWeight.w900,
+                        fontSize: 18,
+                      ),
+                      children: [
+                        TextSpan(
+                          text: "/ $totalPages",
+                          style: TextStyle(
+                            color: Colors.grey.shade400,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+
+              // Tombol Next
+              _buildNavButton(
+                icon: Icons.chevron_right_rounded,
+                isEnabled: currentPage < totalPages,
+                onTap: () {
+                  controller.page.value = currentPage + 1;
+                  controller.getListStockBarang(controller.gudangId.value);
+                },
+              ),
+            ],
+          ),
+        ),
+      );
+    });
+  }
+
+  Widget _buildNavButton({
+    required IconData icon,
+    required bool isEnabled,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: isEnabled ? onTap : null,
+        borderRadius: BorderRadius.circular(20),
+        child: SizedBox(
+          width: 60,
+          height: 65,
+          child: Icon(
+            icon,
+            color: isEnabled ? kPrimaryColor : Colors.grey.shade200,
+            size: 30,
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ============================================================
+  // STOCK CARD — REDESIGN
+  // ============================================================
+  Widget _buildStockCard(int index) {
+    final item = controller.listStockBarangSearch[index];
+
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: const Color(0xFFF1F5F9), width: 1.2),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF1E293B).withOpacity(0.04),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Icon soft-square
+            Container(
+              width: 46,
+              height: 46,
+              decoration: BoxDecoration(
+                color: kPrimaryColor.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Icon(
+                Icons.inventory_2_rounded,
+                color: kPrimaryColor,
+                size: 24,
+              ),
+            ),
+            const SizedBox(width: 12),
+            // Konten
             Expanded(
-              child: RefreshIndicator(
-                onRefresh: () {
-                  return Future<void>.delayed(
-                    const Duration(seconds: 3),
-                    () {
-                      controller.getListStockBarang(controller.gudangId.value);
-                    },
-                  );
-                },
-                child: Obx(
-                  () => controller.isLoadingListStockBarang.isTrue
-                      ? const CustomLottieLoading()
-                      : controller.listStockBarangSearch.isEmpty
-                          ? const CustomLottieNotFound()
-                          : ListView.separated(
-                              itemCount:
-                                  controller.listStockBarangSearch.length,
-                              padding: const EdgeInsets.only(bottom: 20),
-                              itemBuilder: (context, index) {
-                                return Card(
-                                  child: Stack(
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.all(15),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Expanded(
-                                                  flex: 3,
-                                                  child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Text(
-                                                        controller
-                                                            .listStockBarangSearch[
-                                                                index]
-                                                            .namaProduk,
-                                                        style: Get.textTheme
-                                                            .titleMedium
-                                                            ?.copyWith(
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold),
-                                                      ),
-                                                      5.height,
-                                                      Row(
-                                                        children: [
-                                                          const Icon(
-                                                            Icons.home_work,
-                                                            color: grey,
-                                                            size: 20,
-                                                          ),
-                                                          5.width,
-                                                          Text(
-                                                            controller
-                                                                .listStockBarangSearch[
-                                                                    index]
-                                                                .namaGudang,
-                                                            style: Get.textTheme
-                                                                .bodySmall,
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      Row(
-                                                        children: [
-                                                          const Icon(
-                                                            Icons
-                                                                .category_rounded,
-                                                            color: grey,
-                                                            size: 20,
-                                                          ),
-                                                          5.width,
-                                                          Text(
-                                                            '${controller.listStockBarangSearch[index].jumlahStok} - ${controller.listStockBarangSearch[index].satuan}',
-                                                            style: Get.textTheme
-                                                                .bodySmall,
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      // Row(
-                                                      //   children: [
-                                                      //     const Icon(
-                                                      //       Icons.assignment_late_rounded,
-                                                      //       color: grey,
-                                                      //       size: 20,
-                                                      //     ),
-                                                      //     5.width,
-                                                      //     Text(
-                                                      //       controller
-                                                      //           .listStockBarangSearch[index]
-                                                      //           .action,
-                                                      //       style: Get.textTheme.bodySmall,
-                                                      //     ),
-                                                      //   ],
-                                                      // ),
-                                                    ],
-                                                  ),
-                                                ),
-                                                // Container(
-                                                //     padding: const EdgeInsets.all(5),
-                                                //     decoration: BoxDecoration(
-                                                //         color: Colors.grey,
-                                                //         borderRadius:
-                                                //             BorderRadius.circular(5)),
-                                                //     child: Text(
-                                                //         '${controller.listStockBarangSearch[index].namaGudang}')),
-                                              ],
-                                            ),
-                                            // const Divider(
-                                            //   thickness: 1,
-                                            // ),
-                                            // Text(
-                                            //   'Desc :',
-                                            //   style: Get.textTheme.bodySmall,
-                                            // ),
-                                          ],
-                                        ),
-                                      ),
-                                      Positioned(
-                                        bottom: 0,
-                                        top: 0,
-                                        left: 0,
-                                        child: Container(
-                                          width: 5,
-                                          decoration: const BoxDecoration(
-                                            color: kSecondaryColor,
-                                            borderRadius:
-                                                BorderRadius.horizontal(
-                                              left: Radius.circular(10),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
-                              separatorBuilder:
-                                  (BuildContext context, int index) {
-                                return 10.height;
-                              },
-                            ),
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Nama produk
+                  Text(
+                    item.namaProduk,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 15,
+                      color: Color(0xFF1E293B),
+                      letterSpacing: -0.2,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 8),
+                  // Baris info: gudang + stok
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 6,
+                    children: [
+                      // Chip gudang (soft abu)
+                      _buildChip(
+                        icon: Icons.home_work_rounded,
+                        label: item.namaGudang,
+                        bgColor: const Color(0xFFF1F5F9),
+                        iconColor: const Color(0xFF64748B),
+                        textColor: const Color(0xFF475569),
+                      ),
+                      // Chip stok (soft primary)
+                      _buildChip(
+                        icon: Icons.inventory_2_rounded,
+                        label: '${item.jumlahStok} ${item.satuan}',
+                        bgColor: kPrimaryColor.withOpacity(0.08),
+                        iconColor: kPrimaryColor,
+                        textColor: kPrimaryColor,
+                        isBold: true,
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
-            Obx(() => NumberPagination(
-                  // by default, the paginator shows numbers as center content
-                  totalPages: controller.numberPage.value,
-                  currentPage: controller.page.value,
-                  selectedButtonColor: kPrimaryColor,
-                  // controlButtonSize: Size(40, 40),
-                  buttonRadius: 10,
-
-                  visiblePagesCount: controller.visiblePage.value,
-                  onPageChanged: (int index) {
-                    controller.page.value = index;
-                    controller.getListStockBarang(controller.gudangId.value);
-                  },
-                ))
           ],
         ),
+      ),
+    );
+  }
+
+  // Helper chip modern
+  Widget _buildChip({
+    required IconData icon,
+    required String label,
+    required Color bgColor,
+    required Color iconColor,
+    required Color textColor,
+    bool isBold = false,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 12, color: iconColor),
+          const SizedBox(width: 4),
+          Flexible(
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: isBold ? FontWeight.w700 : FontWeight.w600,
+                color: textColor,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
       ),
     );
   }

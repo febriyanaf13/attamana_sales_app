@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:nb_utils/nb_utils.dart';
 
 const kPrimaryColor = Color(0xFF843429);
 const kSecondaryColor = Color(0xFF843429);
@@ -15,8 +14,8 @@ const kGreyColor = Color(0xFFF0F0F0);
 const kDarkGreyColor = Color(0xFF8E8E8E);
 const kGreenColor = Color(0xFF00B951);
 const kCardColor = Color(0xFFF2F2F7);
+const kScaffoldBackground = Color(0xFFF5F6FA);
 
-//Text Color
 const kPrimaryTextColor = Color(0xFF3E3E3E);
 const kSecondaryTextColor = Color(0xFFA1A1A1);
 const kWhiteTextColor = Colors.white;

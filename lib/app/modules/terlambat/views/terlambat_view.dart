@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:nb_utils/nb_utils.dart';
 
 import '../../../components/custom_button.dart';
 import '../../../components/custom_datepicker_dialog.dart';
@@ -90,7 +89,9 @@ class TerlambatView extends GetView<TerlambatController> {
                               ],
                             ),
                             const Divider(),
-                            5.height,
+                            SizedBox(
+                              height: 5,
+                            ),
                             SizedBox(
                               height: 15,
                               child: Row(
@@ -100,7 +101,9 @@ class TerlambatView extends GetView<TerlambatController> {
                                     size: 15,
                                     color: Colors.grey,
                                   ),
-                                  2.width,
+                                  SizedBox(
+                                    width: 2,
+                                  ),
                                   Text(
                                     '${controller.listTerlambatSaya[index].days} Days',
                                     style: Get.textTheme.bodySmall?.copyWith(
@@ -116,60 +119,76 @@ class TerlambatView extends GetView<TerlambatController> {
                                     size: 15,
                                     color: Colors.grey,
                                   ),
-                                  2.width,
-                                  Text(
-                                    'Bukti',
-                                    style: Get.textTheme.bodySmall?.copyWith(
-                                        color: Colors.grey,
-                                        fontWeight: FontWeight.w600),
-                                  ).onTap(() {
-                                    showDialog<Widget>(
-                                      context: context,
-                                      builder: (BuildContext context) => Dialog(
-                                        alignment: Alignment.center,
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(20)),
-                                        child: Container(
-                                          padding: const EdgeInsets.all(10),
-                                          decoration:
-                                              boxDecorationRoundedWithShadow(12,
-                                                  backgroundColor:
-                                                      context.cardColor),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                                child: Center(
-                                                  child: Image.network(
-                                                    controller
-                                                        .listTerlambatSaya[
-                                                            index]
-                                                        .bukti,
-                                                    width: Get.width,
-                                                    fit: BoxFit.fill,
-                                                    errorBuilder: (context,
-                                                        error, stackTrace) {
-                                                      return Image.asset(
-                                                        'bg_terlambat'.jpg,
-                                                        width: 100,
-                                                        height: 100,
-                                                        fit: BoxFit.fill,
-                                                      );
-                                                    },
+                                  SizedBox(
+                                    width: 2,
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      showDialog<Widget>(
+                                        context: context,
+                                        builder: (BuildContext context) =>
+                                            Dialog(
+                                          alignment: Alignment.center,
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(20)),
+                                          child: Container(
+                                            padding: const EdgeInsets.all(10),
+                                            decoration: BoxDecoration(
+                                              color:
+                                                  Theme.of(context).cardColor,
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.black
+                                                      .withOpacity(0.15),
+                                                  blurRadius: 10,
+                                                  offset: const Offset(0, 4),
+                                                ),
+                                              ],
+                                            ),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(10),
+                                                  child: Center(
+                                                    child: Image.network(
+                                                      controller
+                                                          .listTerlambatSaya[
+                                                              index]
+                                                          .bukti,
+                                                      width: Get.width,
+                                                      fit: BoxFit.fill,
+                                                      errorBuilder: (context,
+                                                          error, stackTrace) {
+                                                        return Image.asset(
+                                                          'bg_terlambat'.jpg,
+                                                          width: 100,
+                                                          height: 100,
+                                                          fit: BoxFit.fill,
+                                                        );
+                                                      },
+                                                    ),
                                                   ),
                                                 ),
-                                              ),
-                                            ],
+                                              ],
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                    );
-                                  }),
+                                      );
+                                    },
+                                    child: Text(
+                                      'Bukti',
+                                      style: Get.textTheme.bodySmall?.copyWith(
+                                          color: Colors.grey,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                  )
                                 ],
                               ),
                             )
@@ -182,7 +201,9 @@ class TerlambatView extends GetView<TerlambatController> {
               );
             },
             separatorBuilder: (BuildContext context, int index) {
-              return 20.height;
+              return SizedBox(
+                height: 20,
+              );
             },
           ))
         ],

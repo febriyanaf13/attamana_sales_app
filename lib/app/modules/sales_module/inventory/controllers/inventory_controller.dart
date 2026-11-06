@@ -11,7 +11,7 @@ class InventoryController extends GetxController {
   TextEditingController controllerSearch = TextEditingController();
   TextEditingController textEditingControllerGudang =
       TextEditingController(text: 'ALL');
-  var listGudang = <Map<String, String>>[].obs;
+  var listGudang = <Gudang>[].obs;
   var listStockBarang = <Barang>[].obs;
   var listStockBarangSearch = <Barang>[].obs;
 
@@ -46,10 +46,21 @@ class InventoryController extends GetxController {
     InventoryProvider().getListGudang().then((value) {
       if (value.status.isOk) {
         var data = value.body['data'];
-        listGudang.value = gudangFromJson(data)
-            .map((e) => {'text': e.namaGudang, 'value': e.gudangId.toString()})
-            .toList();
-        listGudang.value.insert(0, {'text': 'ALL', 'value': 'ALL'});
+        List<Gudang> gudangs = gudangFromJson(data);
+        listGudang.value = [
+          Gudang(
+            gudangId: 0,
+            kode: 'ALL',
+            namaGudang: 'ALL',
+            alamat: '',
+            deskripsi: '',
+            status: '',
+          ),
+          ...gudangs
+        ];
+        //     .map((e) => {'text': e.namaGudang, 'value': e.gudangId.toString()})
+        //     .toList();
+        // listGudang.value.insert(0, {'text': 'ALL', 'value': 'ALL'});
 // for (var list in listJobVisit) {
 //   if (list.status == null || list.status == 'CHECK IN') {
 //     listJobVisitOpenProgress.add(list);
@@ -65,7 +76,8 @@ class InventoryController extends GetxController {
 
     print("gudang_id : $gudangId");
     InventoryProvider()
-        .getListStockBarang(gudangId, controllerSearch.text, page)
+        .getListStockBarang(
+            gudangId == 0 ? 'ALL' : gudangId, controllerSearch.text, page)
         .then((value) {
       isLoadingListStockBarang.toggle();
       print("inventory response : ${value.body}");
@@ -76,10 +88,15 @@ class InventoryController extends GetxController {
         var total = value.body['total'];
         var perhalaman = value.body['perhalaman'];
         print("inventory : $data");
-        print(numberPage);
+        print('total $total');
+        print('halaman $numberPage');
         listStockBarang.value = barangFromJson(data);
         listStockBarangSearch.value = barangFromJson(data);
-        numberPage.value = (total / perhalaman).ceil();
+        if (gudangId == 0) {
+          numberPage.value = 1;
+        } else {
+          numberPage.value = (total / perhalaman).ceil();
+        }
         page == 1;
 
         if (numberPage == 1) {
