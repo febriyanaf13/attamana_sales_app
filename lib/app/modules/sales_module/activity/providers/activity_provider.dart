@@ -20,7 +20,8 @@ class ActivityProvider extends GetConnect {
   }
 
   Future<Response> getDetailVisit(visitId) {
-    var api = '${Api.detailActivity}/$visitId';
+    // VERSI 53: userid -> server menghitung hak ubah lokasi bertemu
+    var api = '${Api.detailActivity}/$visitId?userid=${storage.read(kUserId)}';
     if (kDebugMode) {
       print(api);
     }
@@ -89,5 +90,23 @@ class ActivityProvider extends GetConnect {
       print(api);
     }
     return post(api, body, headers: headers);
+  }
+
+  /// VERSI 53: ubah lokasi bertemu (userid, kunjungan_id, lokasi, latitude, longitude, alasan)
+  Future<Response> postUbahLokasi(body) {
+    var api = Api.ubahLokasiActivity;
+    if (kDebugMode) {
+      print(api);
+    }
+    return post(api, body, headers: headers);
+  }
+
+  /// VERSI 53: daftar pegawai yang bisa dipilih sebagai pendamping
+  Future<Response> getListPendamping() {
+    var api = '${Api.listPendamping}?userid=${storage.read(kUserId)}';
+    if (kDebugMode) {
+      print(api);
+    }
+    return get(api, headers: headers);
   }
 }

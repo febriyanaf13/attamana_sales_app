@@ -26,6 +26,24 @@ class Activity {
   String? lokasiCheckout;
   String? perluAbsen;
 
+  /// VERSI 53: lokasi bertemu terbaru, approval, pendamping & hak aksi (dari list_kunjungan)
+  String lokasiRadius;
+  int radiusMeter;
+  String statusLabel;
+  String statusApproval;
+  String alasanTolak;
+  String statusLokasi;
+  String lokasiAwal;
+  String alasanUbahLokasi;
+  String catatanApprovalLokasi;
+  String salesId2;
+  String namaPendamping;
+  String statusPendamping;
+  bool isPembuat;
+  bool bisaUbahLokasi;
+  String pesanUbahLokasi;
+  bool bisaAbsen;
+
   Activity({
     required this.kunjunganId,
     required this.customerId,
@@ -41,6 +59,22 @@ class Activity {
     required this.waktuCheckout,
     required this.lokasiCheckout,
     required this.perluAbsen,
+    this.lokasiRadius = '',
+    this.radiusMeter = 500,
+    this.statusLabel = '',
+    this.statusApproval = '',
+    this.alasanTolak = '',
+    this.statusLokasi = '',
+    this.lokasiAwal = '',
+    this.alasanUbahLokasi = '',
+    this.catatanApprovalLokasi = '',
+    this.salesId2 = '',
+    this.namaPendamping = '',
+    this.statusPendamping = '',
+    this.isPembuat = false,
+    this.bisaUbahLokasi = false,
+    this.pesanUbahLokasi = '',
+    this.bisaAbsen = true,
   });
 
   factory Activity.fromJson(Map<String, dynamic> json) => Activity(
@@ -58,6 +92,22 @@ class Activity {
         lokasiCheckin: json["lokasi_checkin"],
         lokasiCheckout: json["lokasi_checkout"],
         perluAbsen: json["perlu_absen"],
+        lokasiRadius: '${json["lokasi_radius"] ?? ''}',
+        radiusMeter: int.tryParse('${json["radius_meter"] ?? 500}') ?? 500,
+        statusLabel: '${json["status_label"] ?? ''}',
+        statusApproval: '${json["status_approval"] ?? ''}',
+        alasanTolak: '${json["alasan_tolak"] ?? ''}',
+        statusLokasi: '${json["status_lokasi"] ?? ''}',
+        lokasiAwal: '${json["lokasi_awal"] ?? ''}',
+        alasanUbahLokasi: '${json["alasan_ubah_lokasi"] ?? ''}',
+        catatanApprovalLokasi: '${json["catatan_approval_lokasi"] ?? ''}',
+        salesId2: '${json["sales_id2"] ?? ''}',
+        namaPendamping: '${json["nama_pendamping"] ?? ''}',
+        statusPendamping: '${json["status_pendamping"] ?? ''}',
+        isPembuat: json["is_pembuat"] == true,
+        bisaUbahLokasi: json["bisa_ubah_lokasi"] == true,
+        pesanUbahLokasi: '${json["pesan_ubah_lokasi"] ?? ''}',
+        bisaAbsen: json["bisa_absen"] != false,
       );
 
   Map<String, dynamic> toJson() => {

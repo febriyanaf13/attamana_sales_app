@@ -16,7 +16,8 @@ class EditCustomerView extends GetView<CustomerController> {
     controller.controllerNama.text = controller.listCustomerSearch[index].nama;
     controller.controllerAddress.text =
         controller.listCustomerSearch[index].address;
-    controller.controllerCity.text = controller.listCustomerSearch[index].city;
+    controller.controllerKabupaten.text =
+        controller.listCustomerSearch[index].city;
     controller.controllerPhone.text =
         controller.listCustomerSearch[index].phone1;
 
@@ -89,7 +90,7 @@ class EditCustomerView extends GetView<CustomerController> {
                       title: 'Kota',
                       hint: 'Tuliskan kota customer',
                       isRequired: true,
-                      controller: controller.controllerCity,
+                      controller: controller.controllerKabupaten,
                     ),
                     const SizedBox(height: 20),
                     CustomTextField(

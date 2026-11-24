@@ -17,9 +17,16 @@ class CustomerProvider extends GetConnect {
     return get(api, headers: headers);
   }
 
-  Future<Response> getCustomer(int userId, String cari, int page) {
-    var api = "${Api.customer}/$userId?cari=$cari&page=$page";
-    return get(api, headers: headers);
+  // VERSI 49: parameter urut & per_page, nilai pencarian di-encode
+  Future<Response> getCustomer(int userId, String cari, int page,
+      {String urut = 'nama', int perPage = 15}) {
+    var api = "${Api.customer}/$userId";
+    return get(api, headers: headers, query: {
+      'cari': cari,
+      'page': '$page',
+      'urut': urut,
+      'per_page': '$perPage',
+    });
   }
 
   Future<Response> postNewCustomer(Map<String, dynamic> body) {

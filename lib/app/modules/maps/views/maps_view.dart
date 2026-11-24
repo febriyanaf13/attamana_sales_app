@@ -103,6 +103,14 @@ class _MapsViewState extends State<MapsView> with WidgetsBindingObserver {
 
   var argument = Get.arguments;
   var routeArgument = '';
+
+  // VERSI 53: lokasi bertemu terbaru (berubah tanpa membuka ulang halaman bila sales mengubah lokasi)
+  String lokasiRadiusAktif = '';
+  String lokasiBertemu = '';
+  String statusLokasi = '';
+  bool bisaUbahLokasi = false;
+  String pesanUbahLokasi = '';
+  int radiusMeter = 500;
   var role = storage.read(kRoleName);
   var userName = storage.read(kUserNama);
   var statusKaryawan = storage.read(kStatusKaryawan);
@@ -303,31 +311,9 @@ class _MapsViewState extends State<MapsView> with WidgetsBindingObserver {
             )),
           );
         } else {
-          var lokasiRadius = argument['lokasiRadius'];
-
-          // print('ini data argument ' + argument);
-          print('ini lokasi radius ' + lokasiRadius);
-          centerCircle = stringlatlngsplitted(lokasiRadius);
-
-          if (kDebugMode) {
-            print('latlangGedung $centerCircle');
-          }
-
-          // controller.listKoorPolygonGedung.value = listLatLngGedung;
-          // }
-          circle[''] = Circle(
-              circleId: CircleId('1'),
-              center: centerCircle!,
-              radius: 1000,
-              strokeWidth: 1,
-              fillColor: kPrimaryColor.withOpacity(0.5));
-
-          mapController!.animateCamera(
-            CameraUpdate.newCameraPosition(CameraPosition(
-              target: centerCircle!,
-              zoom: 13,
-            )),
-          );
+          // VERSI 53: lingkaran di lokasi bertemu TERBARU (bisa diubah dari HP), radius dari server (default 500 m).
+          // Dulu radius tetap 1.000 m dan error bila lokasi_radius kosong.
+          _pasangLingkaran();
         }
       });
     }
@@ -638,46 +624,210 @@ class _MapsViewState extends State<MapsView> with WidgetsBindingObserver {
     }
   }
 
+  // VERSI 53: lingkaran tidak mengunci. Di luar lingkaran -> konfirmasi, lalu tetap dikirim
+  // (server mencatat jarak ke lokasi bertemu untuk sales manager).
   void onTapCheckInOutButton(status) {
-    CekLokasi cekLokasi = CekLokasi(
-      latTitikSekarang: centerPosition!.latitude,
-      lngTitikSekarang: centerPosition!.longitude,
-      latTitikCircle: centerCircle!.latitude,
-      lngTitikCircle: centerCircle!.longitude,
-      listLatPolygon: [],
-      listLngPolygon: [],
-    );
-    var listButuhLokasi = [
-      'OFFERING PRODUCT',
-      'VISIT CUSTOMER',
-      'MEETING',
-      'AMBIL SAMPLE',
-    ];
-    var listTidakButuhLokasi = [
-      'CHAT / EMAIL',
-      'EVENT',
-      'OTHER',
-      'SALES CALL / WHATSAPP',
-    ];
+    if (centerCircle != null && centerPosition != null) {
+      final jarak = Geolocator.distanceBetween(
+          centerPosition!.latitude,
+          centerPosition!.longitude,
+          centerCircle!.latitude,
+          centerCircle!.longitude);
+      if (jarak > radiusMeter) {
+        Get.defaultDialog(
+          title: 'Di luar lingkaran',
+          middleText:
+              'Posisi Anda ±${_teksJarak(jarak)} dari lokasi bertemu (lingkaran $radiusMeter m). '
+              '${status == 'CHECK IN' ? 'Check-in' : 'Check-out'} tetap bisa dan jaraknya dicatat untuk sales manager.\n\n'
+              'Bila client pindah tempat, tekan "Ubah lokasi bertemu" dulu.',
+          textCancel: 'Batal',
+          textConfirm: 'Lanjut',
+          confirmTextColor: Colors.white,
+          buttonColor: kPrimaryColor,
+          onConfirm: () {
+            Get.back();
+            _kirimPresensi(status);
+          },
+        );
+        return;
+      }
+    }
+    _kirimPresensi(status);
+  }
 
-    // proteksi absen
-    // if (listButuhLokasi.contains(argument['action'].toString())) {
-    //   if (cekLokasi.apakahLokasiDalamCircle()) {
-    //     print('iya didalam');
-    //     controllerJobVisit.postPresensiActivity(argument['idKunjungan'], status,
-    //         '(${centerCircle!.latitude}, ${centerCircle!.longitude})');
-    //   } else {
-    //     dialogWarning('Ops...', 'Maaf, anda tidak dalam wilayah presensi');
-    //   }
-    // } else if (listTidakButuhLokasi.contains(argument['action'].toString())) {
-    //   controllerJobVisit.postPresensiActivity(argument['idKunjungan'], status,
-    //       '(${centerCircle!.latitude}, ${centerCircle!.longitude})');
-    // }
+  void _kirimPresensi(status) {
     controllerJobVisit.postPresensiActivity(
         argument['idKunjungan'],
         status,
         '(${centerPosition!.latitude}, ${centerPosition!.longitude})',
         argument['notulen']);
+  }
+
+  String _teksJarak(double meter) => meter >= 1000
+      ? '${(meter / 1000).toStringAsFixed(1)} km'
+      : '${meter.round()} m';
+
+  LatLng? _parseLatLng(String? teks) {
+    try {
+      if (teks == null || teks.trim().isEmpty) return null;
+      final hasil = stringlatlngsplitted(teks);
+      if (hasil.latitude == 0 && hasil.longitude == 0) return null;
+      return hasil;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// VERSI 53: lingkaran check-in / check-out di lokasi bertemu terbaru
+  void _pasangLingkaran({bool geserKamera = true}) {
+    circle.clear();
+    centerCircle = _parseLatLng(lokasiRadiusAktif);
+    if (centerCircle != null) {
+      circle[''] = Circle(
+        circleId: CircleId('1'),
+        center: centerCircle!,
+        radius: radiusMeter.toDouble(),
+        strokeWidth: 2,
+        strokeColor: kPrimaryColor,
+        fillColor: kPrimaryColor.withOpacity(0.2),
+      );
+      markers['bertemu'] = Marker(
+        markerId: const MarkerId('bertemu'),
+        position: centerCircle!,
+        infoWindow: InfoWindow(title: 'Lokasi bertemu', snippet: lokasiBertemu),
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
+      );
+    } else {
+      markers.remove('bertemu');
+    }
+    final target = centerCircle ?? centerPosition;
+    if (geserKamera && target != null) {
+      mapController?.animateCamera(CameraUpdate.newCameraPosition(
+          CameraPosition(
+              target: target, zoom: centerCircle != null ? 15 : 13)));
+    }
+  }
+
+  Future<void> _ubahLokasi() async {
+    final hasil = await controllerJobVisit.ubahLokasiBertemu(
+        argument['idKunjungan'],
+        lokasiAwal: centerCircle ?? centerPosition);
+    if (hasil == null || !mounted) return;
+    setState(() {
+      lokasiRadiusAktif = '${hasil['lokasi_radius'] ?? ''}';
+      lokasiBertemu = '${hasil['lokasi'] ?? lokasiBertemu}';
+      statusLokasi = '${hasil['status_lokasi'] ?? ''}';
+      radiusMeter = int.tryParse('${hasil['radius_meter'] ?? radiusMeter}') ??
+          radiusMeter;
+      _pasangLingkaran();
+    });
+  }
+
+  Color _warnaStatusLokasi() => statusLokasi == 'PERUBAHAN LOKASI'
+      ? Colors.orange.shade800
+      : statusLokasi == 'LOKASI DITOLAK'
+          ? Colors.red.shade700
+          : Colors.green.shade700;
+
+  Widget _buildKartuLokasi() {
+    final selesai = routeArgument == 'COMPLETED';
+    return Container(
+      margin: const EdgeInsets.only(top: 10),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.4),
+            blurRadius: 4,
+            offset: Offset(0, 1),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.place_rounded, color: kPrimaryColor, size: 18),
+              SizedBox(width: 6),
+              Expanded(
+                child: Text('Lokasi bertemu',
+                    style: TextStyle(
+                        fontSize: 11,
+                        color: Colors.grey.shade600,
+                        fontWeight: FontWeight.w600)),
+              ),
+              if (statusLokasi.isNotEmpty)
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: _warnaStatusLokasi().withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(statusLokasi,
+                      style: TextStyle(
+                          fontSize: 9,
+                          fontWeight: FontWeight.w800,
+                          color: _warnaStatusLokasi())),
+                ),
+            ],
+          ),
+          SizedBox(height: 4),
+          Text(
+            lokasiBertemu.isEmpty ? '-' : lokasiBertemu,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF1E293B)),
+          ),
+          SizedBox(height: 2),
+          Text(
+            centerCircle == null
+                ? 'Titik lokasi belum ada; check-in tetap bisa.'
+                : 'Lingkaran $radiusMeter m. Check-in di luar lingkaran tetap bisa, jaraknya dicatat.',
+            style: TextStyle(fontSize: 10.5, color: Colors.grey.shade500),
+          ),
+          if (!selesai && bisaUbahLokasi) ...[
+            SizedBox(height: 8),
+            SizedBox(
+              width: double.infinity,
+              child: Obx(
+                () => controllerJobVisit.isLoadingUbahLokasi.isTrue
+                    ? Center(
+                        child: SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(
+                              strokeWidth: 2, color: kPrimaryColor),
+                        ),
+                      )
+                    : OutlinedButton.icon(
+                        onPressed: _ubahLokasi,
+                        icon: Icon(Icons.edit_location_alt_rounded, size: 18),
+                        label: Text('Ubah lokasi bertemu'),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: kPrimaryColor,
+                          side:
+                              BorderSide(color: kPrimaryColor.withOpacity(0.4)),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12)),
+                        ),
+                      ),
+              ),
+            ),
+          ] else if (!selesai && pesanUbahLokasi.isNotEmpty) ...[
+            SizedBox(height: 6),
+            Text(pesanUbahLokasi,
+                style:
+                    TextStyle(fontSize: 10.5, color: Colors.orange.shade800)),
+          ],
+        ],
+      ),
+    );
   }
 
   @override
@@ -692,6 +842,14 @@ class _MapsViewState extends State<MapsView> with WidgetsBindingObserver {
     namaGedung = 'Semarang';
     if (argument != null) {
       routeArgument = argument['route'];
+      // VERSI 53
+      lokasiRadiusAktif = '${argument['lokasiRadius'] ?? ''}';
+      lokasiBertemu = '${argument['lokasi'] ?? ''}';
+      statusLokasi = '${argument['statusLokasi'] ?? ''}';
+      bisaUbahLokasi = argument['bisaUbahLokasi'] == true;
+      pesanUbahLokasi = '${argument['pesanUbahLokasi'] ?? ''}';
+      radiusMeter = int.tryParse('${argument['radiusMeter'] ?? 500}') ?? 500;
+      centerCircle = _parseLatLng(lokasiRadiusAktif);
     }
     routeArgument == 'COMPLETED' ? activityCompleted() : null;
 
@@ -797,6 +955,8 @@ class _MapsViewState extends State<MapsView> with WidgetsBindingObserver {
                   ],
                 ),
               ),
+              // VERSI 53: lokasi bertemu + tombol ubah lokasi (mode activity)
+              if (argument != null) _buildKartuLokasi(),
               // SizedBox(
               //   height: Get.height * 0.01,
               // ),

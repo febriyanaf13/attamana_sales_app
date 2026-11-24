@@ -44,6 +44,10 @@ abstract class Api {
   static const kunjunganAutoCheckOutActivity = '$baseUrl/absen_autocheckout';
   static const lead = '$baseUrl/getmy_lead';
 
+  // VERSI 53: ubah lokasi bertemu dari HP & daftar pendamping
+  static const ubahLokasiActivity = '$baseUrl/ubah_lokasi_kunjungan';
+  static const listPendamping = '$baseUrl/list_pendamping';
+
   //report visit
   static const reportVisit = '$baseUrl/visit_report';
   static const uploadCheckinImage = '$baseUrl/upload_checkin';
@@ -58,6 +62,26 @@ abstract class Api {
   static const addCustomer = '$baseUrl/add_customer';
   static const updateCustomer = '$baseUrl/update_customer';
   static const sales = '$baseUrl/allsales';
+
+  // VERSI 49: tracking sales order
+  static const soTracking = '$baseUrl/so_tracking';
+
+  // VERSI 49: sample & pricing
+  static const sampleMaster = '$baseUrl/sample/master';
+  static const sampleCustomer = '$baseUrl/sample/customer';
+  static const samplePertanyaan = '$baseUrl/sample/pertanyaan';
+  static const sample = '$baseUrl/sample';
+  static const sampleSimpan = '$baseUrl/sample/simpan';
+  static const sampleUpdate = '$baseUrl/sample/update';
+
+  // VERSI 51: notifikasi (Firebase) & pendampingan activity
+  static const notifikasi = '$baseUrl/notifikasi';
+  static const notifikasiJumlah = '$baseUrl/notifikasi/jumlah';
+  static const notifikasiBaca = '$baseUrl/notifikasi/baca';
+  static const notifikasiPerangkat = '$baseUrl/notifikasi/perangkat';
+  static const notifikasiPerangkatHapus = '$baseUrl/notifikasi/perangkat/hapus';
+  static const pendampingan = '$baseUrl/pendampingan';
+  static const pendampinganPutuskan = '$baseUrl/pendampingan/putuskan';
 
   //sales report
   static const customerAssign = '$baseUrl/list_customer_assigned';

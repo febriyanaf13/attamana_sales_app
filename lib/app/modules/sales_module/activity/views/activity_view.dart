@@ -182,6 +182,8 @@ class ActivityView extends GetView<ActivityController> {
                           item.lokasi.toString()),
                       _buildInfoRow(Icons.notes_rounded, "Deskripsi",
                           item.notulen ?? '-'),
+                      // VERSI 53: status approval, perubahan lokasi & pendamping
+                      _buildChips(item),
 
                       if (isCompleted) ...[
                         const SizedBox(height: 8),
@@ -200,10 +202,50 @@ class ActivityView extends GetView<ActivityController> {
 
                       // Button Detail/Absen
                       const SizedBox(height: 16),
+                      // VERSI 53: ubah jadwal (tanggal, pendamping, catatan) oleh sales pembuat
+                      if (!isCompleted && item.isPembuat == true) ...[
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton.icon(
+                            onPressed: () => controller.getDetailActivity(
+                                item.kunjunganId,
+                                'EDIT',
+                                item.perluAbsen ?? ''),
+                            icon: const Icon(Icons.edit_calendar_rounded,
+                                size: 18),
+                            label: Text(item.status == 'REJECT'
+                                ? 'PERBAIKI & AJUKAN ULANG'
+                                : 'UBAH JADWAL'),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: const Color(0xFF475569),
+                              side: const BorderSide(color: Color(0xFFE2E8F0)),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12)),
+                              padding: const EdgeInsets.symmetric(vertical: 10),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                      ],
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton.icon(
                           onPressed: () {
+                            // VERSI 53: activity REJECT belum bisa check-in
+                            if (!isCompleted && item.bisaAbsen != true) {
+                              Get.defaultDialog(
+                                title: 'Activity ditolak',
+                                middleText: (item.alasanTolak as String)
+                                        .isNotEmpty
+                                    ? 'Alasan: ${item.alasanTolak}\n\nPerbaiki jadwal lalu ajukan ulang.'
+                                    : 'Perbaiki jadwal lalu ajukan ulang.',
+                                textConfirm: 'OK',
+                                confirmTextColor: Colors.white,
+                                buttonColor: kPrimaryColor,
+                                onConfirm: () => Get.back(),
+                              );
+                              return;
+                            }
                             controller.getDetailActivity(
                               item.kunjunganId,
                               isCompleted ? 'COMPLETED' : 'OPEN',
@@ -263,6 +305,96 @@ class ActivityView extends GetView<ActivityController> {
           ],
         ],
       ),
+    );
+  }
+
+  /// VERSI 53: chip status activity, perubahan lokasi bertemu & pendamping
+  Widget _buildChips(dynamic item) {
+    final chips = <Widget>[];
+    Widget chip(String teks, Color warna, [IconData? ikon]) => Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          decoration: BoxDecoration(
+            color: warna.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (ikon != null) ...[
+                Icon(ikon, size: 11, color: warna),
+                const SizedBox(width: 4),
+              ],
+              Flexible(
+                child: Text(teks,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                        color: warna,
+                        fontSize: 9.5,
+                        fontWeight: FontWeight.w800)),
+              ),
+            ],
+          ),
+        );
+
+    final String approval = item.statusApproval;
+    if (approval == 'MENUNGGU APPROVAL') {
+      chips.add(chip('MENUNGGU APPROVAL', Colors.orange.shade700,
+          Icons.hourglass_top_rounded));
+    } else if (approval == 'APPROVE') {
+      chips.add(chip(
+          'DISETUJUI MANAGER', Colors.green.shade700, Icons.verified_rounded));
+    } else if (approval == 'REJECT') {
+      chips.add(
+          chip('DITOLAK MANAGER', Colors.red.shade700, Icons.block_rounded));
+    }
+    if (item.status == 'CHECK IN') {
+      chips.add(chip(
+          'SEDANG CHECK-IN', const Color(0xFF2563EB), Icons.login_rounded));
+    }
+    final String lokasi = item.statusLokasi;
+    if (lokasi.isNotEmpty) {
+      final warna = lokasi == 'PERUBAHAN LOKASI'
+          ? Colors.orange.shade800
+          : lokasi == 'LOKASI DITOLAK'
+              ? Colors.red.shade700
+              : Colors.green.shade700;
+      chips.add(chip(lokasi, warna, Icons.wrong_location_rounded));
+    }
+    if ((item.namaPendamping as String).isNotEmpty) {
+      final st = item.statusPendamping == 'APPROVE'
+          ? 'setuju'
+          : item.statusPendamping == 'REJECT'
+              ? 'menolak'
+              : 'menunggu';
+      chips.add(chip('Pendamping: ${item.namaPendamping} ($st)',
+          const Color(0xFF7C3AED), Icons.people_alt_rounded));
+    }
+    final List<Widget> isi = [];
+    if (chips.isNotEmpty) {
+      isi.add(Wrap(spacing: 6, runSpacing: 6, children: chips));
+    }
+    if (lokasi.isNotEmpty && (item.lokasiAwal as String).isNotEmpty) {
+      isi.add(Padding(
+        padding: const EdgeInsets.only(top: 6),
+        child: Text(
+          'Lokasi awal: ${item.lokasiAwal}'
+          '${(item.catatanApprovalLokasi as String).isNotEmpty ? '\nCatatan manager: ${item.catatanApprovalLokasi}' : ''}',
+          style: TextStyle(fontSize: 10.5, color: Colors.grey.shade500),
+        ),
+      ));
+    }
+    if (approval == 'REJECT' && (item.alasanTolak as String).isNotEmpty) {
+      isi.add(Padding(
+        padding: const EdgeInsets.only(top: 6),
+        child: Text('Alasan ditolak: ${item.alasanTolak}',
+            style: TextStyle(fontSize: 10.5, color: Colors.red.shade400)),
+      ));
+    }
+    if (isi.isEmpty) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(top: 4, bottom: 4),
+      child:
+          Column(crossAxisAlignment: CrossAxisAlignment.start, children: isi),
     );
   }
 

@@ -9,6 +9,7 @@ import '../../../../style/colors.dart';
 import '../../../../style/paddings.dart';
 import '../controllers/activity_controller.dart';
 import '../models/existing_customer.dart';
+import '../models/pendamping.dart';
 
 class AddActivityView extends GetView<ActivityController> {
   const AddActivityView({Key? key}) : super(key: key);
@@ -96,6 +97,9 @@ class AddActivityView extends GetView<ActivityController> {
                             // Pastikan model ExistingCustomer memiliki properti 'address' atau 'alamat'
                             controller.textEditingControllerAlamat.text =
                                 value.alamatHotel ?? '';
+                            // VERSI 53: titik peta sebelumnya tidak berlaku untuk customer lain
+                            controller.selectedLatitude.value = 0.0;
+                            controller.selectedLongitude.value = 0.0;
                           }
                         },
                         validator: (x) {
@@ -112,27 +116,69 @@ class AddActivityView extends GetView<ActivityController> {
                     }),
                     const SizedBox(height: 20),
 
-                    // ✅ FORM ALAMAT (KLIK UNTUK BUKA PETA)
-                    GestureDetector(
-                      onTap: () {
-                        // Panggil fungsi peta dari controller
-                        controller.pickAddressFromMap();
-                      },
-                      child: AbsorbPointer(
-                        // Mencegah keyboard muncul saat form ditekan
-                        child: CustomTextField(
-                          title: 'Alamat Lengkap',
-                          hint: 'Klik untuk memilih lokasi di peta...',
-                          isRequired: true,
-                          maxLine: 3,
-                          // Jika CustomTextField Anda belum support readOnly,
-                          // set controller agar tidak bisa diedit manual (opsional)
-                          controller: controller.textEditingControllerAlamat,
-                          // Suffix icon opsional (jika CustomTextField mendukung)
-                          // suffixIcon: const Icon(Icons.map_rounded, color: kPrimaryColor),
+                    // VERSI 53: saat edit, lokasi bertemu tidak diubah dari form ini
+                    if (visitId != null) ...[
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF8FAFC),
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(color: const Color(0xFFE2E8F0)),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text('Lokasi bertemu',
+                                style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w700,
+                                    color: Color(0xFF475569))),
+                            const SizedBox(height: 6),
+                            Text(
+                                controller.textEditingControllerAlamat.text
+                                        .isEmpty
+                                    ? '-'
+                                    : controller
+                                        .textEditingControllerAlamat.text,
+                                style: const TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                    color: Color(0xFF1E293B))),
+                            const SizedBox(height: 6),
+                            Text(
+                              'Client minta pindah tempat? Buka kunjungan (MULAI KUNJUNGAN) lalu tekan "Ubah lokasi bertemu". '
+                              'Bila tanggal pertemuan sudah lewat, ganti tanggal di sini dulu.',
+                              style: TextStyle(
+                                  fontSize: 11, color: Colors.grey.shade500),
+                            ),
+                          ],
                         ),
                       ),
-                    ),
+                      const SizedBox(height: 20),
+                    ],
+                    // ✅ FORM ALAMAT (KLIK UNTUK BUKA PETA)
+                    if (visitId == null)
+                      GestureDetector(
+                        onTap: () {
+                          // Panggil fungsi peta dari controller
+                          controller.pickAddressFromMap();
+                        },
+                        child: AbsorbPointer(
+                          // Mencegah keyboard muncul saat form ditekan
+                          child: CustomTextField(
+                            title: 'Alamat Lengkap',
+                            hint: 'Klik untuk memilih lokasi di peta...',
+                            isRequired: true,
+                            maxLine: 3,
+                            // Jika CustomTextField Anda belum support readOnly,
+                            // set controller agar tidak bisa diedit manual (opsional)
+                            controller: controller.textEditingControllerAlamat,
+                            // Suffix icon opsional (jika CustomTextField mendukung)
+                            // suffixIcon: const Icon(Icons.map_rounded, color: kPrimaryColor),
+                          ),
+                        ),
+                      ),
                     const SizedBox(height: 20),
 
                     // --- TUJUAN KUNJUNGAN ---
@@ -149,18 +195,37 @@ class AddActivityView extends GetView<ActivityController> {
                         )),
                     const SizedBox(height: 20),
 
-                    // --- PENDAMPING (OPTIONAL DROPDOWN) ---
-                    Obx(() => CustomDropdownButton(
-                          title: 'Pendamping',
-                          initialValue: controller.action.value == ''
-                              ? null
-                              : controller.action.value,
-                          isRequired: false,
-                          height: 60,
-                          items: controller.listAction.value,
-                          onChangeValue: (value) {},
-                          validator: '',
-                        )),
+                    // --- PENDAMPING (OPTIONAL) ---
+                    // VERSI 53: dulu dropdown ini berisi daftar "Tujuan Kunjungan" dan tidak dikirim ke server.
+                    // Sekarang daftar rekan (pegawai); rekan menerima notifikasi untuk menyetujui pendampingan.
+                    Obx(() {
+                      final terpilih =
+                          controller.listPendamping.firstWhereOrNull(
+                        (e) =>
+                            e.pegawaiId.toString() ==
+                            controller.pendampingId.value,
+                      );
+                      return CustomDropDownSearch<Pendamping>(
+                        title: 'Pendamping (opsional)',
+                        labelSpace: true,
+                        isRequired: false,
+                        withTitle: true,
+                        hint: 'Cari rekan pendamping...',
+                        initialValue: terpilih,
+                        dataList: controller.listPendamping,
+                        onSelectedItem: (value) {
+                          controller.pendampingId.value =
+                              (value == null || value.pegawaiId == 0)
+                                  ? ''
+                                  : value.pegawaiId.toString();
+                        },
+                        validator: (x) => null,
+                        itemLabel: (item) => item.nama,
+                        controller: controller.textEditingControllerPendamping,
+                        onSubmit: (String? p1) {},
+                        onSave: (String? p1) {},
+                      );
+                    }),
                     const SizedBox(height: 20),
 
                     // --- TANGGAL VISIT ---
