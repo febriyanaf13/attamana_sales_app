@@ -1,13 +1,17 @@
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 import '../../../../components/custom_button.dart';
-import '../../../../components/custom_datepicker_dialog.dart';
 import '../../../../components/custom_lottie_not_found.dart';
 import '../../../../style/colors.dart';
+import '../../shared/sales_ui.dart';
 import '../controllers/sales_order_controller.dart';
+import '../models/so_tracking.dart';
+import 'so_tracking_detail_view.dart';
 
+/// Desain kartu & app bar mengikuti desain developer (6 Nov 2026).
+/// VERSI 49 dipasang di atasnya: data dari API so_tracking (langsung tampil tanpa pilih tanggal),
+/// filter tahap, posisi tahap + progress, cari langsung saat mengetik, muat bertahap saat di-scroll,
+/// filter tanggal opsional, dan tombol ke detail tracking SO.
 class SalesOrderView extends GetView<SalesOrderController> {
   const SalesOrderView({Key? key}) : super(key: key);
 
@@ -16,9 +20,17 @@ class SalesOrderView extends GetView<SalesOrderController> {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC), // Slate 50 background
       appBar: AppBar(
-        title: const Text(
-          'Sales Order',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+        title: Column(
+          children: [
+            const Text(
+              'Sales Order',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            ),
+            Obx(() => Text(
+                  '${fmtAngka(controller.total.value)} SO',
+                  style: const TextStyle(fontSize: 11, color: Colors.white70),
+                )),
+          ],
         ),
         backgroundColor: kPrimaryColor,
         centerTitle: true,
@@ -29,25 +41,41 @@ class SalesOrderView extends GetView<SalesOrderController> {
         actions: [
           IconButton(
             onPressed: showBottomSheetFilter,
-            icon: const Icon(Icons.filter_list_rounded, size: 28),
+            icon: Obx(() => Icon(
+                controller.rangeTanggal.value.isEmpty
+                    ? Icons.filter_list_rounded
+                    : Icons.event_available_rounded,
+                size: 28)),
           ),
           const SizedBox(width: 8),
         ],
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(80),
+          preferredSize: const Size.fromHeight(88),
           child: Padding(
             padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                // Info Range Tanggal yang Aktif
+                // Info Range Tanggal yang Aktif (ketuk untuk kembali ke semua tanggal)
                 Obx(() => controller.rangeTanggal.value.isEmpty
                     ? const SizedBox()
                     : Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: Text(
-                          controller.rangeTanggal.value,
-                          style: const TextStyle(
-                              color: Colors.white70, fontSize: 11),
+                        padding: const EdgeInsets.only(bottom: 6),
+                        child: InkWell(
+                          onTap: controller.hapusTanggal,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                controller.rangeTanggal.value,
+                                style: const TextStyle(
+                                    color: Colors.white70, fontSize: 11),
+                              ),
+                              const SizedBox(width: 4),
+                              const Icon(Icons.close_rounded,
+                                  size: 14, color: Colors.white70),
+                            ],
+                          ),
                         ),
                       )),
                 // Search Bar Modern
@@ -66,6 +94,7 @@ class SalesOrderView extends GetView<SalesOrderController> {
                   ),
                   child: TextFormField(
                     controller: controller.textEditingControllerSearch,
+                    textInputAction: TextInputAction.search,
                     decoration: InputDecoration(
                       hintText: 'Cari No. SO atau Nama Customer...',
                       hintStyle: TextStyle(
@@ -77,8 +106,9 @@ class SalesOrderView extends GetView<SalesOrderController> {
                       border: InputBorder.none,
                       contentPadding: const EdgeInsets.symmetric(vertical: 10),
                     ),
-                    onFieldSubmitted: (value) =>
-                        controller.getlistSalesOrderSearch(value),
+                    // VERSI 49: cari langsung saat mengetik (jeda 450 ms)
+                    onChanged: (value) => controller.kataCari.value = value,
+                    onFieldSubmitted: (_) => controller.muatUlang(),
                   ),
                 ),
               ],
@@ -86,36 +116,79 @@ class SalesOrderView extends GetView<SalesOrderController> {
           ),
         ),
       ),
-      body: RefreshIndicator(
-        color: kPrimaryColor,
-        onRefresh: () async {
-          controller.reqPostSalesOrder();
-          controller.textEditingControllerTglFilterMulai.clear();
-          controller.textEditingControllerTglFilterSelesai.clear();
-          controller.rangeTanggal.value = '';
-        },
-        child: Obx(
-          () => controller.isLoadingSalesOrder.isTrue
-              ? const Center(
-                  child: CircularProgressIndicator(color: kPrimaryColor))
-              : controller.listSalesOrderSearch.isEmpty
-                  ? const CustomLottieNotFound()
-                  : ListView.separated(
-                      padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
-                      itemCount: controller.listSalesOrderSearch.length,
-                      separatorBuilder: (context, index) =>
-                          const SizedBox(height: 16),
-                      itemBuilder: (context, index) => _buildSOCard(index),
-                    ),
-        ),
+      body: Column(
+        children: [
+          const SizedBox(height: 14),
+          // VERSI 49: filter tahap tracking + jumlah SO per tahap
+          Obx(() => SalesFilterChips(
+                pilihan: SalesOrderController.filterTahap,
+                aktif: controller.tahap.value,
+                jumlah: controller.jumlahTahap.isEmpty
+                    ? null
+                    : Map<String, int>.from(controller.jumlahTahap),
+                onPilih: controller.pilihTahap,
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+              )),
+          Expanded(
+            child: RefreshIndicator(
+              color: kPrimaryColor,
+              onRefresh: () async => controller.muatUlang(),
+              child: Obx(() {
+                if (controller.isLoadingSalesOrder.isTrue &&
+                    controller.listSo.isEmpty) {
+                  return const Center(
+                      child: CircularProgressIndicator(color: kPrimaryColor));
+                }
+                if (controller.listSo.isEmpty) {
+                  return ListView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    children: [
+                      SizedBox(height: Get.height * 0.08),
+                      const CustomLottieNotFound(),
+                    ],
+                  );
+                }
+                final n = controller.listSo.length;
+                return ListView.separated(
+                  controller: controller.scrollController,
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.fromLTRB(20, 14, 20, 100),
+                  itemCount: n + 1,
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(height: 16),
+                  itemBuilder: (context, index) => index == n
+                      ? _footer()
+                      : _buildSOCard(controller.listSo[index]),
+                );
+              }),
+            ),
+          ),
+        ],
       ),
     );
   }
 
+  Widget _footer() {
+    return Obx(() => controller.isLoadingMore.isTrue
+        ? const Padding(
+            padding: EdgeInsets.all(8),
+            child: Center(
+                child: SizedBox(
+                    width: 22,
+                    height: 22,
+                    child: CircularProgressIndicator(
+                        strokeWidth: 2.5, color: kPrimaryColor))),
+          )
+        : const SizedBox());
+  }
+
+  void _bukaDetail(SoTracking item) => Get.to(() =>
+      SoTrackingDetailView(pesananId: item.pesananId, noSo: item.noTransaksi));
+
   // --- KARTU SO MODERN ---
-  Widget _buildSOCard(int index) {
+  Widget _buildSOCard(SoTracking item) {
     var seeProduct = false.obs;
-    final item = controller.listSalesOrderSearch[index];
+    final warna = warnaTahap(item.tahap);
 
     return Container(
       decoration: BoxDecoration(
@@ -131,120 +204,201 @@ class SalesOrderView extends GetView<SalesOrderController> {
       ),
       child: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Header: No SO & Status
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+          InkWell(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+            onTap: () => _bukaDetail(item),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Header: No SO & Status
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('NO. TRANSAKSI',
+                                style: TextStyle(
+                                    fontSize: 9,
+                                    fontWeight: FontWeight.w800,
+                                    color: Colors.grey.shade400,
+                                    letterSpacing: 1)),
+                            const SizedBox(height: 2),
+                            Text(item.noTransaksi,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w800,
+                                    color: Color(0xFF1E293B),
+                                    fontSize: 15)),
+                          ],
+                        ),
+                      ),
+                      _buildStatusBadge(item.statusSo),
+                    ],
+                  ),
+                  const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 12),
+                      child: Divider(height: 1)),
+
+                  // Customer Info
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                            color: kPrimaryColor.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(10)),
+                        child: const Icon(Icons.business_center_rounded,
+                            color: kPrimaryColor, size: 20),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('CUSTOMER',
+                                style: TextStyle(
+                                    fontSize: 9,
+                                    fontWeight: FontWeight.w800,
+                                    color: Colors.grey.shade400)),
+                            Text(item.namaCustomer,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    color: Color(0xFF475569))),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(fmtRupiah(item.total),
+                          style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w800,
+                              color: Color(0xFF1E293B))),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+
+                  // VERSI 49: posisi tahap SO (konfirmasi, produksi, siap kirim, dikirim, selesai)
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+                    decoration: BoxDecoration(
+                      color: warna.withOpacity(0.06),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Column(
                       children: [
-                        Text('NO. TRANSAKSI',
-                            style: TextStyle(
-                                fontSize: 9,
-                                fontWeight: FontWeight.w800,
-                                color: Colors.grey.shade400,
-                                letterSpacing: 1)),
-                        const SizedBox(height: 2),
-                        Text(item.noTransaksi.toString(),
-                            style: const TextStyle(
-                                fontWeight: FontWeight.w800,
-                                color: Color(0xFF1E293B),
-                                fontSize: 15)),
+                        Row(
+                          children: [
+                            Icon(ikonTahap(item.tahap), size: 18, color: warna),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(item.tahapLabel,
+                                  style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w800,
+                                      color: warna)),
+                            ),
+                            if (item.tahap != 'BATAL')
+                              Text('${item.tahapUrutan}/${item.tahapTotal}',
+                                  style: TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w700,
+                                      color: Colors.grey.shade500)),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        SalesStepBar(
+                            urutan: item.tahapUrutan,
+                            total: item.tahapTotal,
+                            warna: warna),
                       ],
                     ),
-                    _buildStatusBadge(item.status.toString()),
-                  ],
-                ),
-                const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 12),
-                    child: Divider(height: 1)),
+                  ),
+                  const SizedBox(height: 16),
 
-                // Customer Info
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                          color: kPrimaryColor.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(10)),
-                      child: const Icon(Icons.business_center_rounded,
-                          color: kPrimaryColor, size: 20),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('CUSTOMER',
-                              style: TextStyle(
-                                  fontSize: 9,
-                                  fontWeight: FontWeight.w800,
-                                  color: Colors.grey.shade400)),
-                          Text(item.namaCustomer.toString(),
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  color: Color(0xFF475569))),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-
-                // Date Timeline
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    _buildDateInfo('TGL TRANSAKSI', item.tglTransaksi),
-                    Icon(Icons.arrow_forward_rounded,
-                        size: 16, color: Colors.grey.shade300),
-                    _buildDateInfo('JATUH TEMPO', item.dueDate),
-                  ],
-                ),
-              ],
-            ),
-          ),
-
-          // Action: See Product Toggle
-          InkWell(
-            onTap: () => seeProduct.toggle(),
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              decoration: BoxDecoration(
-                color: const Color(0xFFF8FAFC),
-                borderRadius:
-                    const BorderRadius.vertical(bottom: Radius.circular(20)),
-                border: Border(top: BorderSide(color: Colors.grey.shade100)),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('Lihat Detail Produk',
-                      style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                          color: kPrimaryColor)),
-                  const SizedBox(width: 4),
-                  Obx(() => Icon(
-                      seeProduct.isTrue
-                          ? Icons.keyboard_arrow_up_rounded
-                          : Icons.keyboard_arrow_down_rounded,
-                      color: kPrimaryColor,
-                      size: 20)),
+                  // Date Timeline
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _buildDateInfo('TGL TRANSAKSI', item.tglTransaksi),
+                      Icon(Icons.arrow_forward_rounded,
+                          size: 16, color: Colors.grey.shade300),
+                      _buildDateInfo('JATUH TEMPO', item.dueDate),
+                    ],
+                  ),
                 ],
               ),
             ),
           ),
 
+          // Action: See Product Toggle + Tracking
+          Container(
+            decoration: BoxDecoration(
+              color: const Color(0xFFF8FAFC),
+              border: Border(top: BorderSide(color: Colors.grey.shade100)),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: InkWell(
+                    onTap: () => seeProduct.toggle(),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text('Lihat Detail Produk',
+                              style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                  color: kPrimaryColor)),
+                          const SizedBox(width: 4),
+                          Obx(() => Icon(
+                              seeProduct.isTrue
+                                  ? Icons.keyboard_arrow_up_rounded
+                                  : Icons.keyboard_arrow_down_rounded,
+                              color: kPrimaryColor,
+                              size: 20)),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                Container(width: 1, height: 22, color: Colors.grey.shade200),
+                Expanded(
+                  child: InkWell(
+                    onTap: () => _bukaDetail(item),
+                    child: const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 12),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text('Lihat Tracking',
+                              style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                  color: kPrimaryColor)),
+                          SizedBox(width: 2),
+                          Icon(Icons.chevron_right_rounded,
+                              color: kPrimaryColor, size: 20),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
           // Detail Produk (Expanded Table)
           Obx(() => seeProduct.isTrue
-              ? _buildProductTable(item.detail)
-              : const SizedBox()),
+              ? _buildProductTable(item.produk)
+              : const SizedBox(height: 4)),
         ],
       ),
     );
@@ -252,21 +406,26 @@ class SalesOrderView extends GetView<SalesOrderController> {
 
   // --- HELPER WIDGETS ---
   Widget _buildStatusBadge(String status) {
+    final Color warna = status == 'BATAL'
+        ? kMerah
+        : (status == 'BARU' || status.isEmpty)
+            ? Colors.orange
+            : kBiru;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.orange.withOpacity(0.1),
+        color: warna.withOpacity(0.1),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
-        status.toUpperCase(),
-        style: const TextStyle(
-            color: Colors.orange, fontSize: 10, fontWeight: FontWeight.w800),
+        status.isEmpty ? '-' : status.toUpperCase(),
+        style:
+            TextStyle(color: warna, fontSize: 10, fontWeight: FontWeight.w800),
       ),
     );
   }
 
-  Widget _buildDateInfo(String label, DateTime date) {
+  Widget _buildDateInfo(String label, String tanggal) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -275,7 +434,7 @@ class SalesOrderView extends GetView<SalesOrderController> {
                 fontSize: 9,
                 fontWeight: FontWeight.w800,
                 color: Colors.grey.shade400)),
-        Text(DateFormat("dd MMM yyyy").format(date),
+        Text(tanggal.isEmpty ? '-' : fmtTanggal(tanggal),
             style: const TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 13,
@@ -284,7 +443,15 @@ class SalesOrderView extends GetView<SalesOrderController> {
     );
   }
 
-  Widget _buildProductTable(List<dynamic> details) {
+  Widget _buildProductTable(List<SoProduk> details) {
+    const judul = TextStyle(fontSize: 10, fontWeight: FontWeight.bold);
+    const isi = TextStyle(fontSize: 11);
+    if (details.isEmpty) {
+      return const Padding(
+        padding: EdgeInsets.all(16),
+        child: Text('Belum ada produk', style: TextStyle(fontSize: 12)),
+      );
+    }
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
@@ -299,55 +466,38 @@ class SalesOrderView extends GetView<SalesOrderController> {
           horizontalMargin: 10,
           columnSpacing: 20,
           columns: const [
-            DataColumn(
-                label: Text('PRODUCT',
-                    style:
-                        TextStyle(fontSize: 10, fontWeight: FontWeight.bold))),
-            DataColumn(
-                label: Text('REQUEST',
-                    style:
-                        TextStyle(fontSize: 10, fontWeight: FontWeight.bold))),
-            DataColumn(
-                label: Text('IN PROGRESS',
-                    style:
-                        TextStyle(fontSize: 10, fontWeight: FontWeight.bold))),
-            DataColumn(
-                label: Text('DONE',
-                    style:
-                        TextStyle(fontSize: 10, fontWeight: FontWeight.bold))),
-            DataColumn(
-                label: Text('DELIVERED',
-                    style:
-                        TextStyle(fontSize: 10, fontWeight: FontWeight.bold))),
-            DataColumn(
-                label: Text('OUTSTANDING',
-                    style:
-                        TextStyle(fontSize: 10, fontWeight: FontWeight.bold))),
+            DataColumn(label: Text('PRODUCT', style: judul)),
+            DataColumn(label: Text('PESANAN', style: judul)),
+            DataColumn(label: Text('DIPRODUKSI', style: judul)),
+            DataColumn(label: Text('SIAP KIRIM', style: judul)),
+            DataColumn(label: Text('TERKIRIM', style: judul)),
+            DataColumn(label: Text('OUTSTANDING', style: judul)),
           ],
-          rows: details
-              .map((d) => DataRow(cells: [
-                    DataCell(Text(d.namaProduk.toString(),
-                        style: const TextStyle(fontSize: 11))),
-                    DataCell(Center(
-                        child: Text(d.request.toString(),
-                            style: const TextStyle(fontSize: 11)))),
-                    DataCell(Center(
-                        child: Text(d.inProgress.toString(),
-                            style: const TextStyle(fontSize: 11)))),
-                    DataCell(Center(
-                        child: Text(d.done.toString(),
-                            style: const TextStyle(fontSize: 11)))),
-                    DataCell(Center(
-                        child: Text(d.delivered.toString(),
-                            style: const TextStyle(fontSize: 11)))),
-                    DataCell(Center(
-                        child: Text(d.outstanding.toString(),
-                            style: const TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.red)))),
-                  ]))
-              .toList(),
+          rows: details.map((d) {
+            final double sisa = (d.qtyPesanan - d.qtyTerkirim) < 0
+                ? 0.0
+                : d.qtyPesanan - d.qtyTerkirim;
+            return DataRow(cells: [
+              DataCell(Text(
+                  d.satuan.isEmpty
+                      ? d.namaProduk
+                      : '${d.namaProduk} (${d.satuan})',
+                  style: isi)),
+              DataCell(Center(child: Text(fmtAngka(d.qtyPesanan), style: isi))),
+              DataCell(Center(
+                  child: Text(fmtAngka(d.qtyHasilProduksi), style: isi))),
+              DataCell(
+                  Center(child: Text(fmtAngka(d.qtySiapKirim), style: isi))),
+              DataCell(
+                  Center(child: Text(fmtAngka(d.qtyTerkirim), style: isi))),
+              DataCell(Center(
+                  child: Text(fmtAngka(sisa),
+                      style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          color: sisa > 0 ? Colors.red : kHijau)))),
+            ]);
+          }).toList(),
         ),
       ),
     );
@@ -372,29 +522,26 @@ class SalesOrderView extends GetView<SalesOrderController> {
                   fontWeight: FontWeight.w800,
                   color: Color(0xFF1E293B)),
             ),
+            const SizedBox(height: 4),
+            Text('Kosongkan untuk menampilkan semua tanggal.',
+                style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
             const SizedBox(height: 20),
             Row(
               children: [
                 Expanded(
-                  child: CustomDateTimePickerDialog(
-                    title: 'Mulai',
-                    setDateValue:
-                        controller.textEditingControllerTglFilterMulai.text,
-                    onDataChange: (value) => controller
-                        .textEditingControllerTglFilterMulai.text = value ?? '',
-                    isRequired: true,
+                  child: SalesDateField(
+                    label: 'Mulai',
+                    controller: controller.textEditingControllerTglFilterMulai,
+                    bisaDikosongkan: true,
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: CustomDateTimePickerDialog(
-                    title: 'Selesai',
-                    setDateValue:
-                        controller.textEditingControllerTglFilterSelesai.text,
-                    onDataChange: (value) => controller
-                        .textEditingControllerTglFilterSelesai
-                        .text = value ?? '',
-                    isRequired: true,
+                  child: SalesDateField(
+                    label: 'Selesai',
+                    controller:
+                        controller.textEditingControllerTglFilterSelesai,
+                    bisaDikosongkan: true,
                   ),
                 ),
               ],
@@ -405,7 +552,7 @@ class SalesOrderView extends GetView<SalesOrderController> {
                     child: CircularProgressIndicator(color: kPrimaryColor))
                 : CustomButton(
                     onTap: () {
-                      controller.reqPostSalesOrder();
+                      controller.terapkanTanggal();
                       Get.back();
                     },
                     text: 'TAMPILKAN DATA',
@@ -414,9 +561,22 @@ class SalesOrderView extends GetView<SalesOrderController> {
                     gradient: LinearGradient(
                         colors: [kPrimaryColor, const Color(0xFF1E3C72)]),
                   )),
+            const SizedBox(height: 6),
+            Center(
+              child: TextButton(
+                onPressed: () {
+                  controller.hapusTanggal();
+                  Get.back();
+                },
+                child: const Text('Tampilkan semua tanggal',
+                    style: TextStyle(
+                        color: kPrimaryColor, fontWeight: FontWeight.w700)),
+              ),
+            ),
           ],
         ),
       ),
+      isScrollControlled: true,
       barrierColor: Colors.black.withOpacity(0.5),
     );
   }

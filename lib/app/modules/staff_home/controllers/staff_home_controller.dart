@@ -6,6 +6,7 @@ import 'package:attamana_salles_app/app/modules/terlambat/controllers/terlambat_
 import 'package:attamana_salles_app/app/utils/constants.dart';
 import 'package:attamana_salles_app/app/utils/extension_image.dart';
 import 'package:attamana_salles_app/app/utils/string.dart';
+import 'package:attamana_salles_app/app/services/notifikasi_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -64,7 +65,21 @@ class StaffHomeController extends GetxController {
     // TODO: implement onInit
     checkAbsenHariIni();
     getAnnouncement();
+    // VERSI 51: daftarkan HP untuk push notification & muat jumlah notifikasi belum dibaca
+    if (Get.isRegistered<NotifikasiService>()) {
+      NotifikasiService.to.daftarkanToken();
+      NotifikasiService.to.muatJumlah();
+    }
     super.onInit();
+  }
+
+  @override
+  void onReady() {
+    super.onReady();
+    // VERSI 51: notifikasi yang diketuk saat aplikasi masih tertutup dibuka setelah beranda tampil
+    if (Get.isRegistered<NotifikasiService>()) {
+      NotifikasiService.to.prosesTertunda();
+    }
   }
 
   void checkAbsenHariIni() {

@@ -1,15 +1,17 @@
 import 'package:attamana_salles_app/app/utils/constants.dart';
 import 'package:attamana_salles_app/app/utils/string.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../models/sales_order.dart';
+import '../../../../components/custom_dialog.dart';
+import '../../shared/sales_ui.dart';
+import '../models/so_tracking.dart';
 import '../providers/sales_order_provider.dart';
 
+/// VERSI 49: tracking sales order.
+/// List SO milik sales langsung tampil (tanpa harus pilih tanggal dulu), bisa dicari, difilter per tahap
+/// (Konfirmasi, Produksi, Siap kirim, Pengiriman, Selesai) dan rentang tanggal, dimuat bertahap saat di-scroll.
 class SalesOrderController extends GetxController {
-  //TODO: Implement SalesOrderController
-
   TextEditingController textEditingControllerTglFilterMulai =
       TextEditingController();
   TextEditingController textEditingControllerTglFilterSelesai =
@@ -18,75 +20,134 @@ class SalesOrderController extends GetxController {
 
   var userId = storage.read(kUserId);
 
-  var listSalesOrder = <SalesOrder>[].obs;
-  var listSalesOrderSearch = <SalesOrder>[].obs;
+  static const filterTahap = {
+    'SEMUA': 'Semua',
+    'KONFIRMASI': 'Konfirmasi',
+    'PRODUKSI': 'Produksi',
+    'SIAP_KIRIM': 'Siap kirim',
+    'PENGIRIMAN': 'Dikirim',
+    'SELESAI': 'Selesai',
+  };
+
+  var listSo = <SoTracking>[].obs;
+  var jumlahTahap = <String, int>{}.obs;
+  var tahap = 'SEMUA'.obs;
   var rangeTanggal = ''.obs;
+  var kataCari = ''.obs;
+  var total = 0.obs;
+  var page = 1;
+  var lastPage = 1;
   var isLoadingSalesOrder = false.obs;
+  var isLoadingMore = false.obs;
+  final scrollController = ScrollController();
+  int _permintaan = 0;
 
   @override
   void onInit() {
-    textEditingControllerTglFilterMulai.text =
-        '${DateTime.now().year.toString().padLeft(2, '0')}-${DateTime.now().month.toString().padLeft(2, '0')}-${DateTime.now().day.toString().padLeft(2, '0')}';
-    textEditingControllerTglFilterSelesai.text =
-        '${DateTime.now().year.toString().padLeft(2, '0')}-${DateTime.now().month.toString().padLeft(2, '0')}-${DateTime.now().day.toString().padLeft(2, '0')}';
-
-    print(textEditingControllerTglFilterMulai.text);
     super.onInit();
-  }
-
-  @override
-  void onReady() {
-    super.onReady();
+    debounce(kataCari, (_) => muatUlang(),
+        time: const Duration(milliseconds: 450));
+    scrollController.addListener(() {
+      if (scrollController.position.pixels >=
+          scrollController.position.maxScrollExtent - 300) {
+        muatBerikutnya();
+      }
+    });
+    muatUlang();
   }
 
   @override
   void onClose() {
+    scrollController.dispose();
     super.onClose();
   }
 
-  void reqPostSalesOrder() {
-    isLoadingSalesOrder.toggle();
-    var body = {
-      'user_id': userId,
+  void pilihTahap(String kode) {
+    if (tahap.value == kode) return;
+    tahap.value = kode;
+    muatUlang();
+  }
+
+  void terapkanTanggal() {
+    final a = textEditingControllerTglFilterMulai.text;
+    final b = textEditingControllerTglFilterSelesai.text;
+    rangeTanggal.value = (a.isEmpty && b.isEmpty)
+        ? ''
+        : '${a.isEmpty ? '...' : fmtTanggal(a)}  –  ${b.isEmpty ? '...' : fmtTanggal(b)}';
+    muatUlang();
+  }
+
+  void hapusTanggal() {
+    textEditingControllerTglFilterMulai.clear();
+    textEditingControllerTglFilterSelesai.clear();
+    rangeTanggal.value = '';
+    muatUlang();
+  }
+
+  void muatUlang() => _ambil(1, tambah: false);
+
+  void muatBerikutnya() {
+    if (isLoadingSalesOrder.isTrue || isLoadingMore.isTrue || page >= lastPage)
+      return;
+    _ambil(page + 1, tambah: true);
+  }
+
+  /// dipertahankan untuk kompatibilitas pemanggil lama
+  void reqPostSalesOrder() => muatUlang();
+
+  void _ambil(int halaman, {required bool tambah}) {
+    final nomor = ++_permintaan;
+    if (tambah) {
+      isLoadingMore.value = true;
+    } else {
+      isLoadingSalesOrder.value = true;
+    }
+    final query = <String, String>{
+      'userid': '$userId',
+      'page': '$halaman',
+      'per_page': '10',
+      'cari': textEditingControllerSearch.text.trim(),
+      'tahap': tahap.value == 'SEMUA' ? '' : tahap.value,
       'tgl_mulai': textEditingControllerTglFilterMulai.text,
       'tgl_selesai': textEditingControllerTglFilterSelesai.text,
     };
-    print(body);
-    SalesOrderProvider().reqPostSalesOrder(body).then((value) {
-      isLoadingSalesOrder.toggle();
-      if (kDebugMode) {
-        print(value.body);
-      }
-      if (value.status.isOk) {
-        var data = value.body['data'];
-        if (kDebugMode) {
-          print(data);
+    SalesOrderProvider().getSoTracking(query).then((value) {
+      if (nomor != _permintaan) return;
+      isLoadingSalesOrder.value = false;
+      isLoadingMore.value = false;
+      final body = value.body;
+      if (value.status.isOk && body is Map && body['success'] == true) {
+        final data = (body['data'] is List ? body['data'] as List : [])
+            .map((e) => SoTracking.fromJson(Map<String, dynamic>.from(e)))
+            .toList();
+        page = intDari(body['page']);
+        lastPage = intDari(body['last_page']);
+        total.value = intDari(body['total']);
+        if (body['jumlah_tahap'] is Map) {
+          jumlahTahap.value = Map<String, dynamic>.from(body['jumlah_tahap'])
+              .map((k, v) => MapEntry(k, intDari(v)));
         }
-
-        rangeTanggal.value =
-            '${textEditingControllerTglFilterMulai.text}  -  ${textEditingControllerTglFilterSelesai.text}';
-        listSalesOrder.value = SalesOrderFromJson(data);
-        listSalesOrderSearch.value = SalesOrderFromJson(data);
+        if (tambah) {
+          listSo.addAll(data);
+        } else {
+          listSo.value = data;
+          if (scrollController.hasClients) scrollController.jumpTo(0);
+        }
+      } else if (!tambah) {
+        if (value.status.connectionError) {
+          dialogError('Tidak ada koneksi',
+              'Jaringan internet bermasalah, silahkan cek koneksi internet!');
+        } else if (value.status.isServerError) {
+          dialogError('Terjadi Kesalahan',
+              'Terjadi masalah pada server / koneksi internet lambat');
+        } else {
+          dialogWarning(
+              'Ops...',
+              body is Map
+                  ? '${body['message'] ?? body['status'] ?? 'Gagal memuat sales order'}'
+                  : 'Gagal memuat sales order');
+        }
       }
     });
-  }
-
-  getlistSalesOrderSearch(String searchText) {
-    List<SalesOrder> listSearch = listSalesOrder.where((element) {
-      return element.namaCustomer
-              .toLowerCase()
-              .contains(searchText.toLowerCase()) ||
-          element.namaSales.toLowerCase().contains(searchText.toLowerCase()) ||
-          element.noTransaksi
-              .toLowerCase()
-              .contains(searchText.toLowerCase()) ||
-          element.tglTransaksi
-              .toString()
-              .toLowerCase()
-              .contains(searchText.toLowerCase());
-    }).toList();
-    // listSearch.sort((a, b) => b!.tgllunas!.compareTo(a!.tgllunas!));
-    listSalesOrderSearch(listSearch);
-    print(listSearch.length);
   }
 }

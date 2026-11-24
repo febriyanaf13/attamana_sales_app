@@ -1,3 +1,4 @@
+import 'package:attamana_salles_app/app/services/notifikasi_service.dart';
 import 'package:attamana_salles_app/app/modules/account/providers/account_provider.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/cupertino.dart';
@@ -68,6 +69,10 @@ class AccountController extends GetxController {
             child: const Text("Batal")),
         CupertinoDialogAction(
             onPressed: () async {
+              // VERSI 51: HP berhenti menerima notifikasi user ini
+              if (Get.isRegistered<NotifikasiService>()) {
+                await NotifikasiService.to.hapusToken();
+              }
               await storage.remove('session');
               // storage.remove('userData');
 

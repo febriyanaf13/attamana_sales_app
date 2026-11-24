@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../../services/internet_connection_checker.dart';
 import '../controllers/staff_home_controller.dart';
+import 'package:attamana_salles_app/app/services/notifikasi_service.dart';
 
 class StaffHomeView extends GetView<StaffHomeController> {
   const StaffHomeView({Key? key}) : super(key: key);
@@ -255,9 +256,15 @@ class StaffHomeView extends GetView<StaffHomeController> {
                                         Stack(
                                           children: [
                                             IconButton(
-                                              onPressed: () {
-                                                Get.toNamed(
+                                              onPressed: () async {
+                                                await Get.toNamed(
                                                     Routes.NOTIFICATION);
+                                                // VERSI 51: perbarui badge setelah kembali
+                                                if (Get.isRegistered<
+                                                    NotifikasiService>()) {
+                                                  NotifikasiService.to
+                                                      .muatJumlah();
+                                                }
                                               },
                                               icon: Icon(
                                                 Icons
@@ -267,23 +274,47 @@ class StaffHomeView extends GetView<StaffHomeController> {
                                                 size: 26,
                                               ),
                                             ),
-                                            // Notification Badge Indicator
-                                            Positioned(
-                                              right: 12,
-                                              top: 12,
-                                              child: Container(
-                                                width: 10,
-                                                height: 10,
-                                                decoration: BoxDecoration(
-                                                  color: const Color(
-                                                      0xFFFF3B30), // Red dot
-                                                  shape: BoxShape.circle,
-                                                  border: Border.all(
-                                                      color: kPrimaryColor,
-                                                      width: 1.5),
-                                                ),
+                                            // VERSI 51: badge = jumlah notifikasi belum dibaca (dulu titik merah selalu tampil)
+                                            if (Get.isRegistered<
+                                                NotifikasiService>())
+                                              Positioned(
+                                                right: 6,
+                                                top: 6,
+                                                child: Obx(() {
+                                                  final n = NotifikasiService
+                                                      .to.jumlahBelum.value;
+                                                  if (n <= 0)
+                                                    return const SizedBox();
+                                                  return Container(
+                                                    constraints:
+                                                        const BoxConstraints(
+                                                            minWidth: 18,
+                                                            minHeight: 18),
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        horizontal: 4),
+                                                    decoration: BoxDecoration(
+                                                      color: const Color(
+                                                          0xFFFF3B30),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              9),
+                                                      border: Border.all(
+                                                          color: kPrimaryColor,
+                                                          width: 1.5),
+                                                    ),
+                                                    alignment: Alignment.center,
+                                                    child: Text(
+                                                      n > 99 ? '99+' : '$n',
+                                                      style: const TextStyle(
+                                                          color: Colors.white,
+                                                          fontSize: 10,
+                                                          fontWeight:
+                                                              FontWeight.w800),
+                                                    ),
+                                                  );
+                                                }),
                                               ),
-                                            ),
                                           ],
                                         ),
                                         const SizedBox(width: 8),

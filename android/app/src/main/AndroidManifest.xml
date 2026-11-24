@@ -22,6 +22,10 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyD2xvFq92XW4_jYTpPJ8DdCjeac-AUE4Qc" />
+        <!-- VERSI 51: channel default push notification (sama dengan Fcm::CHANNEL di server) -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="attamana_notif" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
