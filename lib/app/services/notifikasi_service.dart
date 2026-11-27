@@ -133,6 +133,7 @@ class NotifikasiService extends GetxService {
       if (izin.authorizationStatus == AuthorizationStatus.denied) return;
       final t = await FirebaseMessaging.instance.getToken();
       if (t != null && t.isNotEmpty) await _kirimToken(t);
+      debugPrint('🔥 FCM TOKEN: $t');
     } catch (e) {
       if (kDebugMode) print('Token FCM gagal: $e');
     }
