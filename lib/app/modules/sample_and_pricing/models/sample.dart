@@ -21,6 +21,8 @@ class SampleItem {
   final int progres;
   final String foto;
   final bool bolehEdit;
+  final bool bolehKirim; // VERSI 61
+  final bool bolehUpdateStatus; // VERSI 61
 
   SampleItem({
     required this.sampleId,
@@ -39,6 +41,8 @@ class SampleItem {
     required this.progres,
     required this.foto,
     required this.bolehEdit,
+    this.bolehKirim = false,
+    this.bolehUpdateStatus = false,
   });
 
   factory SampleItem.fromJson(Map<String, dynamic> j) => SampleItem(
@@ -58,6 +62,8 @@ class SampleItem {
         progres: intDari(j['progres']),
         foto: teksDari(j['foto']),
         bolehEdit: boolDari(j['boleh_edit']),
+        bolehKirim: boolDari(j['boleh_kirim']),
+        bolehUpdateStatus: boolDari(j['boleh_update_status']),
       );
 }
 

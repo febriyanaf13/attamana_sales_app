@@ -1,117 +1,156 @@
+import 'package:get_storage/get_storage.dart';
+
 abstract class Api {
-  static const baseUrl = 'https://attamana.freightapp.in:444/api';
+  // Key storage untuk menyimpan base URL dinamis
+  static const kCustomBaseUrl = 'custom_base_url';
 
-  // static const baseUrl = 'https://demoerp.freightapp.in:444/api';
+  // URL default (server utama)
+  static const defaultBaseUrl = 'https://attamana.freightapp.in:444/api';
 
-  // static const baseUrl = '192.168.18.15:8000/api';
+  // URL alternatif untuk demo (jika diperlukan sebagai referensi)
+  static const demoBaseUrl = 'https://demoerp.freightapp.in:444/api';
 
-  static const token = '$baseUrl/login';
-  static const login = '$baseUrl/uslogin';
+  /// Base URL dinamis. Membaca custom URL yang tersimpan di storage (jika ada),
+  /// atau fallback ke defaultBaseUrl.
+  static String get baseUrl {
+    try {
+      final storage = GetStorage();
+      final customUrl = storage.read<String>(kCustomBaseUrl);
+      if (customUrl != null && customUrl.trim().isNotEmpty) {
+        final clean = customUrl.trim();
+        return clean.endsWith('/') ? clean.substring(0, clean.length - 1) : clean;
+      }
+    } catch (_) {}
+    return defaultBaseUrl;
+  }
+
+  /// Update base URL dinamis ke storage. Bila [newUrl] null atau kosong, kembali ke default.
+  static void setBaseUrl(String? newUrl) {
+    final storage = GetStorage();
+    if (newUrl == null || newUrl.trim().isEmpty) {
+      storage.remove(kCustomBaseUrl);
+    } else {
+      var clean = newUrl.trim();
+      if (clean.endsWith('/')) {
+        clean = clean.substring(0, clean.length - 1);
+      }
+      storage.write(kCustomBaseUrl, clean);
+    }
+  }
+
+  /// Request token handshake selalu memanggil gateway default/master
+  static String get token => '$defaultBaseUrl/login';
+
+  // Endpoint aplikasi lainnya mengikuti baseUrl aktif
+  static String get login => '$baseUrl/uslogin';
 
   //absen
-  static const lokasiAbsen = '$baseUrl/get_lokasiabsen';
-  static const simpanAbsenMasuk = '$baseUrl/absen-masuk';
-  static const simpanAbsenPulang = '$baseUrl/absen-pulang';
-  static const checkPresensihariIni = '$baseUrl/cek-absensi';
-  static const getAnnouncement = '$baseUrl/pengumuman';
+  static String get lokasiAbsen => '$baseUrl/get_lokasiabsen';
+  static String get simpanAbsenMasuk => '$baseUrl/absen-masuk';
+  static String get simpanAbsenPulang => '$baseUrl/absen-pulang';
+  static String get checkPresensihariIni => '$baseUrl/cek-absensi';
+  static String get getAnnouncement => '$baseUrl/pengumuman';
 
-  static const riwayatAbsenHarian = '$baseUrl/riwayat_absen_harian';
-  static const riwayatAbsenBulanan = '$baseUrl/riwayat_absen_bulanan';
-  static const riwayatAbsenTahunan = '$baseUrl/riwayat_absen_tahunan';
-  static const grafikAbsenBulanan = '$baseUrl/grafik_absen_bulanan';
+  static String get riwayatAbsenHarian => '$baseUrl/riwayat_absen_harian';
+  static String get riwayatAbsenBulanan => '$baseUrl/riwayat_absen_bulanan';
+  static String get riwayatAbsenTahunan => '$baseUrl/riwayat_absen_tahunan';
+  static String get grafikAbsenBulanan => '$baseUrl/grafik_absen_bulanan';
 
-  static const simpanPermohonanIjin = '$baseUrl/simpan_ijin';
-  static const getAllShift = '$baseUrl/shifts';
+  static String get simpanPermohonanIjin => '$baseUrl/simpan_ijin';
+  static String get getAllShift => '$baseUrl/shifts';
 
   //cuti
-  static const cuti = '$baseUrl/cuti-saya';
-  static const tipeCuti = '$baseUrl/tipe-cutis';
+  static String get cuti => '$baseUrl/cuti-saya';
+  static String get tipeCuti => '$baseUrl/tipe-cutis';
 
   //terlambat
-  static const terlambat = '$baseUrl/terlambat-saya';
+  static String get terlambat => '$baseUrl/terlambat-saya';
 
   //lembur
-  static const lembur = '$baseUrl/lembur-saya';
+  static String get lembur => '$baseUrl/lembur-saya';
 
   //activity
-  static const listActivity = '$baseUrl/list_kunjungan';
-  static const detailActivity = '$baseUrl/detail_kunjungan';
-  static const existingCustomer = '$baseUrl/get_allcustomer';
-  static const jenisKunjungan = '$baseUrl/get_jenis_kunjungan';
-  static const simpanActivity = '$baseUrl/save_kunjungan';
-  static const updateActivity = '$baseUrl/update_kunjungan';
-  static const presensiActivity = '$baseUrl/absen_kunjungan';
-  static const kunjunganAutoCheckOutActivity = '$baseUrl/absen_autocheckout';
-  static const lead = '$baseUrl/getmy_lead';
+  static String get listActivity => '$baseUrl/list_kunjungan';
+  static String get detailActivity => '$baseUrl/detail_kunjungan';
+  static String get existingCustomer => '$baseUrl/get_allcustomer';
+  static String get jenisKunjungan => '$baseUrl/get_jenis_kunjungan';
+  static String get simpanActivity => '$baseUrl/save_kunjungan';
+  static String get updateActivity => '$baseUrl/update_kunjungan';
+  static String get presensiActivity => '$baseUrl/absen_kunjungan';
+  static String get kunjunganAutoCheckOutActivity => '$baseUrl/absen_autocheckout';
+  static String get lead => '$baseUrl/getmy_lead';
 
   // VERSI 53: ubah lokasi bertemu dari HP & daftar pendamping
-  static const ubahLokasiActivity = '$baseUrl/ubah_lokasi_kunjungan';
-  static const listPendamping = '$baseUrl/list_pendamping';
+  static String get ubahLokasiActivity => '$baseUrl/ubah_lokasi_kunjungan';
+  static String get listPendamping => '$baseUrl/list_pendamping';
 
   //report visit
-  static const reportVisit = '$baseUrl/visit_report';
-  static const uploadCheckinImage = '$baseUrl/upload_checkin';
+  static String get reportVisit => '$baseUrl/visit_report';
+  static String get uploadCheckinImage => '$baseUrl/upload_checkin';
 
   //inventory
-  static const listGudang = '$baseUrl/list_gudang';
-  static const listStockBarang = '$baseUrl/list_stok';
+  static String get listGudang => '$baseUrl/list_gudang';
+  static String get listStockBarang => '$baseUrl/list_stok';
 
   //sales monitoring
-  static const salesOrder = '$baseUrl/so_monitoring';
-  static const customer = '$baseUrl/getsales_customer';
-  static const addCustomer = '$baseUrl/add_customer';
-  static const updateCustomer = '$baseUrl/update_customer';
-  static const sales = '$baseUrl/allsales';
+  static String get salesOrder => '$baseUrl/so_monitoring';
+  static String get customer => '$baseUrl/getsales_customer';
+  static String get addCustomer => '$baseUrl/add_customer';
+  static String get updateCustomer => '$baseUrl/update_customer';
+  static String get sales => '$baseUrl/allsales';
 
   // VERSI 49: tracking sales order
-  static const soTracking = '$baseUrl/so_tracking';
+  static String get soTracking => '$baseUrl/so_tracking';
 
   // VERSI 49: sample & pricing
-  static const sampleMaster = '$baseUrl/sample/master';
-  static const sampleCustomer = '$baseUrl/sample/customer';
-  static const samplePertanyaan = '$baseUrl/sample/pertanyaan';
-  static const sample = '$baseUrl/sample';
-  static const sampleSimpan = '$baseUrl/sample/simpan';
-  static const sampleUpdate = '$baseUrl/sample/update';
+  static String get sampleMaster => '$baseUrl/sample/master';
+  static String get sampleCustomer => '$baseUrl/sample/customer';
+  static String get samplePertanyaan => '$baseUrl/sample/pertanyaan';
+  static String get sample => '$baseUrl/sample';
+  static String get sampleSimpan => '$baseUrl/sample/simpan';
+  static String get sampleUpdate => '$baseUrl/sample/update';
+  // VERSI 61: kirim sample ke pelanggan & update status hasil (APPROVED / REVISI / FAIL)
+  static String get sampleKirim => '$baseUrl/sample/kirim';
+  static String get sampleStatus => '$baseUrl/sample/status';
 
   // VERSI 51: notifikasi (Firebase) & pendampingan activity
-  static const notifikasi = '$baseUrl/notifikasi';
-  static const notifikasiJumlah = '$baseUrl/notifikasi/jumlah';
-  static const notifikasiBaca = '$baseUrl/notifikasi/baca';
-  static const notifikasiPerangkat = '$baseUrl/notifikasi/perangkat';
-  static const notifikasiPerangkatHapus = '$baseUrl/notifikasi/perangkat/hapus';
-  static const pendampingan = '$baseUrl/pendampingan';
-  static const pendampinganPutuskan = '$baseUrl/pendampingan/putuskan';
+  static String get notifikasi => '$baseUrl/notifikasi';
+  static String get notifikasiJumlah => '$baseUrl/notifikasi/jumlah';
+  static String get notifikasiBaca => '$baseUrl/notifikasi/baca';
+  static String get notifikasiPerangkat => '$baseUrl/notifikasi/perangkat';
+  static String get notifikasiPerangkatHapus => '$baseUrl/notifikasi/perangkat/hapus';
+  static String get pendampingan => '$baseUrl/pendampingan';
+  static String get pendampinganPutuskan => '$baseUrl/pendampingan/putuskan';
 
   //sales report
-  static const customerAssign = '$baseUrl/list_customer_assigned';
-  static const customerNotAssign = '$baseUrl/list_customer_notassigned';
-  static const customerSales = '$baseUrl/get_customersales';
-  static const simpanAssignSales = '$baseUrl/simpan_assigned_sales';
-  static const updateAssignSales = '$baseUrl/update_assigned_sales';
+  static String get customerAssign => '$baseUrl/list_customer_assigned';
+  static String get customerNotAssign => '$baseUrl/list_customer_notassigned';
+  static String get customerSales => '$baseUrl/get_customersales';
+  static String get simpanAssignSales => '$baseUrl/simpan_assigned_sales';
+  static String get updateAssignSales => '$baseUrl/update_assigned_sales';
 
   //slip gaji
-  static const slipGaji = '$baseUrl/slip-gaji-saya';
+  static String get slipGaji => '$baseUrl/slip-gaji-saya';
 
   //kendaraan
-  static const kendaraan = '$baseUrl/kendaraan';
-  static const bensin = '$baseUrl/bensin';
+  static String get kendaraan => '$baseUrl/kendaraan';
+  static String get bensin => '$baseUrl/bensin';
 
   //Fixedasset
-  static const fixedasset = '$baseUrl/fixedassets';
-  static const maintenance = '$baseUrl/maintenances';
-  static const services = '$baseUrl/services';
-  static const vendors = '$baseUrl/vendors';
+  static String get fixedasset => '$baseUrl/fixedassets';
+  static String get maintenance => '$baseUrl/maintenances';
+  static String get services => '$baseUrl/services';
+  static String get vendors => '$baseUrl/vendors';
 
   //acoount
-  static const updatePassword = '$baseUrl/updatepassword';
+  static String get updatePassword => '$baseUrl/updatepassword';
 
   //get user
-  static const getUser = '$baseUrl/get_user';
+  static String get getUser => '$baseUrl/get_user';
 
   //get provinsi
-  static const getProvinsi = '$baseUrl/list_provinsi';
+  static String get getProvinsi => '$baseUrl/list_provinsi';
 
   //get kabupaten
-  static const getKabupaten = '$baseUrl/list_kabupaten';
+  static String get getKabupaten => '$baseUrl/list_kabupaten';
 }

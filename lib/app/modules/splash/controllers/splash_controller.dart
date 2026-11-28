@@ -9,6 +9,7 @@ import '../../../routes/app_pages.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/helper.dart';
 import '../../../utils/string.dart';
+import '../../../data/api/my_api.dart';
 import '../../login/providers/login_provider.dart';
 
 class SplashController extends GetxController {
@@ -28,21 +29,34 @@ class SplashController extends GetxController {
   }
 
   Future<void> reqToken() async {
-    LoginProvider()
-        .reqToken('attamanacrm', 'febrimobile150708', version.value)
-        .then((value) {
+    try {
+      final value = await LoginProvider()
+          .reqToken('attamanacrm', 'febrimobile150708', version.value);
       if (kDebugMode) {
         print('status_code token : ${value.statusCode}');
+        print('response token body : ${value.body}');
       }
 
-      var success = value.body['success'];
-      var message = value.body['message'];
+      var success = value.body?['success'];
+      var message = value.body?['message'];
 
       if (value.status.isOk) {
-        if (success) {
+        if (success == true) {
           storage.write('token', value.body['token']);
+
+          // Simpan base URL baru jika disediakan oleh server
+          final dynamic serverUrl = value.body['base_url'] ?? value.body['url'];
+          if (serverUrl != null && serverUrl is String && serverUrl.trim().isNotEmpty) {
+            Api.setBaseUrl(serverUrl);
+          }
+          if (kDebugMode) {
+            print('==================================================');
+            print('🌐 [SPLASH] BASE URL AKTIF SAAT INI : ${Api.baseUrl}');
+            print('🌐 [SPLASH] BASE URL DARI SERVER    : $serverUrl');
+            print('==================================================');
+          }
         } else {
-          dialogWarning('Gagal', message);
+          dialogWarning('Gagal', message ?? 'Gagal mendapatkan token');
         }
       } else if (value.status.isServerError) {
         dialogError('Terjadi Kesalahan',
@@ -51,7 +65,11 @@ class SplashController extends GetxController {
         dialogError('Tidak ada koneksi',
             'Jaringan internet bermasalah, silahkan cek koneksi internet!');
       }
-    });
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error reqToken di splash: $e');
+      }
+    }
   }
 
   void autoLogin() async {
@@ -114,7 +132,7 @@ class SplashController extends GetxController {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
 
     version.value = packageInfo.version;
-    reqToken();
-    Future.delayed(const Duration(seconds: 3), () => autoLogin());
+    await reqToken();
+    autoLogin();
   }
 }

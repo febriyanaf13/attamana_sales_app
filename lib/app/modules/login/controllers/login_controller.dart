@@ -22,7 +22,6 @@ class LoginController extends GetxController {
   @override
   void onInit() {
     getVersionApp();
-
     super.onInit();
   }
 
@@ -34,18 +33,85 @@ class LoginController extends GetxController {
 
   Future<void> onTapLogin() async {
     if (formKey.currentState!.validate()) {
-      isLoadingLogin.toggle();
+      isLoadingLogin.value = true;
 
-      LoginProvider()
-          .postLogin(nameController.text, passwordController.text, token)
-          .then((value) async {
-        isLoadingLogin.toggle();
+      try {
+        // 1. Ambil token aplikasi & base URL terbaru dari server
+        String currentVersion = version.value;
+        if (currentVersion.isEmpty) {
+          PackageInfo packageInfo = await PackageInfo.fromPlatform();
+          currentVersion = packageInfo.version;
+          version.value = currentVersion;
+        }
+
+        final tokenRes = await LoginProvider().reqToken(
+          'attamanacrm',
+          'febrimobile150708',
+          currentVersion,
+        );
+
+        if (!tokenRes.status.isOk) {
+          isLoadingLogin.value = false;
+          if (tokenRes.status.isServerError) {
+            dialogError('Terjadi Kesalahan',
+                'Terjadi masalah pada server / koneksi internet lambat');
+          } else if (tokenRes.status.connectionError) {
+            dialogError('Koneksi Gagal',
+                'Tidak dapat terhubung ke server.\nPastikan internet aktif atau server dapat diakses.');
+          } else {
+            dialogError('Gagal', 'Gagal memverifikasi aplikasi ke server');
+          }
+          return;
+        }
+
+        final tokenBody = tokenRes.body;
+        if (kDebugMode) {
+          print('status_code token (login) : ${tokenRes.statusCode}');
+          print('response token body (login) : $tokenBody');
+        }
+
+        if (tokenBody == null || tokenBody['success'] != true) {
+          isLoadingLogin.value = false;
+          dialogWarning(
+              'Gagal', tokenBody?['message'] ?? 'Otentikasi aplikasi gagal');
+          return;
+        }
+
+        final validToken = '${tokenBody['token']}';
+        storage.write('token', validToken);
+        token = validToken;
+
+        // 2. Jika response memiliki base_url / url baru, alihkan base URL aplikasi
+        final dynamic serverUrl = tokenBody['base_url'] ?? tokenBody['url'];
+        if (serverUrl != null &&
+            serverUrl is String &&
+            serverUrl.trim().isNotEmpty) {
+          Api.setBaseUrl(serverUrl);
+        }
+
+        if (kDebugMode) {
+          print('==================================================');
+          print('🌐 [LOGIN] BASE URL AKTIF SAAT INI : ${Api.baseUrl}');
+          print('🌐 [LOGIN] BASE URL DARI SERVER    : $serverUrl');
+          print('==================================================');
+        }
+
+        // 3. Lakukan postLogin user menggunakan base URL dan token terbaru
+        final value = await LoginProvider().postLogin(
+          nameController.text.trim(),
+          passwordController.text.trim(),
+          validToken,
+        );
+
+        isLoadingLogin.value = false;
         if (value.status.isOk) {
           var success = value.body['success'];
           var message = value.body['message'];
           var data = value.body['data'];
-          print(value.body);
-          print(success);
+          if (kDebugMode) {
+            print(value.body);
+            print(success);
+          }
           List<String>? listStringGedung = [];
           List<String> listNamaGedung = [];
 
@@ -141,7 +207,10 @@ class LoginController extends GetxController {
               'Tidak dapat terhubung ke server.\n'
                   'Pastikan internet aktif atau server dapat diakses.');
         }
-      });
+      } catch (e) {
+        isLoadingLogin.value = false;
+        dialogError('Terjadi Kesalahan', 'Gagal memproses login: $e');
+      }
     }
   }
 

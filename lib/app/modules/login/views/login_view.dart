@@ -6,6 +6,7 @@ import 'dart:async';
 import 'dart:ui'; // Diperlukan untuk ImageFilter (Glassmorphism)
 
 // --- IMPORT UNTUK CONTROLLER (WAJIB ADA DI VIEW KARENA PART OF) ---
+import 'package:flutter/foundation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:awesome_dialog/awesome_dialog.dart' as awd;
 import 'package:get_storage/get_storage.dart';
@@ -21,6 +22,7 @@ import 'package:lottie/lottie.dart';
 
 import '../../../components/custom_button.dart';
 import '../../../components/custom_dialog.dart'; // Untuk dialogWarning & dialogError
+import '../../../data/api/my_api.dart';
 import '../../../data/models/user.dart'; // Untuk userFromJson
 import '../../../routes/app_pages.dart'; // Untuk Routes
 import '../../../style/colors.dart';

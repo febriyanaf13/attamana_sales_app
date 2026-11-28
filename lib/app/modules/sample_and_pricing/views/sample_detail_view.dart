@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../components/custom_dialog.dart';
 import '../../../style/colors.dart';
 import '../../sales_module/shared/sales_ui.dart';
 import '../models/sample.dart';
 import '../providers/sample_provider.dart';
+import 'sample_aksi_view.dart';
 import 'sample_and_pricing_view.dart';
 
 /// VERSI 49: detail & monitoring 1 sample — status, approval, langkah R&D (rendering, pricing, pembuatan, QC),
 /// harga jual, pengiriman sample, feedback pelanggan, data input sales.
+/// VERSI 61: tombol "Kirim ke pelanggan" (status READY TO DELIVERED) dan "Update status" APPROVED / REVISI / FAIL
+/// (status DELIVERED SAMPLE TO CUSTOMER), sama dengan menu Aksi di daftar Sample web.
 class SampleDetailView extends StatefulWidget {
   const SampleDetailView({super.key, required this.sampleId, this.kode = ''});
 
@@ -56,11 +60,66 @@ class _SampleDetailViewState extends State<SampleDetailView> {
     _muat();
   }
 
+  /// VERSI 61: kembali ke list dengan Navigator.pop. Get.back() hanya menutup snackbar bila pesan "Berhasil" masih tampil
+  /// (GetX 4.6.6, lihat VERSI 59), sehingga halaman tidak tertutup pada tekan pertama.
+  void _kembali() => Navigator.of(context).pop(berubah);
+
+  List<String> _teksList(dynamic v) => v is List ? v.map((e) => '$e').toList() : <String>[];
+
+  /// VERSI 61: buka halaman Kirim / Update status; bila tersimpan, detail dimuat ulang dan list ikut diperbarui saat kembali
+  Future<void> _aksi(bool kirim) async {
+    final data = d;
+    if (data == null) return;
+    final pesan = kirim
+        ? await bukaKirimSample(context,
+            sampleId: widget.sampleId,
+            kode: teksDari(data['kode_sample']),
+            namaHotel: teksDari(data['nama_hotel']),
+            pilihanVia: _teksList(data['pilihan_via']))
+        : await bukaStatusSample(context,
+            sampleId: widget.sampleId,
+            kode: teksDari(data['kode_sample']),
+            namaHotel: teksDari(data['nama_hotel']),
+            pilihanStatus: _teksList(data['pilihan_status_hasil']));
+    if (pesan == null || !mounted) return;
+    berubah = true;
+    dialogSuccess('Berhasil', pesan);
+    _muat();
+  }
+
+  Widget? _tombolAksi() {
+    final data = d;
+    if (data == null) return null;
+    final kirim = boolDari(data['boleh_kirim']);
+    final status = boolDari(data['boleh_update_status']);
+    if (!kirim && !status) return null;
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+        child: SizedBox(
+          height: 52,
+          child: ElevatedButton.icon(
+            key: Key(kirim ? 'tombol_kirim_sample' : 'tombol_status_sample'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: kirim ? const Color(0xFF0D9488) : const Color(0xFF4F46E5),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            ),
+            onPressed: loading ? null : () => _aksi(kirim),
+            icon: Icon(kirim ? Icons.local_shipping_rounded : Icons.fact_check_rounded),
+            label: Text(kirim ? 'Kirim ke pelanggan' : 'Update status (Approved / Revisi / Fail)',
+                style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15)),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        Get.back(result: berubah);
+        _kembali();
         return false;
       },
       child: Scaffold(
@@ -70,7 +129,7 @@ class _SampleDetailViewState extends State<SampleDetailView> {
           backgroundColor: kPrimaryColor,
           centerTitle: true,
           elevation: 0,
-          leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => Get.back(result: berubah)),
+          leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: _kembali),
           actions: [
             if (d != null && boolDari(d!['boleh_edit']))
               IconButton(tooltip: 'Edit', onPressed: _edit, icon: const Icon(Icons.edit_rounded)),
@@ -85,6 +144,7 @@ class _SampleDetailViewState extends State<SampleDetailView> {
                   ? SalesKosong(judul: 'Data tidak dapat dimuat', pesan: pesan, ikon: Icons.cloud_off_rounded)
                   : _isi(d!),
         ),
+        bottomNavigationBar: _tombolAksi(),
       ),
     );
   }
@@ -140,6 +200,25 @@ class _SampleDetailViewState extends State<SampleDetailView> {
                     if (teksDari(d['catatan_revisi']).isNotEmpty) ...[
                       const SizedBox(height: 6),
                       Text('Catatan: ${teksDari(d['catatan_revisi'])}', style: const TextStyle(fontSize: 12.5, color: kSlate700)),
+                    ],
+                    // VERSI 61: bukti approval pelanggan (diunggah dari web atau aplikasi)
+                    if (teksDari(d['file_bukti_approval']).isNotEmpty) ...[
+                      const SizedBox(height: 6),
+                      InkWell(
+                        onTap: () => Get.dialog(
+                          Dialog(
+                            insetPadding: const EdgeInsets.all(12),
+                            child: InteractiveViewer(child: Image.network(teksDari(d['file_bukti_approval']), fit: BoxFit.contain)),
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(Icons.attachment_rounded, size: 16, color: w),
+                            const SizedBox(width: 4),
+                            Text('Lihat bukti approval', style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w800, color: w)),
+                          ],
+                        ),
+                      ),
                     ],
                   ],
                 ),

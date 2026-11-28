@@ -10,15 +10,20 @@ import 'sample_detail_view.dart';
 import 'sample_form_view.dart';
 
 /// VERSI 49: Sample & Pricing — list milik sales + monitoring status.
-/// Input & edit dari aplikasi; approval, R&D, pricing dan pengiriman sample tetap di web.
+/// Input & edit dari aplikasi; approval, R&D, pricing tetap di web.
+/// VERSI 61: kirim sample & update status hasil pelanggan dari halaman detail (badge di kartu sebagai penanda).
 class SampleAndPricingView extends GetView<SampleAndPricingController> {
   const SampleAndPricingView({Key? key}) : super(key: key);
 
   static Future<void> bukaForm({int? sampleId}) async {
     final hasil = await Get.to<bool>(
       () => const SampleFormView(),
-      binding: BindingsBuilder(
-          () => Get.put(SampleFormController(sampleId: sampleId))),
+      // VERSI 59: tipe controller ditulis eksplisit. Dulu `() => Get.put(SampleFormController(...))`
+      // di dalam BindingsBuilder (callback bertipe void) membuat Get.put terdaftar sebagai <void>,
+      // sehingga SampleFormView gagal Get.find<SampleFormController>() -> halaman abu-abu (release).
+      binding: BindingsBuilder(() {
+        Get.put<SampleFormController>(SampleFormController(sampleId: sampleId));
+      }),
     );
     if (hasil == true && Get.isRegistered<SampleAndPricingController>()) {
       Get.find<SampleAndPricingController>().muatUlang();
@@ -202,6 +207,23 @@ class _SampleCard extends StatelessWidget {
                           teks: 'Bisa diedit',
                           warna: kSlate500,
                           ikon: Icons.edit_rounded),
+                    ],
+                    // VERSI 61: penanda aksi yang menunggu sales
+                    if (s.bolehKirim) ...[
+                      const SizedBox(width: 6),
+                      const Flexible(
+                          child: SalesBadge(
+                              teks: 'Perlu dikirim',
+                              warna: Color(0xFF0D9488),
+                              ikon: Icons.local_shipping_rounded)),
+                    ],
+                    if (s.bolehUpdateStatus) ...[
+                      const SizedBox(width: 6),
+                      const Flexible(
+                          child: SalesBadge(
+                              teks: 'Update status',
+                              warna: Color(0xFF4F46E5),
+                              ikon: Icons.fact_check_rounded)),
                     ],
                   ],
                 ),

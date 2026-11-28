@@ -34,4 +34,12 @@ class SampleProvider extends GetConnect {
   Future<Response> simpan(FormData body) => post(Api.sampleSimpan, body, headers: headers);
 
   Future<Response> update(int id, FormData body) => post('${Api.sampleUpdate}/$id', body, headers: headers);
+
+  /// VERSI 61: kirim sample (READY TO DELIVERED -> DELIVERED SAMPLE TO CUSTOMER).
+  /// [body]: tanggal_kirim, real_armada_kirim, via, nomor_resi (userid ditambahkan otomatis).
+  Future<Response> kirim(int id, Map<String, String> body) =>
+      post('${Api.sampleKirim}/$id', FormData({...body, 'userid': userId}), headers: headers);
+
+  /// VERSI 61: status hasil dari pelanggan. [body] FormData: status, catatan, file_bukti_approval (wajib untuk APPROVED).
+  Future<Response> updateStatus(int id, FormData body) => post('${Api.sampleStatus}/$id', body, headers: headers);
 }
